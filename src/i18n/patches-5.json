@@ -1,0 +1,74 @@
+{
+  "en": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" uses a greeting that fits the holiday", "Nick albo nazwa kanału": "Nick or channel name",
+    "Pokaż ELO": "Show ELO", "Pokaż etykietę z lewej": "Show the left label", "Pokaż ikonę serwisu": "Show the service icon", "Pokaż level": "Show level",
+    "Pokaż nagłówek czatu": "Show chat header", "Pokaż napis": "Show label", "Pokaż napis nad licznikiem": "Show text above the timer", "Pokaż następny stream": "Show next stream",
+    "Pokaż nick": "Show nick", "Pokaż pasek z napisem": "Show the name bar", "Pokaż podpis": "Show caption", "Pokaż podtytuł": "Show subtitle", "Pokaż ramkę": "Show frame",
+    "Pokaż separator": "Show separator", "Pokaż sociale": "Show socials", "Pokaż tytuł": "Show title", "Pokaż znaczek nad tytułem": "Show badge above the title",
+    "Pokażą się na dole ekranu z ikonami": "Shown at the bottom of the screen with icons"
+  },
+  "de": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" setzt einen passenden Gruß zum Anlass ein", "Nick albo nazwa kanału": "Nick oder Kanalname",
+    "Pokaż ELO": "ELO anzeigen", "Pokaż etykietę z lewej": "Linkes Label anzeigen", "Pokaż ikonę serwisu": "Dienst-Icon anzeigen", "Pokaż level": "Level anzeigen",
+    "Pokaż nagłówek czatu": "Chat-Überschrift anzeigen", "Pokaż napis": "Text anzeigen", "Pokaż napis nad licznikiem": "Text über dem Timer anzeigen", "Pokaż następny stream": "Nächsten Stream anzeigen",
+    "Pokaż nick": "Nick anzeigen", "Pokaż pasek z napisem": "Namensleiste anzeigen", "Pokaż podpis": "Untertitel anzeigen", "Pokaż podtytuł": "Untertitel anzeigen", "Pokaż ramkę": "Rahmen anzeigen",
+    "Pokaż separator": "Trenner anzeigen", "Pokaż sociale": "Socials anzeigen", "Pokaż tytuł": "Titel anzeigen", "Pokaż znaczek nad tytułem": "Badge über dem Titel anzeigen",
+    "Pokażą się na dole ekranu z ikonami": "Erscheinen unten auf dem Bildschirm mit Icons"
+  },
+  "cs": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" vloží nápis k dané příležitosti", "Nick albo nazwa kanału": "Přezdívka nebo název kanálu",
+    "Pokaż ELO": "Zobrazit ELO", "Pokaż etykietę z lewej": "Zobrazit štítek vlevo", "Pokaż ikonę serwisu": "Zobrazit ikonu služby", "Pokaż level": "Zobrazit level",
+    "Pokaż nagłówek czatu": "Zobrazit záhlaví chatu", "Pokaż napis": "Zobrazit nápis", "Pokaż napis nad licznikiem": "Zobrazit text nad odpočtem", "Pokaż następny stream": "Zobrazit další stream",
+    "Pokaż nick": "Zobrazit přezdívku", "Pokaż pasek z napisem": "Zobrazit lištu se jménem", "Pokaż podpis": "Zobrazit popisek", "Pokaż podtytuł": "Zobrazit podtitul", "Pokaż ramkę": "Zobrazit rámeček",
+    "Pokaż separator": "Zobrazit oddělovač", "Pokaż sociale": "Zobrazit sociální sítě", "Pokaż tytuł": "Zobrazit titulek", "Pokaż znaczek nad tytułem": "Zobrazit odznak nad titulkem",
+    "Pokażą się na dole ekranu z ikonami": "Zobrazí se dole na obrazovce s ikonami"
+  },
+  "es": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" pone un saludo acorde a la ocasión", "Nick albo nazwa kanału": "Nick o nombre del canal",
+    "Pokaż ELO": "Mostrar ELO", "Pokaż etykietę z lewej": "Mostrar la etiqueta izquierda", "Pokaż ikonę serwisu": "Mostrar el icono del servicio", "Pokaż level": "Mostrar nivel",
+    "Pokaż nagłówek czatu": "Mostrar encabezado del chat", "Pokaż napis": "Mostrar texto", "Pokaż napis nad licznikiem": "Mostrar texto sobre el contador", "Pokaż następny stream": "Mostrar próximo stream",
+    "Pokaż nick": "Mostrar nick", "Pokaż pasek z napisem": "Mostrar la barra con el nombre", "Pokaż podpis": "Mostrar leyenda", "Pokaż podtytuł": "Mostrar subtítulo", "Pokaż ramkę": "Mostrar marco",
+    "Pokaż separator": "Mostrar separador", "Pokaż sociale": "Mostrar redes", "Pokaż tytuł": "Mostrar título", "Pokaż znaczek nad tytułem": "Mostrar insignia sobre el título",
+    "Pokażą się na dole ekranu z ikonami": "Aparecen abajo en la pantalla con iconos"
+  },
+  "fr": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" met un message adapté à l'occasion", "Nick albo nazwa kanału": "Pseudo ou nom de la chaîne",
+    "Pokaż ELO": "Afficher l'ELO", "Pokaż etykietę z lewej": "Afficher l'étiquette à gauche", "Pokaż ikonę serwisu": "Afficher l'icône du service", "Pokaż level": "Afficher le niveau",
+    "Pokaż nagłówek czatu": "Afficher l'en-tête du chat", "Pokaż napis": "Afficher le texte", "Pokaż napis nad licznikiem": "Afficher le texte au-dessus du compteur", "Pokaż następny stream": "Afficher le prochain stream",
+    "Pokaż nick": "Afficher le pseudo", "Pokaż pasek z napisem": "Afficher la barre de nom", "Pokaż podpis": "Afficher la légende", "Pokaż podtytuł": "Afficher le sous-titre", "Pokaż ramkę": "Afficher le cadre",
+    "Pokaż separator": "Afficher le séparateur", "Pokaż sociale": "Afficher les réseaux", "Pokaż tytuł": "Afficher le titre", "Pokaż znaczek nad tytułem": "Afficher le badge au-dessus du titre",
+    "Pokażą się na dole ekranu z ikonami": "Affichés en bas de l'écran avec des icônes"
+  },
+  "pt": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" usa uma mensagem que combina com a data", "Nick albo nazwa kanału": "Nick ou nome do canal",
+    "Pokaż ELO": "Mostrar ELO", "Pokaż etykietę z lewej": "Mostrar a etiqueta à esquerda", "Pokaż ikonę serwisu": "Mostrar o ícone do serviço", "Pokaż level": "Mostrar level",
+    "Pokaż nagłówek czatu": "Mostrar cabeçalho do chat", "Pokaż napis": "Mostrar texto", "Pokaż napis nad licznikiem": "Mostrar texto acima do contador", "Pokaż następny stream": "Mostrar próxima live",
+    "Pokaż nick": "Mostrar nick", "Pokaż pasek z napisem": "Mostrar a barra com o nome", "Pokaż podpis": "Mostrar legenda", "Pokaż podtytuł": "Mostrar subtítulo", "Pokaż ramkę": "Mostrar moldura",
+    "Pokaż separator": "Mostrar separador", "Pokaż sociale": "Mostrar redes", "Pokaż tytuł": "Mostrar título", "Pokaż znaczek nad tytułem": "Mostrar selo acima do título",
+    "Pokażą się na dole ekranu z ikonami": "Aparecem embaixo na tela com ícones"
+  },
+  "ru": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" подставляет надпись под праздник", "Nick albo nazwa kanału": "Ник или название канала",
+    "Pokaż ELO": "Показывать ELO", "Pokaż etykietę z lewej": "Показывать метку слева", "Pokaż ikonę serwisu": "Показывать иконку сервиса", "Pokaż level": "Показывать уровень",
+    "Pokaż nagłówek czatu": "Показывать заголовок чата", "Pokaż napis": "Показывать надпись", "Pokaż napis nad licznikiem": "Показывать надпись над таймером", "Pokaż następny stream": "Показывать следующий стрим",
+    "Pokaż nick": "Показывать ник", "Pokaż pasek z napisem": "Показывать плашку с именем", "Pokaż podpis": "Показывать подпись", "Pokaż podtytuł": "Показывать подзаголовок", "Pokaż ramkę": "Показывать рамку",
+    "Pokaż separator": "Показывать разделитель", "Pokaż sociale": "Показывать соцсети", "Pokaż tytuł": "Показывать заголовок", "Pokaż znaczek nad tytułem": "Показывать значок над заголовком",
+    "Pokażą się na dole ekranu z ikonami": "Появятся внизу экрана с иконками"
+  },
+  "tr": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" güne uygun bir mesaj koyar", "Nick albo nazwa kanału": "Nick veya kanal adı",
+    "Pokaż ELO": "ELO'yu göster", "Pokaż etykietę z lewej": "Soldaki etiketi göster", "Pokaż ikonę serwisu": "Servis simgesini göster", "Pokaż level": "Seviyeyi göster",
+    "Pokaż nagłówek czatu": "Sohbet başlığını göster", "Pokaż napis": "Yazıyı göster", "Pokaż napis nad licznikiem": "Sayacın üstündeki yazıyı göster", "Pokaż następny stream": "Sonraki yayını göster",
+    "Pokaż nick": "Nick'i göster", "Pokaż pasek z napisem": "İsim şeridini göster", "Pokaż podpis": "Alt yazıyı göster", "Pokaż podtytuł": "Alt başlığı göster", "Pokaż ramkę": "Çerçeveyi göster",
+    "Pokaż separator": "Ayırıcıyı göster", "Pokaż sociale": "Sosyal hesapları göster", "Pokaż tytuł": "Başlığı göster", "Pokaż znaczek nad tytułem": "Başlığın üstündeki rozeti göster",
+    "Pokażą się na dole ekranu z ikonami": "Ekranın altında simgelerle görünür"
+  },
+  "uk": {
+    "\"auto\" wstawia napis pasujący do okazji": "\"auto\" підставляє напис до свята", "Nick albo nazwa kanału": "Нік або назва каналу",
+    "Pokaż ELO": "Показувати ELO", "Pokaż etykietę z lewej": "Показувати мітку зліва", "Pokaż ikonę serwisu": "Показувати іконку сервісу", "Pokaż level": "Показувати рівень",
+    "Pokaż nagłówek czatu": "Показувати заголовок чату", "Pokaż napis": "Показувати напис", "Pokaż napis nad licznikiem": "Показувати напис над таймером", "Pokaż następny stream": "Показувати наступний стрим",
+    "Pokaż nick": "Показувати нік", "Pokaż pasek z napisem": "Показувати плашку з іменем", "Pokaż podpis": "Показувати підпис", "Pokaż podtytuł": "Показувати підзаголовок", "Pokaż ramkę": "Показувати рамку",
+    "Pokaż separator": "Показувати розділювач", "Pokaż sociale": "Показувати соцмережі", "Pokaż tytuł": "Показувати заголовок", "Pokaż znaczek nad tytułem": "Показувати значок над заголовком",
+    "Pokażą się na dole ekranu z ikonami": "З'являться внизу екрана з іконками"
+  }
+}

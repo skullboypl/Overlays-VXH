@@ -112,14 +112,14 @@ export const FaceitStats = ({ params }: { params: Params }) => {
 
   return (
     <div className={`fs fs-${look} pos-${params.statsPos ?? 'bl'}`} style={style}>
-      {look !== 'minimal' && <LevelBadge level={s.level} />}
+      {look !== 'minimal' && params.showLevel !== false && <LevelBadge level={s.level} />}
       {look === 'card' && params.avatar && s.avatar && <img className="fs-avatar" src={s.avatar.startsWith('/') ? `https://faceitbanner.vxh.pl${s.avatar}` : s.avatar} alt="" />}
       <div className="fs-main">
-        {(look === 'card' || look === 'hud') && <div className="fs-nick">{s.nickname}</div>}
-        <div className="fs-elo">
+        {(look === 'card' || look === 'hud') && params.showNick !== false && <div className="fs-nick">{s.nickname}</div>}
+        {params.showElo !== false && <div className="fs-elo">
           <b>{s.elo}</b><small>ELO</small>
           {diff !== null && diff !== 0 && <em className={diff > 0 ? 'up' : 'down'}>{diff > 0 ? `+${diff}` : diff}</em>}
-        </div>
+        </div>}
       </div>
       {look !== 'pill' && look !== 'minimal' && picked.length > 0 && (
         <div className="fs-stats">

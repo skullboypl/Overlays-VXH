@@ -186,11 +186,11 @@ export const HolidayFrame = ({ params }: { params: Params }) => {
   const art = FRAME_URLS[`${params.theme}-${variant}`];
   // A variant whose picture is not generated yet falls back to the animated vector frame.
   if (art && (ART_VARIANTS as string[]).includes(variant)) {
-    const label = (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
+    const label = params.showLabel === false ? '' : (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
     return <ImageFrame theme={theme} params={params} variant={variant as ArtVariant} label={label} src={art} />;
   }
   const colors = theme.colors;
-  const label = (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
+  const label = params.showLabel === false ? '' : (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
   const speed = params.speed as number;
   const style: Vars = {
     '--inset': `${params.inset}px`,
@@ -215,8 +215,8 @@ export const HolidayFrame = ({ params }: { params: Params }) => {
           />
         </div>
       )}
-      {(params.glow as number) > 0 && <div className="ov-neon-ring ov-neon-glow" />}
-      <div className="ov-neon-ring" />
+      {params.showBorder !== false && (params.glow as number) > 0 && <div className="ov-neon-ring ov-neon-glow" />}
+      {params.showBorder !== false && <div className="ov-neon-ring" />}
 
       {params.garland && theme.garland === 'lights' && <Lights colors={colors} />}
       {params.garland && theme.garland === 'bunting' && <Bunting colors={colors} />}

@@ -28,12 +28,12 @@ export const TickerWidget = ({ params }: { params: Params }) => {
   const run = items.map((t, i) => (
     <span key={i} className="wd-tick-item">
       {t}
-      <i>{params.separator as string}</i>
+      {params.showSeparator !== false && <i>{params.separator as string}</i>}
     </span>
   ));
   return (
     <div className={`ov-fill wd-ticker style-${params.style}`} style={style}>
-      {params.label && <div className="wd-tick-label">{params.label as string}</div>}
+      {params.showLabel !== false && params.label && <div className="wd-tick-label">{params.label as string}</div>}
       <div className="wd-tick-viewport">
         <div className="wd-tick-track" ref={trackRef}>
           {run}
@@ -67,7 +67,7 @@ export const SocialsWidget = ({ params }: { params: Params }) => {
   return (
     <div className={`ov-fill wd-socials align-${params.align}`} style={style}>
       <div key={index} className={`wd-soc style-${params.style} anim-${params.anim}`}>
-        <span className="wd-soc-icon"><BrandIcon brand={item.brand} size="1.3em" /></span>
+        {params.showIcon !== false && <span className="wd-soc-icon"><BrandIcon brand={item.brand} size="1.3em" /></span>}
         <span className="wd-soc-text">{item.label}</span>
         {params.progress && list.length > 1 && (
           <span className="wd-soc-bar" style={{ animationDuration: `${every}ms` }} />

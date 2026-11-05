@@ -196,7 +196,7 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
 
       {chat && (
         <div className="sc-chat">
-          {params.chatTitle && <div className="sc-chat-head"><i />{params.chatTitle as string}</div>}
+          {params.showChatTitle !== false && params.chatTitle && <div className="sc-chat-head"><i />{params.chatTitle as string}</div>}
           {/* Only the studio preview shows these; in OBS the real chat source sits here. */}
           <div className="sc-chat-hint" aria-hidden>
             <p><b style={{ color: '#ff8a3d' }}>widz123:</b> siema!</p>
@@ -209,14 +209,14 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
 
       <div className="sc-inner">
         <div className="sc-center">
-          {params.kicker && (
+          {params.showKicker !== false && params.kicker && (
             <div className="sc-kicker">
               <i className={kind === 'ending' ? 'off' : ''} />
               {params.kicker as string}
             </div>
           )}
-          <Title key={`${params.title}-${params.titleAnim}`} text={(params.title as string) || ' '} anim={params.titleAnim as string} />
-          {params.subtitle && <p className="sc-sub">{params.subtitle as string}</p>}
+          {params.showTitle !== false && <Title key={`${params.title}-${params.titleAnim}`} text={(params.title as string) || ' '} anim={params.titleAnim as string} />}
+          {params.showSubtitle !== false && params.subtitle && <p className="sc-sub">{params.subtitle as string}</p>}
 
           {timer !== 'off' && (
             <div className="sc-timer">
@@ -224,7 +224,7 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
                 <strong className="sc-done">{params.doneText as string}</strong>
               ) : (
                 <>
-                  {params.timerLabel && <span>{params.timerLabel as string}</span>}
+                  {params.showTimerLabel !== false && params.timerLabel && <span>{params.timerLabel as string}</span>}
                   <strong key={Math.ceil(left / 1000)}>{fmtLeft(left)}</strong>
                 </>
               )}
@@ -236,7 +236,7 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
             </div>
           )}
 
-          {kind === 'ending' && params.next && <p className="sc-next">{params.next as string}</p>}
+          {kind === 'ending' && params.showNext !== false && params.next && <p className="sc-next">{params.next as string}</p>}
         </div>
 
         {params.bars && (
@@ -247,7 +247,7 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
           </div>
         )}
 
-        {socials.length > 0 && (
+        {params.showSocials !== false && socials.length > 0 && (
           <div className="sc-socials">
             {socials.map((s, i) => (
               <span key={i} className="sc-social" style={{ '--brand': BRAND_COLORS[s.brand], '--i': i } as Vars}>

@@ -76,10 +76,10 @@ const proFields = (d: { colors: string[]; shape?: string }): Field[] => [
   { group: 'Kształt', key: 'outsideColor', label: 'Kolor wokół', type: 'color', default: '#0b0b0c', when: { key: 'mask', is: [true] } },
   { group: 'Obramowanie', key: 'border', label: 'Styl obramowania', type: 'select', default: 'gradient', options: [
     { value: 'gradient', label: 'Gradient' }, { value: 'solid', label: 'Pełne' }, { value: 'double', label: 'Podwójne' },
-    { value: 'dashed', label: 'Przerywane' }, { value: 'glass', label: 'Szkło' },
+    { value: 'dashed', label: 'Przerywane' }, { value: 'glass', label: 'Szkło' }, { value: 'none', label: 'Brak' },
   ] },
-  { group: 'Obramowanie', key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: d.colors },
-  { group: 'Obramowanie', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 30, step: 1, default: 6, unit: 'px' },
+  { group: 'Obramowanie', key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: d.colors, when: { key: 'border', is: ['gradient', 'solid', 'double', 'dashed'] } },
+  { group: 'Obramowanie', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 30, step: 1, default: 6, unit: 'px', when: { key: 'border', is: ['gradient', 'solid', 'double', 'dashed', 'glass'] } },
   { group: 'Obramowanie', key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 50, step: 1, default: 14, unit: 'px', when: { key: 'border', is: ['gradient', 'solid', 'double', 'dashed'] } },
   { group: 'Obramowanie', key: 'shadow', label: 'Cień pod ramką', type: 'toggle', default: true },
   { group: 'Animacja', key: 'anim', label: 'Animacja', type: 'select', default: 'spin', options: [
@@ -100,10 +100,14 @@ type SceneDefaults = {
 
 const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   // ---- texts ----
-  { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: d.title, maxLength: 40 },
-  { group: 'Teksty', key: 'subtitle', i18n: true, label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 90 },
-  { group: 'Teksty', key: 'kicker', label: 'Znaczek nad tytułem', type: 'text', default: 'skullboypl', maxLength: 40, hint: 'Nick albo nazwa kanału. Puste ukrywa.' },
-  ...(ending ? [{ group: 'Teksty', key: 'next', i18n: true, label: 'Następny stream', type: 'text', default: d.next ?? '', maxLength: 80, placeholder: 'np. Piątek, 20:00' } as Field] : []),
+  { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
+  { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: d.title, maxLength: 40, when: { key: 'showTitle', is: [true] } },
+  { group: 'Teksty', key: 'showSubtitle', label: 'Pokaż podtytuł', type: 'toggle', default: true },
+  { group: 'Teksty', key: 'subtitle', i18n: true, label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 90, when: { key: 'showSubtitle', is: [true] } },
+  { group: 'Teksty', key: 'showKicker', label: 'Pokaż znaczek nad tytułem', type: 'toggle', default: true },
+  { group: 'Teksty', key: 'kicker', label: 'Znaczek nad tytułem', type: 'text', default: 'skullboypl', maxLength: 40, hint: 'Nick albo nazwa kanału', when: { key: 'showKicker', is: [true] } },
+  ...(ending ? [{ group: 'Teksty', key: 'showNext', label: 'Pokaż następny stream', type: 'toggle', default: true } as Field] : []),
+  ...(ending ? [{ group: 'Teksty', when: { key: 'showNext', is: [true] }, key: 'next', i18n: true, label: 'Następny stream', type: 'text', default: d.next ?? '', maxLength: 80, placeholder: 'np. Piątek, 20:00' } as Field] : []),
 
   // ---- countdown ----
   { group: 'Odliczanie', key: 'timer', label: 'Licznik', type: 'select', default: d.timer, options: [
@@ -111,12 +115,14 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   ] },
   { group: 'Odliczanie', key: 'minutes', label: 'Ile minut', type: 'range', min: 1, max: 120, step: 1, default: 5, unit: ' min', when: { key: 'timer', is: ['countdown'] }, hint: 'Liczone od chwili, gdy OBS załaduje źródło' },
   { group: 'Odliczanie', key: 'at', label: 'Godzina startu', type: 'text', default: '20:00', maxLength: 5, placeholder: 'HH:MM', when: { key: 'timer', is: ['clock'] } },
-  { group: 'Odliczanie', key: 'timerLabel', i18n: true, label: 'Napis nad licznikiem', type: 'text', default: d.timerLabel, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'showTimerLabel', label: 'Pokaż napis nad licznikiem', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'timerLabel', i18n: true, label: 'Napis nad licznikiem', type: 'text', default: d.timerLabel, maxLength: 30, when: [{ key: 'timer', is: ['countdown', 'clock'] }, { key: 'showTimerLabel', is: [true] }] },
   { group: 'Odliczanie', key: 'doneText', i18n: true, label: 'Napis po odliczeniu', type: 'text', default: d.doneText, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
   { group: 'Odliczanie', key: 'progress', label: 'Pasek postępu', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
 
   // ---- socials ----
-  { group: 'Sociale', key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.gg/skullmedia | youtube.com/@skullboypl', maxLength: 300, hint: 'Pokażą się na dole ekranu z ikonami. Usuń wszystkie, żeby ukryć pasek.' },
+  { group: 'Sociale', key: 'showSocials', label: 'Pokaż sociale', type: 'toggle', default: true },
+  { group: 'Sociale', when: { key: 'showSocials', is: [true] }, key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.gg/skullmedia | youtube.com/@skullboypl', maxLength: 300, hint: 'Pokażą się na dole ekranu z ikonami' },
 
   // ---- chat ----
   { group: 'Czat', key: 'chat', label: 'Miejsce na czat', type: 'toggle', default: false, hint: 'Zostawia ramkę, na którą kładziesz źródło czatu w OBS' },
@@ -127,7 +133,8 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   { group: 'Czat', key: 'chatStyle', label: 'Wygląd ramki', type: 'select', default: 'glass', when: { key: 'chat', is: [true] }, options: [
     { value: 'glass', label: 'Szkło' }, { value: 'outline', label: 'Obramowanie' }, { value: 'cutout', label: 'Przezroczysta dziura' },
   ] },
-  { group: 'Czat', key: 'chatTitle', i18n: true, label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: { key: 'chat', is: [true] }, hint: 'Puste ukrywa nagłówek' },
+  { group: 'Czat', key: 'showChatTitle', label: 'Pokaż nagłówek czatu', type: 'toggle', default: true, when: { key: 'chat', is: [true] } },
+  { group: 'Czat', key: 'chatTitle', i18n: true, label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: [{ key: 'chat', is: [true] }, { key: 'showChatTitle', is: [true] }] },
 
   // ---- look ----
   { group: 'Tło', key: 'bg', label: 'Wybierz tło', type: 'select', default: d.bg, options: BG_OPTIONS, swatches: BG_SWATCHES },
@@ -344,8 +351,10 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'nametag', name: 'Ramka z podpisem', icon: '🏷️', category: 'camera', size: CAM,
     description: 'Czysta ramka z paskiem na nick, social albo tekst.',
     fields: [
-      { group: 'Teksty', key: 'text', label: 'Nick / tytuł', type: 'text', default: 'skullboypl', maxLength: 40 },
-      { group: 'Teksty', key: 'sub', label: 'Podpis pod spodem', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 60, placeholder: 'np. social, opcjonalnie' },
+      { group: 'Teksty', key: 'showTag', label: 'Pokaż pasek z napisem', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'text', label: 'Nick / tytuł', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'showTag', is: [true] } },
+      { group: 'Teksty', key: 'showSub', label: 'Pokaż podpis', type: 'toggle', default: true, when: { key: 'showTag', is: [true] } },
+      { group: 'Teksty', when: [{ key: 'showTag', is: [true] }, { key: 'showSub', is: [true] }], key: 'sub', label: 'Podpis pod spodem', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 60, placeholder: 'np. social, opcjonalnie' },
       { group: 'Wygląd', key: 'color', label: 'Kolor ramki', type: 'color', default: '#ff5900' },
       { key: 'bg', label: 'Tło paska', type: 'color', default: '#111114' },
       { key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
@@ -368,9 +377,10 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'anim', label: 'Animowana' }, { value: 'real', label: 'Realistyczna' }, { value: '3d', label: '3D' },
         { value: 'cartoon', label: 'Kreskówka' }, { value: 'neon', label: 'Neon' },
       ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczna, 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
-      { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji, puste pole ukrywa napis' },
-      { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px' },
-      { group: 'Okazja', key: 'labelPos', label: 'Pozycja napisu', type: 'select', default: 'bottom', options: [
+      { group: 'Okazja', key: 'showLabel', label: 'Pokaż napis', type: 'toggle', default: true },
+      { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji', when: { key: 'showLabel', is: [true] } },
+      { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px', when: { key: 'showLabel', is: [true] } },
+      { group: 'Okazja', key: 'labelPos', label: 'Pozycja napisu', type: 'select', default: 'bottom', when: { key: 'showLabel', is: [true] }, options: [
         { value: 'bottom', label: 'Na dole' }, { value: 'top', label: 'Na górze' },
       ] },
       { group: 'Dekoracje', key: 'decorations', label: 'Dekoracje w rogach', type: 'toggle', default: true, when: { key: 'variant', is: ['anim', '3d', 'cartoon'] } },
@@ -380,10 +390,11 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { key: 'depth', label: 'Siła ruchu', type: 'range', min: 0, max: 2.5, step: 0.1, default: 1, unit: '×', when: { key: 'variant', is: ['3d', 'cartoon', 'neon'] }, hint: '0 zatrzymuje ruch' },
       { key: 'particles', label: 'Efekt (śnieg, serca...)', type: 'toggle', default: true },
       { key: 'amount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'particles', is: [true] } },
-      { group: 'Ramka', key: 'thickness', label: 'Grubość ramki', type: 'range', min: 1, max: 24, step: 1, default: 6, unit: 'px', when: { key: 'variant', is: ['anim'] } },
-      { key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 16, unit: 'px', when: { key: 'variant', is: ['anim'] } },
-      { key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 40, step: 1, default: 12, unit: 'px', when: { key: 'variant', is: ['anim'] } },
-      { key: 'speed', label: 'Obrót kolorów', type: 'range', min: 0, max: 3, step: 0.1, default: 0.6, unit: '×', when: { key: 'variant', is: ['anim'] } },
+      { group: 'Ramka', key: 'showBorder', label: 'Pokaż ramkę', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] } },
+      { group: 'Ramka', key: 'thickness', label: 'Grubość ramki', type: 'range', min: 1, max: 24, step: 1, default: 6, unit: 'px', when: [{ key: 'variant', is: ['anim'] }, { key: 'showBorder', is: [true] }] },
+      { key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 16, unit: 'px', when: [{ key: 'variant', is: ['anim'] }, { key: 'showBorder', is: [true] }] },
+      { key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 40, step: 1, default: 12, unit: 'px', when: [{ key: 'variant', is: ['anim'] }, { key: 'showBorder', is: [true] }] },
+      { key: 'speed', label: 'Obrót kolorów', type: 'range', min: 0, max: 3, step: 0.1, default: 0.6, unit: '×', when: [{ key: 'variant', is: ['anim'] }, { key: 'showBorder', is: [true] }] },
       { key: 'inset', label: 'Margines', type: 'range', min: 10, max: 70, step: 1, default: 30, unit: 'px', when: { key: 'variant', is: ['anim'] }, hint: 'Miejsce na dekoracje wystające poza ramkę' },
     ],
   },
@@ -404,6 +415,9 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
         { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },
       ] },
+      { group: 'Wygląd statów', key: 'showLevel', label: 'Pokaż level', type: 'toggle', default: true, when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'pill', 'bar', 'neon', 'hud'] }] },
+      { group: 'Wygląd statów', key: 'showNick', label: 'Pokaż nick', type: 'toggle', default: true, when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'hud'] }] },
+      { group: 'Wygląd statów', key: 'showElo', label: 'Pokaż ELO', type: 'toggle', default: true, when: { key: 'source', is: ['api'] } },
       { group: 'Wygląd statów', key: 'stats', label: 'Staty', type: 'select', default: 'kd,wr,hs', when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'bar', 'neon', 'hud'] }], options: [
         { value: 'kd,wr,hs', label: 'K/D, WR, HS' }, { value: 'kd,adr,hs', label: 'K/D, ADR, HS' }, { value: 'kd,kills,wr', label: 'K/D, średnie kille, WR' },
         { value: 'kd', label: 'Tylko K/D' }, { value: 'kd,wr,hs,adr,kills', label: 'Wszystkie' }, { value: 'none', label: 'Bez statów' },
@@ -438,8 +452,10 @@ const ALL_OVERLAYS: OverlayDef[] = [
     description: 'Pasek z przesuwającym się tekstem: harmonogram, info, zasady czatu.',
     fields: [
       { group: 'Teksty', key: 'text', i18n: true, label: 'Komunikaty', type: 'text', list: 'lines', placeholder: 'Treść komunikatu', default: 'Streamy pon-pt od 20:00 | !discord po link do serwera | Dzięki za każdy follow ❤️', maxLength: 400, hint: 'Każdy wiersz to osobny komunikat, przewijane po kolei.' },
-      { group: 'Teksty', key: 'label', i18n: true, label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, hint: 'Puste ukrywa etykietę' },
-      { group: 'Teksty', key: 'separator', label: 'Separator', type: 'text', default: '◆', maxLength: 3 },
+      { group: 'Teksty', key: 'showLabel', label: 'Pokaż etykietę z lewej', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'label', i18n: true, label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, when: { key: 'showLabel', is: [true] } },
+      { group: 'Teksty', key: 'showSeparator', label: 'Pokaż separator', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'separator', label: 'Separator', type: 'text', default: '◆', maxLength: 3, when: { key: 'showSeparator', is: [true] } },
       { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'solid', options: [
         { value: 'solid', label: 'Pełny' }, { value: 'glass', label: 'Szkło' }, { value: 'none', label: 'Bez tła' },
       ] },
@@ -469,6 +485,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
       ] },
       { key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 48, step: 1, default: 26, unit: 'px' },
+      { key: 'showIcon', label: 'Pokaż ikonę serwisu', type: 'toggle', default: true },
       { key: 'brandColors', label: 'Kolory serwisów', type: 'toggle', default: true, hint: 'Fiolet Twitcha, czerwień YouTube itd.' },
       { key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900', when: { key: 'brandColors', is: [false] } },
       { key: 'bg', label: 'Tło', type: 'color', default: '#111114' },

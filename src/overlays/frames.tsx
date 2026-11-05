@@ -59,11 +59,11 @@ export const NameTagFrame = ({ params }: { params: Params }) => {
   return (
     <div className="ov-fill ov-nametag" style={style}>
       <div className="ov-nametag-border" />
-      {(params.text || params.sub) && (
+      {params.showTag !== false && (params.text || params.sub) && (
         <div className={`ov-tag pos-${pos} ${params.shine ? 'is-shining' : ''}`}>
           <div className="ov-tag-text">
             {params.text && <strong>{c(params.text)}</strong>}
-            {params.sub && <small>{c(params.sub)}</small>}
+            {params.showSub !== false && params.sub && <small>{c(params.sub)}</small>}
           </div>
         </div>
       )}
