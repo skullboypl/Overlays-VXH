@@ -94,12 +94,22 @@ def background_mask(raw):
 
 
 def unmultiply_black(raw):
-    """Neon light on black -> light with its own alpha: the glow stays translucent colour, not dark smudge."""
-    rgb = np.asarray(raw, dtype=np.float32)
-    a = np.clip((rgb.max(axis=2) - 14) / 241, 0, 1)
-    a[a < 0.04] = 0  # sensor-like noise in the black: invisible, but it bloats the file
-    col = np.where(a[..., None] > 0, rgb / np.maximum(a[..., None], 1e-3), 0)
-    return Image.fromarray(np.clip(col, 0, 255).astype(np.uint8)), Image.fromarray((a * 255).astype(np.uint8))
+    """Neon light on black -> light with its own alpha.
+
+    Colour is the light's hue at full brightness and alpha its brightness above the image's own black
+    level (Flux sometimes paints a dim wall instead of pure black). The faint ambient haze fades out
+    smoothly: a hard threshold shows up as torn, blotchy edges over a camera.
+    """
+    src = np.asarray(raw, dtype=np.float32)
+    v0 = src.max(axis=2)
+    black = float(np.percentile(v0, 50))
+    rgb = src * np.clip((v0 - black) / np.maximum(v0, 1), 0, 1)[..., None]
+    v = rgb.max(axis=2)
+    knee = np.asarray(Image.fromarray(np.clip(v, 0, 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(2)), dtype=np.float32)
+    t = np.clip((knee - 26) / (76 - 26), 0, 1)
+    a = (v / 255) * t * t * (3 - 2 * t)
+    col = rgb / np.maximum(v, 1)[..., None] * 255
+    return Image.fromarray(np.clip(col, 0, 255).astype(np.uint8)), Image.fromarray(np.clip(a * 255, 0, 255).astype(np.uint8))
 
 
 def finish(raw, cut, path, glow=False):
