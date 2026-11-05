@@ -7,6 +7,7 @@ import { OVERLAYS } from '../overlays/registry';
 import { HOLIDAY_THEMES } from '../overlays/HolidayFrame';
 import { docsSourceStrings } from '../seo/content';
 import { CATEGORY_LABEL } from '../seo/SeoArticle';
+import { CHARACTER_LABELS } from '../overlays/backgrounds';
 
 const SRC = join(process.cwd(), 'src');
 const out = new Set<string>();
@@ -26,6 +27,8 @@ for (const o of OVERLAYS) {
 }
 Object.values(HOLIDAY_THEMES).forEach((t) => add(t.label));
 Object.values(CATEGORY_LABEL).forEach(add);
+// Every planned character, not only the clips that exist right now.
+Object.values(CHARACTER_LABELS).forEach(add);
 docsSourceStrings().forEach(add);
 
 const walk = (dir: string): string[] =>
