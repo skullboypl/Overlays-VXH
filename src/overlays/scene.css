@@ -711,3 +711,7 @@
 /* Holiday frame drawn over the camera slot of a scene. */
 .cs-holiday { position: absolute; z-index: 2; pointer-events: none; }
 .hl-layer { z-index: 2; }
+
+/* Pełnoekranowa kamera: the holiday art sits under the frame, the texts and the FACEIT stats. */
+.fc-root > .hl-layer { z-index: 1; }
+.fc-root > .pf, .fc-root > .sc-inner { z-index: 3; }

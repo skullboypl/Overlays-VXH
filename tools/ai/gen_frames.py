@@ -6,10 +6,11 @@ ComfyUI-RMBG nodes. Run with ComfyUI's embedded Python (it has Pillow):
 Existing files are skipped, so the script can be re-run after a crash.
 """
 import io, json, os, random, sys, time, urllib.parse, urllib.request
+import numpy as np
 from PIL import Image, ImageChops, ImageDraw, ImageFilter
 
 API = 'http://127.0.0.1:8188'
-OUT = sys.argv[1]
+OUT = sys.argv[1] if len(sys.argv) > 1 else 'src/assets/frames'
 ONLY = sys.argv[2].split(',') if len(sys.argv) > 2 else None
 
 DETAILS = {
@@ -92,13 +93,27 @@ def background_mask(raw):
     return mask.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(1.5))
 
 
+def unmultiply_black(raw):
+    """Neon light on black -> light with its own alpha: the glow stays translucent colour, not dark smudge."""
+    rgb = np.asarray(raw, dtype=np.float32)
+    a = np.clip((rgb.max(axis=2) - 14) / 241, 0, 1)
+    a[a < 0.04] = 0  # sensor-like noise in the black: invisible, but it bloats the file
+    col = np.where(a[..., None] > 0, rgb / np.maximum(a[..., None], 1e-3), 0)
+    return Image.fromarray(np.clip(col, 0, 255).astype(np.uint8)), Image.fromarray((a * 255).astype(np.uint8))
+
+
 def finish(raw, cut, path, glow=False):
-    W, H = 1280, 720
+    W, H = 1920, 1080
     raw = raw.convert('RGB').resize((W, H), Image.LANCZOS)
     alpha = cut.convert('RGBA').resize((W, H), Image.LANCZOS).split()[3]
     if glow:
-        # Neon light on black: brightness is the shape, so keep anything clearly lit.
-        alpha = ImageChops.lighter(alpha, raw.convert('L').point(lambda v: max(0, min(255, (v - 28) * 4))))
+        # Neon: alpha comes from the light itself, colours are un-multiplied from black.
+        raw, alpha = unmultiply_black(raw)
+        hole = Image.new('L', (W, H), 255)
+        ImageDraw.Draw(hole).rounded_rectangle((int(W * 0.15), int(H * 0.2), int(W * 0.85), int(H * 0.8)), radius=60, fill=0)
+        alpha = ImageChops.multiply(alpha, hole.filter(ImageFilter.GaussianBlur(27)))
+        Image.merge('RGBA', (*raw.split(), alpha)).save(path, 'WEBP', quality=92, method=6)
+        return
     # Guard: if the flood fill would wipe out most of the artwork (dark decorations touching the
     # background), keep the cut-out model's mask alone.
     cleaned = ImageChops.subtract(alpha, background_mask(raw))
@@ -108,28 +123,33 @@ def finish(raw, cut, path, glow=False):
         alpha = cleaned
     # The camera must stay visible: clear a feathered rectangle in the middle.
     hole = Image.new('L', (W, H), 255)
-    ImageDraw.Draw(hole).rounded_rectangle((int(W * 0.15), int(H * 0.2), int(W * 0.85), int(H * 0.8)), radius=40, fill=0)
-    alpha = ImageChops.multiply(alpha, hole.filter(ImageFilter.GaussianBlur(18)))
-    Image.merge('RGBA', (*raw.split(), alpha)).save(path, 'WEBP', quality=84, method=6)
+    ImageDraw.Draw(hole).rounded_rectangle((int(W * 0.15), int(H * 0.2), int(W * 0.85), int(H * 0.8)), radius=60, fill=0)
+    alpha = ImageChops.multiply(alpha, hole.filter(ImageFilter.GaussianBlur(27)))
+    Image.merge('RGBA', (*raw.split(), alpha)).save(path, 'WEBP', quality=90, method=6)
 
 
-for theme, d in DETAILS.items():
-    for style, tpl in STYLES.items():
-        name = f'{theme}-{style}'
-        if (ONLY and name not in ONLY and theme not in ONLY) or os.path.exists(f'{OUT}/{name}.webp'):
-            continue
-        pid = post('/prompt', {'prompt': wf(tpl.format(d=d, n=NEON[theme]), random.randint(1, 2**31))})['prompt_id']
-        t0 = time.time()
-        while True:
-            time.sleep(2)
-            if time.time() - t0 > 1200:
-                raise TimeoutError(name)
-            hist = json.loads(urllib.request.urlopen(f'{API}/history/{pid}').read())
-            if pid not in hist:
-                continue
-            e = hist[pid]
-            if e.get('status', {}).get('status_str') == 'error':
-                raise RuntimeError(f'{name}: ' + json.dumps(e['status'])[:800])
-            finish(fetch(e['outputs']['9']['images'][0]), fetch(e['outputs']['11']['images'][0]), f'{OUT}/{name}.webp', glow=style == 'neon')
-            print(name, 'ok', round(time.time() - t0), 's', flush=True)
-            break
+def main():
+  for theme, d in DETAILS.items():
+      for style, tpl in STYLES.items():
+          name = f'{theme}-{style}'
+          if (ONLY and name not in ONLY and theme not in ONLY) or os.path.exists(f'{OUT}/{name}.webp'):
+              continue
+          pid = post('/prompt', {'prompt': wf(tpl.format(d=d, n=NEON[theme]), random.randint(1, 2**31))})['prompt_id']
+          t0 = time.time()
+          while True:
+              time.sleep(2)
+              if time.time() - t0 > 1200:
+                  raise TimeoutError(name)
+              hist = json.loads(urllib.request.urlopen(f'{API}/history/{pid}').read())
+              if pid not in hist:
+                  continue
+              e = hist[pid]
+              if e.get('status', {}).get('status_str') == 'error':
+                  raise RuntimeError(f'{name}: ' + json.dumps(e['status'])[:800])
+              finish(fetch(e['outputs']['9']['images'][0]), fetch(e['outputs']['11']['images'][0]), f'{OUT}/{name}.webp', glow=style == 'neon')
+              print(name, 'ok', round(time.time() - t0), 's', flush=True)
+              break
+
+
+if __name__ == '__main__':
+    main()
