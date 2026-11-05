@@ -715,3 +715,27 @@
 /* Pełnoekranowa kamera: the holiday art sits under the frame, the texts and the FACEIT stats. */
 .fc-root > .hl-layer { z-index: 1; }
 .fc-root > .pf, .fc-root > .sc-inner { z-index: 3; }
+
+/* ---------- Kamerka fullscreen: extra options ---------- */
+.cs-topbar.at-center { left: 50%; transform: translateX(-50%); }
+.cs-topbar.at-right { left: auto; right: 2.2cqh; }
+.cs-uptime { font-variant-numeric: tabular-nums; }
+.cs-shadow { position: absolute; border-radius: var(--radius); box-shadow: 0 1.4cqh 4cqh rgba(0, 0, 0, 0.55); pointer-events: none; z-index: 1; }
+.cs-shadow.is-round { border-radius: 50%; }
+.cs-corners { position: absolute; z-index: 3; pointer-events: none; }
+.cs-corners span { position: absolute; width: 4cqh; height: 4cqh; border: 0.55cqh solid var(--c1); filter: drop-shadow(0 0 0.8cqh var(--c1)); }
+.cs-corners .tl { left: -1.2cqh; top: -1.2cqh; border-right: 0; border-bottom: 0; border-top-left-radius: 1cqh; }
+.cs-corners .tr { right: -1.2cqh; top: -1.2cqh; border-left: 0; border-bottom: 0; border-top-right-radius: 1cqh; }
+.cs-corners .bl { left: -1.2cqh; bottom: -1.2cqh; border-right: 0; border-top: 0; border-bottom-left-radius: 1cqh; }
+.cs-corners .br { right: -1.2cqh; bottom: -1.2cqh; border-left: 0; border-top: 0; border-bottom-right-radius: 1cqh; }
+.cs-name.name-pill b { border-left: 0; border-radius: 999px; padding: 0.6cqh 2cqh; }
+.cs-name.name-pill small { border-radius: 999px; margin-top: 0.5cqh; }
+.cs-name.name-tag b { background: var(--c1); border-left: 0; border-radius: 0.6cqh; }
+.cs-name.name-tag small { background: rgba(10, 10, 14, 0.78); border-radius: 0 0 0.6cqh 0.6cqh; }
+.cs-name.name-plain b, .cs-name.name-plain small { background: none; border: 0; padding-left: 0; padding-right: 0; text-shadow: 0 0.3cqh 1cqh rgba(0, 0, 0, 0.9); }
+.cs-name.name-plain small { color: var(--c1); }
+.cs-socials.align-left { justify-content: flex-start; }
+.cs-socials.align-right { justify-content: flex-end; }
+.cs-root.bg-motion .sc-layers { overflow: hidden; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
+.cs-root.bg-motion .sc-layers > :first-child { animation: cs-drift 40s ease-in-out infinite alternate; transform-origin: 40% 50%; }
+@keyframes cs-drift { from { transform: scale(1.04) translate(0, 0); } to { transform: scale(1.12) translate(-2%, -1.5%); } }

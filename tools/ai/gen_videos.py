@@ -1,7 +1,7 @@
 """Looping realistic video backgrounds from the photo backgrounds in public/bg.
 
 Wan 2.2 I2V (smoothMix Q6 GGUF) with the photo as both first and last frame, so the clip loops
-seamlessly; ffmpeg upscales to 1280x720 H.264. Existing clips are skipped.
+seamlessly; RealESRGAN x2 per frame, then ffmpeg fits 1920x1080 H.264. Existing clips are skipped.
     python gen_videos.py <bg_dir> <out_dir> [id,id...]
 """
 import json, os, random, subprocess, sys, tempfile, time, urllib.parse, urllib.request
@@ -24,6 +24,37 @@ MOTION = {
     'abstract': 'The glossy liquid shapes flow and morph slowly, the spheres float gently, light reflections move across the surfaces.',
     'sakura': 'Cherry blossom petals fall slowly, the paper lanterns flicker, ripples move across the pond.',
     'beach': 'Waves roll gently onto the shore, the palm leaves sway in the breeze, the sun glitters on the water.',
+    # Holiday and everyday 4K backgrounds (gen_bgs.py)
+    'xmas-village': 'Snow falls softly, the string lights twinkle, the shop windows glow warmly.',
+    'xmas-cabin': 'The fireplace flames dance, the christmas tree lights twinkle, snow falls outside the window.',
+    'xmas-bokeh': 'The fairy lights twinkle and the bokeh lights shimmer softly, the baubles reflect the light.',
+    'winter-lake': 'Light snow drifts in the air, the sky colors glow gently, mist moves slowly over the ice.',
+    'winter-street': 'Heavy snow falls steadily, the street lamps glow and flicker slightly.',
+    'winter-pines': 'Snow falls gently between the pine trees, the moonlight sparkles on the snow.',
+    'ny-fireworks': 'Colorful fireworks burst and sparkle in the sky, their reflections ripple on the river.',
+    'ny-party': 'The sparklers fizz and sparkle, the golden bokeh lights shimmer, bubbles rise in the champagne.',
+    'ny-gold': 'Gold and silver confetti falls slowly and glitters, the streamers sway.',
+    'val-roses': 'The candle flames flicker softly, a few rose petals fall gently.',
+    'val-hearts': 'The heart-shaped bokeh lights drift and shimmer softly, the glow pulses gently.',
+    'val-city': 'The lanterns and string lights twinkle, gentle ripples move across the river.',
+    'easter-meadow': 'The flowers and grass sway gently in the breeze, sunlight flickers through.',
+    'easter-table': 'Sunlight shimmers through the window, the flowers sway very slightly, dust sparkles in the light.',
+    'easter-garden': 'Blossom petals fall slowly, the branches sway gently in the breeze.',
+    'hw-mansion': 'Fog rolls slowly, bats fly across the full moon, the bare branches sway.',
+    'hw-forest': 'Mist drifts slowly along the path, the jack-o-lantern candles flicker.',
+    'hw-witch': 'The cauldron bubbles and steams, the candle flames flicker, potion bottles glow.',
+    'pl-oldtown': 'The flags wave gently in the wind, the street lights glow warmly, clouds drift slowly.',
+    'pl-flags': 'The white and red flags wave in the wind, clouds drift across the sky, sunbeams shimmer.',
+    'pl-tatra': 'Mist drifts slowly through the valleys, golden light shifts on the peaks, clouds move.',
+    'bday-party': 'The balloons bob gently, confetti falls slowly, the streamers sway.',
+    'bday-cake': 'The candle flames flicker, the bokeh lights twinkle softly.',
+    'bday-neon': 'The neon lights pulse and change color, confetti floats in the air, balloons bob.',
+    'gaming-room': 'The RGB lights slowly shift colors, the monitor glow flickers softly, the LED strips pulse.',
+    'space-window': 'The earth rotates very slowly, stars twinkle, a soft glow pulses in the interior.',
+    'rainy-cafe': 'Raindrops run down the window, the city lights outside shimmer, steam rises from the coffee.',
+    'aurora-peaks': 'The aurora borealis waves and ripples across the sky, the stars twinkle, its reflection moves on the lake.',
+    'cyber-alley': 'Rain falls, the neon signs flicker and buzz, steam rises from the street, reflections ripple.',
+    'underwater': 'Sun rays shimmer through the water, fish swim slowly, the coral sways gently.',
 }
 
 
@@ -74,7 +105,10 @@ def clip(name, image_path, prompt, w=832, h=480, length=81):
         '12': ks(['10', 0], ['9', 2], 0, 3, True),
         '13': ks(['11', 0], ['12', 0], 3, 10000, False),
         '14': {'class_type': 'VAEDecode', 'inputs': {'samples': ['13', 0], 'vae': ['4', 0]}},
-        '15': {'class_type': 'SaveImage', 'inputs': {'images': ['14', 0], 'filename_prefix': f'vxh_overlays/video_{name}'}},
+        # Sharper frames than a plain resize: RealESRGAN x2 (1664x960), ffmpeg then fits 1920x1080.
+        '16': {'class_type': 'UpscaleModelLoader', 'inputs': {'model_name': 'RealESRGAN_x2.pth'}},
+        '17': {'class_type': 'ImageUpscaleWithModel', 'inputs': {'upscale_model': ['16', 0], 'image': ['14', 0]}},
+        '15': {'class_type': 'SaveImage', 'inputs': {'images': ['17', 0], 'filename_prefix': f'vxh_overlays/video_{name}'}},
     }
     return wait(post('/prompt', {'prompt': wf})['prompt_id'])['outputs']['15']['images']
 
@@ -92,6 +126,6 @@ for name, motion in MOTION.items():
         for i, im in enumerate(frames[:-1]):  # last frame equals the first: drop it for a clean loop
             open(os.path.join(tmp, f'{i:04d}.png'), 'wb').write(fetch(im))
         subprocess.run(['ffmpeg', '-loglevel', 'error', '-y', '-framerate', '16', '-i', os.path.join(tmp, '%04d.png'),
-                        '-vf', 'scale=1280:720:flags=lanczos,fps=24', '-c:v', 'libx264', '-preset', 'slow', '-crf', '24',
+                        '-vf', 'scale=1920:1080:flags=lanczos,fps=24', '-c:v', 'libx264', '-preset', 'slow', '-crf', '23',
                         '-pix_fmt', 'yuv420p', '-movflags', '+faststart', '-an', out], check=True)
     print(name, 'ok', len(frames), 'frames', round(time.time() - t0), 's', os.path.getsize(out) // 1024, 'KB', flush=True)

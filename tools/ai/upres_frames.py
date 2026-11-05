@@ -43,5 +43,5 @@ for path in sorted(glob.glob(f'{FRAMES}/*.webp')):
     if raw_e > 8 or not os.path.exists(cut_p):
         print(name, f'skip: no confident match (raw {raw_e:.1f})')
         continue
-    finish(Image.open(raw_p), Image.open(cut_p), path, glow=name.endswith('-neon'))
+    finish(Image.open(raw_p), Image.open(cut_p), path, glow='-neon' in name)
     print(name, '<-', os.path.basename(raw_p), f'{raw_e:.1f}', flush=True)

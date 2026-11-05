@@ -4,7 +4,8 @@ import { startParticles, type ParticleKind } from './particles';
 import { startFireworks, startStars } from './sky';
 
 export type EffectKind = ParticleKind | 'fireworks' | 'stars';
-export const EFFECT_KINDS: EffectKind[] = ['snow', 'rain', 'confetti', 'emoji', 'fireflies', 'petals', 'fireworks', 'stars'];
+export const EFFECT_KINDS: EffectKind[] = ['snow', 'rain', 'confetti', 'emoji', 'fireflies', 'petals', 'fireworks', 'stars',
+  'embers', 'bubbles', 'bokeh', 'sparkles', 'balloons', 'meteors', 'digital'];
 
 // Settings read only when a particle spawns; changing them restarts the effect so the preview reacts at once.
 const SPAWN_KEYS = ['color', 'colors', 'emoji', 'flakes', 'blur', 'shape', 'mode', 'area', 'from'];

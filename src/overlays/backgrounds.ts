@@ -1,5 +1,8 @@
-// Photo backgrounds generated locally (ComfyUI + Flux1-dev), stored as public/bg/<id>.webp and <id>-thumb.webp.
-export const PHOTO_IDS = ['cozy', 'city', 'winter', 'xmas', 'halloween', 'nebula', 'sunset', 'abstract', 'sakura', 'beach'];
+import photoBgs from './photo-bgs.json';
+
+// Photo backgrounds generated locally (ComfyUI + Flux1-dev + 4x-UltraSharp, 3840x2160), stored as
+// public/bg/<id>.webp and <id>-thumb.webp. tools/ai/gen_bgs.py adds each id to photo-bgs.json once its file exists.
+export const PHOTO_IDS: string[] = photoBgs;
 
 // AI holiday frames (Flux1-dev + RMBG-2.0) as src/assets/frames/<theme>-<variant>.webp.
 // Bundled through Vite, so a variant shows up in the studio as soon as its file exists.

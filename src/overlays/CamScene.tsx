@@ -161,6 +161,17 @@ const holesMask = (rects: Rect[], radius: number, circle: Rect | null) => {
 
 const pct = (r: Rect): CSSProperties => ({ left: `${(r.x / W) * 100}%`, top: `${(r.y / H) * 100}%`, width: `${(r.w / W) * 100}%`, height: `${(r.h / H) * 100}%` });
 
+/** Time since the source was loaded (OBS loads it when the scene goes live). */
+const Uptime = () => {
+  const [start] = useState(() => Date.now());
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => { const id = setInterval(() => setNow(Date.now()), 1000); return () => clearInterval(id); }, []);
+  const t = Math.floor((now - start) / 1000);
+  const hh = Math.floor(t / 3600), mm = Math.floor((t % 3600) / 60), ss = t % 60;
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return <span className="cs-clock cs-uptime">{hh ? `${hh}:${pad(mm)}:${pad(ss)}` : `${pad(mm)}:${pad(ss)}`}</span>;
+};
+
 const Clock = () => {
   const [now, setNow] = useState(new Date());
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 15_000); return () => clearInterval(id); }, []);
@@ -194,7 +205,7 @@ export const CamScene = ({ params }: { params: Params }) => {
   const border = String(params.border ?? 'gradient');
 
   return (
-    <div className={`sc-root cs-root ov-neon ${params.anim === 'spin' ? 'is-spinning' : ''}`} style={style}>
+    <div className={`sc-root cs-root ov-neon ${params.anim === 'spin' ? 'is-spinning' : ''} ${params.bgMotion ? 'bg-motion' : ''}`} style={style}>
       {/* Preview only: stand-ins for the OBS sources that will sit under the holes. */}
       {preview && (Object.entries(slots) as [Slot, Rect][]).map(([k, r]) => (
         <div key={k} className={`cs-ph ph-${k} ${round && k === 'cam' ? 'is-round' : ''}`} style={pct(r)}>
@@ -213,12 +224,20 @@ export const CamScene = ({ params }: { params: Params }) => {
         </div>
       )}
 
-      {border !== 'none' && (Object.entries(slots) as [Slot, Rect][]).filter(([k]) => !(fullScreen && k === 'screen')).filter(([k]) => k !== 'chat' || params.frameChat !== false).map(([k, r]) => (
+      {params.slotShadow !== false && (Object.entries(slots) as [Slot, Rect][]).filter(([k]) => !(fullScreen && k === 'screen')).map(([k, r]) => (
+        <div key={`sh-${k}`} className={`cs-shadow ${round && k === 'cam' ? 'is-round' : ''}`} style={pct(round && k === 'cam' ? { x: r.x + (r.w - Math.min(r.w, r.h)) / 2, y: r.y + (r.h - Math.min(r.w, r.h)) / 2, w: Math.min(r.w, r.h), h: Math.min(r.w, r.h) } : r)} />
+      ))}
+
+      {border !== 'none' && (Object.entries(slots) as [Slot, Rect][]).filter(([k]) => !(fullScreen && k === 'screen')).filter(([k]) => k !== 'chat' || params.frameChat !== false).filter(([k]) => k !== 'screen' || params.frameScreen !== false).map(([k, r]) => (
         <div key={k} className={`cs-frame border-${border} ${round && k === 'cam' ? 'is-round' : ''}`} style={pct(round && k === 'cam' ? { x: r.x + (r.w - Math.min(r.w, r.h)) / 2, y: r.y + (r.h - Math.min(r.w, r.h)) / 2, w: Math.min(r.w, r.h), h: Math.min(r.w, r.h) } : r)}>
           {border === 'gradient' && <><div className="pf-ring" />{Number(params.glow) > 0 && <div className="pf-ring pf-ring-glow" />}</>}
           {k === 'chat' && params.chatTitle && params.showChatTitle !== false && <div className="cs-chat-head">{String(params.chatTitle)}</div>}
         </div>
       ))}
+
+      {params.camCorners && !round && (
+        <div className="cs-corners" style={pct(cam)}>{['tl', 'tr', 'bl', 'br'].map((c) => <span key={c} className={c} />)}</div>
+      )}
 
       {params.holiday && params.holiday !== 'none' && (
         <div className="cs-holiday" style={pct(cam)}><HolidayLayer params={params} /></div>
@@ -226,20 +245,21 @@ export const CamScene = ({ params }: { params: Params }) => {
 
       <div className="sc-inner cs-inner">
         {params.showTitle !== false && params.title && (
-          <div className="cs-topbar">
+          <div className={`cs-topbar at-${params.titlePos ?? 'left'}`}>
             {params.live !== false && <i className="cs-live" />}
             <b>{String(params.title)}</b>
             {params.showClock && <Clock />}
+            {params.showUptime && <Uptime />}
           </div>
         )}
         {params.showName !== false && params.name && (
-          <div className={`cs-name at-${params.namePos ?? 'bl'}`} style={pct(round ? { x: cam.x + (cam.w - Math.min(cam.w, cam.h)) / 2, y: cam.y, w: Math.min(cam.w, cam.h), h: cam.h } : cam)}>
+          <div className={`cs-name at-${params.namePos ?? 'bl'} name-${params.nameStyle ?? 'bar'}`} style={pct(round ? { x: cam.x + (cam.w - Math.min(cam.w, cam.h)) / 2, y: cam.y, w: Math.min(cam.w, cam.h), h: cam.h } : cam)}>
             <b>{String(params.name)}</b>
             {params.showSub !== false && params.sub && <small>{String(params.sub)}</small>}
           </div>
         )}
         {params.showSocials !== false && socials.length > 0 && (
-          <div className="sc-socials cs-socials">
+          <div className={`sc-socials cs-socials align-${params.socialsAlign ?? 'center'}`}>
             {socials.map((s, i) => (
               <span key={i} className="sc-social" style={{ '--brand': BRAND_COLORS[s.brand], '--i': i } as Vars}>
                 <BrandIcon brand={s.brand} />{s.label}

@@ -43,6 +43,16 @@ const HOLIDAY_OPTIONS = [
 const PHOTO_LABELS: Record<string, string> = {
   cozy: 'Pokój nocą', city: 'Miasto neon', winter: 'Zimowy las', xmas: 'Święta', halloween: 'Halloween',
   nebula: 'Mgławica', sunset: 'Zachód anime', abstract: 'Abstrakcja 3D', sakura: 'Sakura nocą', beach: 'Plaża',
+  'xmas-village': 'Święta: zimowe miasteczko', 'xmas-cabin': 'Święta: chatka z kominkiem', 'xmas-bokeh': 'Święta: lampki choinki',
+  'winter-lake': 'Zima: zamarznięte jezioro', 'winter-street': 'Zima: śnieżna ulica', 'winter-pines': 'Zima: las nocą',
+  'ny-fireworks': 'Sylwester: fajerwerki nad miastem', 'ny-party': 'Sylwester: szampan', 'ny-gold': 'Sylwester: złote konfetti',
+  'val-roses': 'Walentynki: róże i świece', 'val-hearts': 'Walentynki: serduszka', 'val-city': 'Walentynki: most o zmierzchu',
+  'easter-meadow': 'Wielkanoc: łąka z pisankami', 'easter-table': 'Wielkanoc: śniadanie', 'easter-garden': 'Wielkanoc: kwitnący ogród',
+  'hw-mansion': 'Halloween: nawiedzony dwór', 'hw-forest': 'Halloween: las z dyniami', 'hw-witch': 'Halloween: chatka czarownicy',
+  'pl-oldtown': '11.11: Stare Miasto', 'pl-flags': '11.11: flagi', 'pl-tatra': '11.11: Tatry o świcie',
+  'bday-party': 'Urodziny: impreza', 'bday-cake': 'Urodziny: tort', 'bday-neon': 'Urodziny: neonowy klub',
+  'gaming-room': 'Pokój gamingowy', 'space-window': 'Okno statku kosmicznego', 'rainy-cafe': 'Kawiarnia w deszczu',
+  'aurora-peaks': 'Zorza nad górami', 'cyber-alley': 'Cyberpunkowa uliczka', underwater: 'Rafa koralowa',
 };
 const BG_OPTIONS = [
   { value: 'aurora', label: 'Zorza' }, { value: 'synth', label: 'Synthwave' }, { value: 'waves', label: 'Fale' },
@@ -99,13 +109,26 @@ const proFields = (d: { colors: string[]; shape?: string }): Field[] => [
 // Full-screen webcam frame: a little thicker and rounder than on a 640×360 source.
 const FULLCAM_DEFAULTS: Record<string, number> = { inset: 24, thickness: 8, radius: 28 };
 
+// Versions of a holiday frame. Picture versions only show up once their file exists (optionFilter).
+const FRAME_VARIANTS = [
+  { value: 'anim', label: 'Animowana' },
+  { value: 'real', label: 'Realistyczna' },
+  { value: 'real2', label: 'Realistyczna: narożniki' },
+  { value: 'real3', label: 'Realistyczna: girlanda' },
+  { value: 'real4', label: 'Realistyczna: złota' },
+  { value: 'real5', label: 'Realistyczna: nocna magia' },
+  { value: '3d', label: '3D' },
+  { value: 'cartoon', label: 'Kreskówka' },
+  { value: 'neon', label: 'Neon' },
+];
+const PHOTO_VARIANTS = ['real', 'real2', 'real3', 'real4', 'real5'];
+
 // Holiday layer for the camera scenes (HolidayLayer): same art as "Ramki świąteczne".
 const holidayFields = (): Field[] => [
   { group: 'Święta', key: 'holiday', label: 'Świąteczna oprawa', type: 'select', default: 'none', options: [{ value: 'none', label: 'Brak' }, ...HOLIDAY_OPTIONS] },
   { group: 'Święta', key: 'holidayVariant', label: 'Wersja ramki', type: 'select', default: 'real', when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) },
     optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.holiday}-${v}`]), options: [
-    { value: 'anim', label: 'Animowana' }, { value: 'real', label: 'Realistyczna' }, { value: '3d', label: '3D' },
-    { value: 'cartoon', label: 'Kreskówka' }, { value: 'neon', label: 'Neon' },
+    ...FRAME_VARIANTS,
   ] },
   { group: 'Święta', key: 'holidayLabelOn', label: 'Pokaż napis', type: 'toggle', default: true, when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) } },
   { group: 'Święta', key: 'holidayLabel', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayLabelOn', is: [true] }] },
@@ -191,6 +214,7 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
     { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'warp', label: 'Warp' },
     { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' }, { value: 'confetti', label: 'Konfetti' },
     { value: 'petals', label: 'Płatki' }, { value: 'emoji', label: 'Emoji' }, { value: 'fireworks', label: 'Fajerwerki' },
+    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
   ] },
   { group: 'Dodatki', key: 'bars', label: 'Animowany equalizer', type: 'toggle', default: !ending },
   { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
@@ -293,6 +317,71 @@ const ALL_OVERLAYS: OverlayDef[] = [
     ],
   },
   {
+    id: 'embers', name: 'Iskry z ogniska', icon: '🔥', category: 'screen', size: FULL_HD,
+    description: 'Żarzące się iskry unoszące się z dołu ekranu.',
+    fields: [
+      density(90, 400), speed(1), size(1), wind(0.2), opacity(0.9),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: ['#ff7a1a', '#ffb347', '#ff3d00'] },
+      { key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 3, step: 0.1, default: 1, unit: '×' },
+      area,
+    ],
+  },
+  {
+    id: 'bubbles', name: 'Bańki mydlane', icon: '🫧', category: 'screen', size: FULL_HD,
+    description: 'Opalizujące bańki płynące w górę.',
+    fields: [
+      density(26, 150), speed(0.8), size(1), wind(0), opacity(0.9),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: ['#bfe9ff', '#ffd1f5', '#d9ffe8'] },
+      area,
+    ],
+  },
+  {
+    id: 'bokeh', name: 'Bokeh', icon: '🔆', category: 'screen', size: FULL_HD,
+    description: 'Duże, miękkie krążki światła jak z obiektywu, powoli dryfujące.',
+    fields: [
+      density(22, 120), speed(0.6), size(1), opacity(0.55),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: ['#ffcf7a', '#ff8fb1', '#8fb8ff'] },
+    ],
+  },
+  {
+    id: 'sparkles', name: 'Błyski brokatu', icon: '💫', category: 'screen', size: FULL_HD,
+    description: 'Gwiazdki zapalające się i gasnące w losowych miejscach.',
+    fields: [
+      density(40, 300), speed(1), size(1), opacity(1),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: ['#fff3b0', '#ffffff', '#ffd23f'] },
+      area,
+    ],
+  },
+  {
+    id: 'balloons', name: 'Balony', icon: '🎈', category: 'screen', size: FULL_HD,
+    description: 'Kolorowe balony lecące w górę, na urodziny i świętowanie subów.',
+    fields: [
+      density(14, 80), speed(0.8), size(1), wind(0), opacity(1),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 6, default: ['#ff5900', '#ffd23f', '#3bceac', '#7aa2ff', '#f26b8a'] },
+      area,
+    ],
+  },
+  {
+    id: 'meteors', name: 'Spadające gwiazdy', icon: '☄️', category: 'screen', size: FULL_HD,
+    description: 'Meteory z jasnym ogonem przecinające niebo co kilka sekund.',
+    fields: [
+      density(4, 30), speed(1), size(1), opacity(1),
+      { key: 'every', label: 'Przerwy między gwiazdami', type: 'range', min: 0.5, max: 15, step: 0.5, default: 3, unit: 's' },
+      { key: 'from', label: 'Kierunek', type: 'select', default: 'left', options: [
+        { value: 'left', label: 'Z lewej' }, { value: 'right', label: 'Z prawej' },
+      ] },
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 4, default: ['#bfe3ff', '#ffffff'] },
+    ],
+  },
+  {
+    id: 'digital', name: 'Cyfrowy deszcz', icon: '💻', category: 'screen', size: FULL_HD,
+    description: 'Spadające kolumny znaków jak w hakerskim terminalu.',
+    fields: [
+      density(60, 240), speed(1), size(1), opacity(0.8),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 4, default: ['#3bff7a'] },
+    ],
+  },
+  {
     id: 'videobg', name: 'Tło wideo', icon: '🎬', category: 'scene', size: FULL_HD,
     description: 'Realistyczne zapętlone wideo na całą scenę: pokój nocą z deszczem, miasto neon, zimowy las, kominek i inne.',
     fields: [
@@ -306,6 +395,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Dodatki', key: 'effect', label: 'Efekt na wierzchu', type: 'select', default: 'none', options: [
         { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
         { value: 'petals', label: 'Płatki' }, { value: 'confetti', label: 'Konfetti' },
+    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
       ] },
       { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
       { group: 'Dodatki', key: 'grain', label: 'Ziarno filmowe', type: 'toggle', default: false },
@@ -350,6 +440,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Efekty', key: 'effect', label: 'Efekt nad kamerą', type: 'select', default: 'none', options: [
         { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
         { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' }, { value: 'fireworks', label: 'Fajerwerki' },
+    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
       ] },
       { group: 'Efekty', key: 'vignette', label: 'Winieta przy krawędziach', type: 'toggle', default: false },
       { group: 'Efekty', key: 'vignetteStrength', label: 'Siła winiety', type: 'range', min: 0.1, max: 1, step: 0.05, default: 0.6, when: { key: 'vignette', is: [true] } },
@@ -387,6 +478,9 @@ const ALL_OVERLAYS: OverlayDef[] = [
       ] },
       { group: 'Ramki slotów', key: 'speed', label: 'Prędkość obrotu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: [{ key: 'border', is: ['gradient'] }, { key: 'anim', is: ['spin'] }] },
       { group: 'Ramki slotów', key: 'frameChat', label: 'Ramka wokół czatu', type: 'toggle', default: true, when: [{ key: 'chat', is: [true] }, { key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] }] },
+      { group: 'Ramki slotów', key: 'frameScreen', label: 'Ramka wokół ekranu gry', type: 'toggle', default: true, when: { key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] } },
+      { group: 'Ramki slotów', key: 'camCorners', label: 'Narożniki na kamerce', type: 'toggle', default: false, hint: 'Akcenty w rogach kamerki w pierwszym kolorze' },
+      { group: 'Ramki slotów', key: 'slotShadow', label: 'Cień pod slotami', type: 'toggle', default: true },
       { group: 'Ramki slotów', key: 'showChatTitle', label: 'Pokaż nagłówek czatu', type: 'toggle', default: true, when: { key: 'chat', is: [true] } },
       { group: 'Ramki slotów', key: 'chatTitle', i18n: true, label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: [{ key: 'chat', is: [true] }, { key: 'showChatTitle', is: [true] }] },
       { group: 'Tło', key: 'bg', label: 'Wybierz tło', type: 'select', default: 'aurora', options: BG_OPTIONS, swatches: BG_SWATCHES, when: { key: 'layout', is: ['screen-cam', 'cam-full', 'cam-screen', 'cam-center', 'split', 'duo', 'squad', 'game-duo', 'vertical', 'theater', 'screen-top'] } },
@@ -397,12 +491,18 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Tło', key: 'effect', label: 'Efekt na tle', type: 'select', default: 'none', options: [
         { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' },
         { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' },
+    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
       ] },
       { group: 'Tło', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
+      { group: 'Tło', key: 'bgMotion', label: 'Powolny ruch tła', type: 'toggle', default: false, hint: 'Delikatne przybliżanie i przesuwanie tła' },
       { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
       { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: 'NA ŻYWO', maxLength: 50, when: { key: 'showTitle', is: [true] } },
       { group: 'Teksty', key: 'live', label: 'Kropka LIVE', type: 'toggle', default: true, when: { key: 'showTitle', is: [true] } },
       { group: 'Teksty', key: 'showClock', label: 'Pokaż zegar', type: 'toggle', default: true, when: { key: 'showTitle', is: [true] } },
+      { group: 'Teksty', key: 'showUptime', label: 'Pokaż czas streamu', type: 'toggle', default: false, when: { key: 'showTitle', is: [true] }, hint: 'Liczy od włączenia źródła w OBS' },
+      { group: 'Teksty', key: 'titlePos', label: 'Położenie tytułu', type: 'select', default: 'left', when: { key: 'showTitle', is: [true] }, options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
       { group: 'Teksty', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [
         { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'dm', label: 'DM Sans' },
       ] },
@@ -411,11 +511,17 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'namePos', label: 'Róg podpisu na kamerce', type: 'select', default: 'bl', when: { key: 'showName', is: [true] }, options: [
         { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' }, { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' },
       ] },
+      { group: 'Teksty', key: 'nameStyle', label: 'Styl podpisu', type: 'select', default: 'bar', when: { key: 'showName', is: [true] }, options: [
+        { value: 'bar', label: 'Belka' }, { value: 'pill', label: 'Pigułka' }, { value: 'tag', label: 'Etykieta w kolorze' }, { value: 'plain', label: 'Sam tekst' },
+      ] },
       { group: 'Teksty', key: 'showSub', label: 'Pokaż podpis', type: 'toggle', default: true, when: { key: 'showName', is: [true] } },
       { group: 'Teksty', key: 'sub', label: 'Podpis pod spodem', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 60, when: [{ key: 'showName', is: [true] }, { key: 'showSub', is: [true] }] },
       { group: 'Teksty', key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
       { group: 'Sociale', key: 'showSocials', label: 'Pokaż sociale', type: 'toggle', default: true },
       { group: 'Sociale', when: { key: 'showSocials', is: [true] }, key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl', maxLength: 300 },
+      { group: 'Sociale', key: 'socialsAlign', label: 'Wyrównanie', type: 'select', default: 'center', when: { key: 'showSocials', is: [true] }, options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
       ...holidayFields(),
       { group: 'FACEIT', key: 'showFaceit', label: 'Pokaż staty FACEIT na kamerce', type: 'toggle', default: false, hint: 'Po włączeniu wpisz swój nick FACEIT poniżej' },
       { group: 'FACEIT', key: 'player', label: 'Nick FACEIT', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'showFaceit', is: [true] }, hint: 'Nick z faceit.com, player_id albo link z faceitbanner.vxh.pl' },
@@ -546,9 +652,8 @@ const ALL_OVERLAYS: OverlayDef[] = [
     fields: [
       { group: 'Okazja', key: 'theme', label: 'Święto', type: 'select', default: 'xmas', options: HOLIDAY_OPTIONS },
       { group: 'Okazja', key: 'variant', label: 'Wersja ramki', type: 'select', default: 'anim', options: [
-        { value: 'anim', label: 'Animowana' }, { value: 'real', label: 'Realistyczna' }, { value: '3d', label: '3D' },
-        { value: 'cartoon', label: 'Kreskówka' }, { value: 'neon', label: 'Neon' },
-      ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczna, 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
+        ...FRAME_VARIANTS,
+      ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczne (5 wersji), 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
       { group: 'Okazja', key: 'showLabel', label: 'Pokaż napis', type: 'toggle', default: true },
       { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji', when: { key: 'showLabel', is: [true] } },
       { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px', when: { key: 'showLabel', is: [true] } },
@@ -558,7 +663,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Dekoracje', key: 'decorations', label: 'Dekoracje w rogach', type: 'toggle', default: true, when: { key: 'variant', is: ['anim', '3d', 'cartoon'] } },
       { key: 'decoSize', label: 'Wielkość dekoracji', type: 'range', min: 16, max: 90, step: 1, default: 44, unit: 'px', when: [{ key: 'decorations', is: [true] }, { key: 'variant', is: ['anim', '3d', 'cartoon'] }] },
       { key: 'garland', label: 'Girlanda / lampki', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] }, hint: 'Lampki, chorągiewki albo czapa śniegu, zależnie od okazji' },
-      { key: 'shine', label: 'Błysk światła', type: 'toggle', default: true, when: { key: 'variant', is: ['real', '3d', 'cartoon'] } },
+      { key: 'shine', label: 'Błysk światła', type: 'toggle', default: true, when: { key: 'variant', is: [...PHOTO_VARIANTS, '3d', 'cartoon'] } },
       { key: 'depth', label: 'Siła ruchu', type: 'range', min: 0, max: 2.5, step: 0.1, default: 1, unit: '×', when: { key: 'variant', is: ['3d', 'cartoon', 'neon'] }, hint: '0 zatrzymuje ruch' },
       { key: 'particles', label: 'Efekt (śnieg, serca...)', type: 'toggle', default: true },
       { key: 'amount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'particles', is: [true] } },
@@ -623,46 +728,90 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'ticker', name: 'Przewijany pasek', icon: '📰', category: 'widget', size: { w: 1920, h: 64 },
     description: 'Pasek z przesuwającym się tekstem: harmonogram, info, zasady czatu.',
     fields: [
-      { group: 'Teksty', key: 'text', i18n: true, label: 'Komunikaty', type: 'text', list: 'lines', placeholder: 'Treść komunikatu', default: 'Streamy pon-pt od 20:00 | !discord po link do serwera | Dzięki za każdy follow ❤️', maxLength: 400, hint: 'Każdy wiersz to osobny komunikat, przewijane po kolei.' },
-      { group: 'Teksty', key: 'showLabel', label: 'Pokaż etykietę z lewej', type: 'toggle', default: true },
-      { group: 'Teksty', key: 'label', i18n: true, label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, when: { key: 'showLabel', is: [true] } },
-      { group: 'Teksty', key: 'showSeparator', label: 'Pokaż separator', type: 'toggle', default: true },
-      { group: 'Teksty', key: 'separator', label: 'Separator', type: 'text', default: '◆', maxLength: 3, when: { key: 'showSeparator', is: [true] } },
+      { group: 'Teksty', key: 'text', i18n: true, label: 'Komunikaty', type: 'text', list: 'lines', placeholder: 'Treść komunikatu', default: 'Streamy pon-pt od 20:00 | !discord po link do serwera | Dzięki za każdy follow ❤️', maxLength: 400, hint: 'Każdy wiersz to osobny komunikat.' },
+      { group: 'Teksty', key: 'mode', label: 'Tryb', type: 'select', default: 'scroll', options: [
+        { value: 'scroll', label: 'Przewijanie' }, { value: 'rotate', label: 'Po jednym komunikacie' },
+      ] },
+      { group: 'Teksty', key: 'every', label: 'Zmiana co', type: 'range', min: 2, max: 30, step: 1, default: 6, unit: 's', when: { key: 'mode', is: ['rotate'] } },
+      { group: 'Teksty', key: 'rotateAnim', label: 'Animacja zmiany', type: 'select', default: 'up', when: { key: 'mode', is: ['rotate'] }, options: [
+        { value: 'up', label: 'Wjazd z dołu' }, { value: 'slide', label: 'Wjazd z boku' }, { value: 'fade', label: 'Zanik' }, { value: 'type', label: 'Pisanie' },
+      ] },
+      { group: 'Teksty', key: 'direction', label: 'Kierunek', type: 'select', default: 'left', when: { key: 'mode', is: ['scroll'] }, options: [
+        { value: 'left', label: 'W lewo' }, { value: 'right', label: 'W prawo' },
+      ] },
+      { group: 'Teksty', key: 'speed', label: 'Prędkość', type: 'range', min: 20, max: 400, step: 10, default: 110, unit: ' px/s', when: { key: 'mode', is: ['scroll'] } },
+      { group: 'Teksty', key: 'showSeparator', label: 'Pokaż separator', type: 'toggle', default: true, when: { key: 'mode', is: ['scroll'] } },
+      { group: 'Teksty', key: 'separator', label: 'Separator', type: 'text', default: '◆', maxLength: 3, when: [{ key: 'mode', is: ['scroll'] }, { key: 'showSeparator', is: [true] }] },
+      { group: 'Teksty', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
+      { group: 'Etykieta', key: 'showLabel', label: 'Pokaż etykietę z lewej', type: 'toggle', default: true },
+      { group: 'Etykieta', key: 'label', i18n: true, label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, when: { key: 'showLabel', is: [true] } },
+      { group: 'Etykieta', key: 'labelStyle', label: 'Kształt etykiety', type: 'select', default: 'angled', when: { key: 'showLabel', is: [true] }, options: [
+        { value: 'angled', label: 'Ścięta' }, { value: 'flat', label: 'Prosta' }, { value: 'rounded', label: 'Zaokrąglona' }, { value: 'outline', label: 'Kontur' },
+      ] },
+      { group: 'Etykieta', key: 'liveDot', label: 'Migająca kropka LIVE', type: 'toggle', default: false, when: { key: 'showLabel', is: [true] } },
+      { group: 'Etykieta', key: 'showClock', label: 'Zegar z prawej', type: 'toggle', default: false },
+      { group: 'Etykieta', key: 'clock12', label: 'Zegar 12-godzinny', type: 'toggle', default: false, when: { key: 'showClock', is: [true] } },
       { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'solid', options: [
-        { value: 'solid', label: 'Pełny' }, { value: 'glass', label: 'Szkło' }, { value: 'none', label: 'Bez tła' },
+        { value: 'solid', label: 'Pełny' }, { value: 'glass', label: 'Szkło' }, { value: 'gradient', label: 'Gradient' }, { value: 'neon', label: 'Neon' },
+        { value: 'outline', label: 'Kontur' }, { value: 'lower', label: 'Pływający pasek' }, { value: 'none', label: 'Bez tła' },
       ] },
-      { key: 'speed', label: 'Prędkość', type: 'range', min: 20, max: 400, step: 10, default: 110, unit: ' px/s' },
-      { key: 'fontSize', label: 'Wielkość tekstu', type: 'range', min: 14, max: 60, step: 1, default: 28, unit: 'px' },
-      { key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
-        { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' },
+      { group: 'Wygląd', key: 'borderPos', label: 'Linia akcentu', type: 'select', default: 'top', when: { key: 'style', is: ['solid'] }, options: [
+        { value: 'top', label: 'Na górze' }, { value: 'bottom', label: 'Na dole' }, { value: 'none', label: 'Brak' },
       ] },
-      { key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
-      { key: 'bg', label: 'Tło', type: 'color', default: '#111114' },
-      { key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
+      { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 40, step: 1, default: 14, unit: 'px', when: { key: 'style', is: ['glass', 'neon', 'outline', 'lower'] } },
+      { group: 'Wygląd', key: 'fadeEdges', label: 'Wygaszanie krawędzi tekstu', type: 'toggle', default: true },
+      { group: 'Wygląd', key: 'fontSize', label: 'Wielkość tekstu', type: 'range', min: 14, max: 60, step: 1, default: 28, unit: 'px' },
+      { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
+        { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
+      ] },
+      { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
+      { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114', when: { key: 'style', is: ['solid', 'glass', 'gradient', 'neon', 'lower'] } },
+      { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
     ],
   },
   {
     id: 'socials', name: 'Rotator sociali', icon: '🔗', category: 'widget', size: { w: 560, h: 100 },
     description: 'Po kolei pokazuje Twitch, Discord, YouTube, TikTok z ikonami.',
     fields: [
-      { group: 'Kanały', key: 'items', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl', maxLength: 300, hint: 'Pokazywane po kolei, jeden na raz.' },
+      { group: 'Kanały', key: 'items', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl', maxLength: 300 },
+      { group: 'Kanały', key: 'layout', label: 'Układ', type: 'select', default: 'one', options: [
+        { value: 'one', label: 'Jeden na raz' }, { value: 'row', label: 'Wszystkie w rzędzie' }, { value: 'column', label: 'Wszystkie w kolumnie' },
+      ], hint: 'Przy rzędzie i kolumnie aktywny kanał jest podświetlany po kolei. Dla rzędu ustaw szersze źródło w OBS, np. 1400 × 100.' },
       { group: 'Kanały', key: 'every', label: 'Zmiana co', type: 'range', min: 2, max: 30, step: 1, default: 5, unit: 's' },
+      { group: 'Kanały', key: 'shuffle', label: 'Losowa kolejność', type: 'toggle', default: false },
+      { group: 'Kanały', key: 'textMode', label: 'Tekst', type: 'select', default: 'full', options: [
+        { value: 'full', label: 'Cały adres' }, { value: 'handle', label: 'Sam nick' },
+      ], hint: 'Sam nick zamienia twitch.tv/skullboypl na skullboypl' },
+      { group: 'Kanały', key: 'showPrefix', label: 'Pokaż tekst przed kanałem', type: 'toggle', default: false },
+      { group: 'Kanały', key: 'prefix', i18n: true, label: 'Tekst przed kanałem', type: 'text', default: 'Obserwuj:', maxLength: 24, when: { key: 'showPrefix', is: [true] } },
       { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: [
-        { value: 'pill', label: 'Pigułka' }, { value: 'card', label: 'Karta' }, { value: 'clean', label: 'Bez tła' },
+        { value: 'pill', label: 'Pigułka' }, { value: 'card', label: 'Karta' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' },
+        { value: 'gradient', label: 'Gradient' }, { value: 'outline', label: 'Kontur' }, { value: 'underline', label: 'Podkreślenie' }, { value: 'clean', label: 'Bez tła' },
       ] },
-      { key: 'anim', label: 'Animacja', type: 'select', default: 'slide', options: [
-        { value: 'slide', label: 'Wjazd' }, { value: 'flip', label: 'Obrót' }, { value: 'fade', label: 'Zanik' },
+      { group: 'Wygląd', key: 'anim', label: 'Animacja', type: 'select', default: 'slide', when: { key: 'layout', is: ['one'] }, options: [
+        { value: 'slide', label: 'Wjazd' }, { value: 'flip', label: 'Obrót' }, { value: 'fade', label: 'Zanik' }, { value: 'zoom', label: 'Powiększenie' },
+        { value: 'bounce', label: 'Podskok' }, { value: 'drop', label: 'Spadnięcie' }, { value: 'blur', label: 'Rozmycie' },
       ] },
-      { key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [
+      { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
       ] },
-      { key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 48, step: 1, default: 26, unit: 'px' },
-      { key: 'showIcon', label: 'Pokaż ikonę serwisu', type: 'toggle', default: true },
-      { key: 'brandColors', label: 'Kolory serwisów', type: 'toggle', default: true, hint: 'Fiolet Twitcha, czerwień YouTube itd.' },
-      { key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900', when: { key: 'brandColors', is: [false] } },
-      { key: 'bg', label: 'Tło', type: 'color', default: '#111114' },
-      { key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
-      { key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true },
+      { group: 'Wygląd', key: 'gap', label: 'Odstęp', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px', when: { key: 'layout', is: ['row', 'column'] } },
+      { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 40, unit: 'px', when: { key: 'style', is: ['pill', 'glass', 'neon', 'gradient', 'outline'] } },
+      { group: 'Wygląd', key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 48, step: 1, default: 26, unit: 'px' },
+      { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
+        { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
+      ] },
+      { group: 'Wygląd', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
+      { group: 'Wygląd', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+      { group: 'Ikona', key: 'showIcon', label: 'Pokaż ikonę serwisu', type: 'toggle', default: true },
+      { group: 'Ikona', key: 'iconShape', label: 'Kształt ikony', type: 'select', default: 'circle', when: { key: 'showIcon', is: [true] }, options: [
+        { value: 'circle', label: 'Koło' }, { value: 'rounded', label: 'Zaokrąglony kwadrat' }, { value: 'square', label: 'Kwadrat' },
+      ] },
+      { group: 'Kolory', key: 'brandColors', label: 'Kolory serwisów', type: 'toggle', default: true, hint: 'Fiolet Twitcha, czerwień YouTube itd.' },
+      { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900', when: { key: 'brandColors', is: [false] } },
+      { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114', when: { key: 'style', is: ['pill', 'card', 'glass', 'neon', 'gradient'] } },
+      { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
+      { group: 'Kolory', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true },
     ],
   },
 ];

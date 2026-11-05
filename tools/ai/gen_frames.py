@@ -41,6 +41,24 @@ STYLES = {
           'arranged as a thick frame border along all four edges of the image, like premium 3D game assets, ' + EMPTY,
     'cartoon': 'flat 2D cartoon illustration of a decorative {d} forming a thick frame border along all four edges of the image, '
                'bold clean outlines, cheerful saturated colors, sticker style, vector art, ' + EMPTY,
+    # Four more photographic takes, each a separate option in the app.
+    'real2': 'photorealistic lush overflowing arrangements of decorative {d} clustered in the four corners only, '
+             'cinematic bokeh fairy lights, shallow depth of field, professional photo, ' + EMPTY,
+    'real3': 'photorealistic decorative {d} hanging down from the top edge like a garland and piled along the bottom edge, '
+             'warm cozy light, sharp studio photo, ' + EMPTY,
+    'real4': 'photorealistic elegant luxury {d} with gold accents, glitter and shiny metallic details forming a slim frame border '
+             'along all four edges, high-end editorial product photo, ' + EMPTY,
+    'real5': 'photorealistic magical night scene version of {d} glowing softly with sparkles, tiny lights and volumetric light rays, '
+             'forming a frame border along all four edges, dreamy cinematic photo, ' + EMPTY,
+    # Four more neon takes. Pure black around the tubes keeps the light-only cut clean.
+    'neon2': 'minimal thin single-line neon tube frame border along all four edges with small neon line icons of {n} in the four corners only, '
+             'crisp cyberpunk neon sign, on a pure solid black background, no wall, no reflections, no haze, ' + EMPTY,
+    'neon3': 'retro 80s synthwave neon sign frame made of double parallel neon tubes along all four edges with neon outlines of {n}, '
+             'vivid magenta and cyan glow, on a pure solid black background, no wall, no reflections, no haze, ' + EMPTY,
+    'neon4': 'neon light garland of {n} hanging along the top edge and standing along the bottom edge, thin glowing neon tubes, '
+             'realistic neon sign, on a pure solid black background, no wall, no reflections, no haze, ' + EMPTY,
+    'neon5': 'soft pastel glowing neon outline icons of {n} scattered evenly along all four edges of the image, delicate thin neon tubes, '
+             'dreamy neon sign art, on a pure solid black background, no wall, no reflections, no haze, ' + EMPTY,
     'neon': 'glowing neon light tube sign art: a thin frame border along all four edges of the image decorated with neon line drawings of {n}, '
             'vibrant glowing neon tubes with soft bloom, realistic neon sign, ' + EMPTY,
 }
@@ -162,6 +180,25 @@ def finish(raw, cut, path, glow=False):
     Image.merge('RGBA', (*raw.split(), alpha)).save(path, 'WEBP', quality=90, method=6)
 
 
+def quality_ok(path):
+    """Rejects a cut that is nearly empty or kept the plain black background (dark pixels inside the art)."""
+    a = np.asarray(Image.open(path).convert('RGBA')).astype(np.float32)
+    art = a[..., 3] > 128
+    share = art.mean()
+    dark = (art & (a[..., :3].max(axis=2) < 30)).sum() / max(art.sum(), 1)
+    h, w = art.shape
+    # Both sides should carry art (one-sided picks look broken over a camera).
+    left, right = art[:, :int(w * 0.3)].mean(), art[:, int(w * 0.7):].mean()
+    balance = min(left, right) / max(left, right, 1e-6)
+    # Cast shadows the cut kept: dark, semi-transparent smudges in the middle band.
+    mid = (slice(int(h * 0.05), int(h * 0.95)), slice(int(w * 0.25), int(w * 0.75)))
+    blobs = ((a[..., 3][mid] > 25) & (a[..., :3].max(axis=2)[mid] < 45)).mean()
+    ok = share >= 0.07 and (dark <= 0.15 or '-neon' in path) and balance >= 0.2 and (blobs <= 0.03 or '-neon' in path)
+    if not ok:
+        print(f'{os.path.basename(path)} rejected: art {share:.0%}, dark {dark:.0%}, balance {balance:.2f}, blobs {blobs:.1%}', flush=True)
+    return ok
+
+
 def main():
   for theme, d in DETAILS.items():
       for style, tpl in STYLES.items():
@@ -180,7 +217,10 @@ def main():
               e = hist[pid]
               if e.get('status', {}).get('status_str') == 'error':
                   raise RuntimeError(f'{name}: ' + json.dumps(e['status'])[:800])
-              finish(fetch(e['outputs']['9']['images'][0]), fetch(e['outputs']['11']['images'][0]), f'{OUT}/{name}.webp', glow=style == 'neon')
+              finish(fetch(e['outputs']['9']['images'][0]), fetch(e['outputs']['11']['images'][0]), f'{OUT}/{name}.webp', glow=style.startswith('neon'))
+              if not quality_ok(f'{OUT}/{name}.webp'):
+                  os.remove(f'{OUT}/{name}.webp')
+                  break
               print(name, 'ok', round(time.time() - t0), 's', flush=True)
               break
 

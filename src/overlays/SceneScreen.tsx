@@ -176,6 +176,13 @@ export const EFFECT_DEFAULTS: Record<string, Params> = {
   petals: { count: 50, speed: 0.9, size: 1.1, wind: 0.5, opacity: 0.95, shape: 'petal', colors: ['#ffb7c9', '#ff9fb8', '#ffd1dc'] },
   emoji: { count: 30, speed: 0.8, size: 1.3, wind: 0, opacity: 0.9, emoji: '💜✨🎮', from: 'up', area: 'full' },
   fireworks: { count: 2, every: 2.2, size: 1, opacity: 1, shape: 'mixed', twinkle: true },
+  embers: { count: 90, speed: 1, size: 1, wind: 0.2, opacity: 0.9, glow: 1, colors: ['#ff7a1a', '#ffb347', '#ff3d00'] },
+  bubbles: { count: 26, speed: 0.8, size: 1, wind: 0, opacity: 0.9, colors: ['#bfe9ff', '#ffd1f5', '#d9ffe8'] },
+  bokeh: { count: 22, speed: 0.6, size: 1, opacity: 0.55, colors: ['#ffcf7a', '#ff8fb1', '#8fb8ff'] },
+  sparkles: { count: 40, speed: 1, size: 1, opacity: 1, area: 'full', colors: ['#fff3b0', '#ffffff', '#ffd23f'] },
+  balloons: { count: 14, speed: 0.8, size: 1, wind: 0, opacity: 1, colors: ['#ff5900', '#ffd23f', '#3bceac', '#7aa2ff', '#f26b8a'] },
+  meteors: { count: 4, speed: 1, size: 1, opacity: 1, every: 3, from: 'left', colors: ['#bfe3ff', '#ffffff'] },
+  digital: { count: 60, speed: 1, size: 1, opacity: 0.8, colors: ['#3bff7a'] },
 };
 
 export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'ending'; params: Params }) => {
