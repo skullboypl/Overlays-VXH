@@ -270,8 +270,8 @@ const COPY: Record<string, Copy> = {
   socials: {
     title: 'Rotator sociali do OBS – Twitch, YouTube, Discord, TikTok z ikonami',
     description: 'Overlay, który po kolei pokazuje Twoje kanały z ikonami serwisów: Twitch, Kick, YouTube, Discord, TikTok, Instagram, X.',
-    intro: ['Rotator sociali pokazuje jeden kanał na raz i co kilka sekund zmienia na kolejny. Ikona i kolor dobierają się same po wybranym serwisie.'],
-    features: ['Twitch, Kick, YouTube, Discord, TikTok, Instagram, X, Facebook', 'Styl pigułka, karta albo bez tła', '3 animacje zmiany', 'Pasek czasu'],
+    intro: ['Rotator sociali pokazuje Twoje kanały po kolei: jeden na raz, w rzędzie, w kolumnie, w siatce, jako ikony albo przewijane w pętli. Ikona i kolor dobierają się same po wybranym serwisie, a rozmiar dopasowuje się do źródła w OBS.'],
+    features: ['Twitch, Kick, YouTube, Discord, TikTok, Instagram, X, Facebook', '6 układów i 18 motywów wyglądu', '7 animacji zmiany', 'Pasek czasu'],
     faq: [{ q: 'Jak dodać sociale na stream?', a: 'W „Rotatorze sociali” dodaj serwisy i nicki, skopiuj link i wstaw go w OBS jako Przeglądarkę 560×100.' }],
     keywords: ['social media overlay obs', 'sociale na stream', 'rotator sociali', 'twitch youtube discord overlay'],
   },

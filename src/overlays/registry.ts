@@ -800,8 +800,10 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Kanały', key: 'items', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl', maxLength: 300 },
       { group: 'Kanały', key: 'layout', label: 'Układ', type: 'select', default: 'one', options: [
         { value: 'one', label: 'Jeden na raz' }, { value: 'row', label: 'Wszystkie w rzędzie' }, { value: 'column', label: 'Wszystkie w kolumnie' },
-      ], hint: 'Przy rzędzie i kolumnie aktywny kanał jest podświetlany po kolei. Dla rzędu ustaw szersze źródło w OBS, np. 1400 × 100.' },
-      { group: 'Kanały', key: 'every', label: 'Zmiana co', type: 'range', min: 2, max: 30, step: 1, default: 5, unit: 's' },
+        { value: 'grid', label: 'Siatka 2 kolumny' }, { value: 'icons', label: 'Ikony, napis przy aktywnym' }, { value: 'marquee', label: 'Przewijane w pętli' },
+      ], hint: 'Rozmiar dopasowuje się sam do źródła w OBS, więc nic się nie ucina. Do rzędu i przewijania najlepsze jest szerokie źródło, np. 1400 × 100, do kolumny wysokie, np. 420 × 320.' },
+      { group: 'Kanały', key: 'every', label: 'Zmiana co', type: 'range', min: 2, max: 30, step: 1, default: 5, unit: 's', hint: 'Przy przewijaniu: tyle sekund na jeden kanał' },
+      { group: 'Kanały', key: 'dimOthers', label: 'Przygaś nieaktywne', type: 'toggle', default: true, when: { key: 'layout', is: ['row', 'column', 'grid', 'icons'] } },
       { group: 'Kanały', key: 'shuffle', label: 'Losowa kolejność', type: 'toggle', default: false },
       { group: 'Kanały', key: 'textMode', label: 'Tekst', type: 'select', default: 'full', options: [
         { value: 'full', label: 'Cały adres' }, { value: 'handle', label: 'Sam nick' },
@@ -811,6 +813,9 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: [
         { value: 'pill', label: 'Pigułka' }, { value: 'card', label: 'Karta' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' },
         { value: 'gradient', label: 'Gradient' }, { value: 'outline', label: 'Kontur' }, { value: 'underline', label: 'Podkreślenie' }, { value: 'clean', label: 'Bez tła' },
+        { value: 'brand', label: 'Kolor serwisu' }, { value: 'split', label: 'Ikona w bloku' }, { value: 'skew', label: 'Esport (skos)' }, { value: 'cut', label: 'Ścięte rogi' },
+        { value: 'retro', label: 'Retro (twardy cień)' }, { value: 'light', label: 'Jasny' }, { value: 'button3d', label: 'Przycisk 3D' }, { value: 'tag', label: 'Etykieta' },
+        { value: 'glow', label: 'Krążąca ramka' }, { value: 'shine', label: 'Połysk' },
       ] },
       { group: 'Wygląd', key: 'anim', label: 'Animacja', type: 'select', default: 'slide', when: { key: 'layout', is: ['one'] }, options: [
         { value: 'slide', label: 'Wjazd' }, { value: 'flip', label: 'Obrót' }, { value: 'fade', label: 'Zanik' }, { value: 'zoom', label: 'Powiększenie' },
@@ -819,8 +824,8 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
       ] },
-      { group: 'Wygląd', key: 'gap', label: 'Odstęp', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px', when: { key: 'layout', is: ['row', 'column'] } },
-      { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 40, unit: 'px', when: { key: 'style', is: ['pill', 'glass', 'neon', 'gradient', 'outline'] } },
+      { group: 'Wygląd', key: 'gap', label: 'Odstęp', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px', when: { key: 'layout', is: ['row', 'column', 'grid', 'icons', 'marquee'] } },
+      { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 40, unit: 'px', when: { key: 'style', is: ['pill', 'glass', 'neon', 'gradient', 'outline', 'brand', 'light', 'button3d', 'glow', 'shine'] } },
       { group: 'Wygląd', key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 48, step: 1, default: 26, unit: 'px' },
       { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
         { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
@@ -833,9 +838,9 @@ const ALL_OVERLAYS: OverlayDef[] = [
       ] },
       { group: 'Kolory', key: 'brandColors', label: 'Kolory serwisów', type: 'toggle', default: true, hint: 'Fiolet Twitcha, czerwień YouTube itd.' },
       { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900', when: { key: 'brandColors', is: [false] } },
-      { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114', when: { key: 'style', is: ['pill', 'card', 'glass', 'neon', 'gradient'] } },
-      { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
-      { group: 'Kolory', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true },
+      { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114', when: { key: 'style', is: ['pill', 'card', 'glass', 'neon', 'gradient', 'split', 'skew', 'cut', 'retro', 'button3d', 'tag', 'glow', 'shine'] } },
+      { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff', when: { key: 'style', is: ['pill', 'card', 'glass', 'neon', 'gradient', 'outline', 'underline', 'clean', 'split', 'skew', 'cut', 'retro', 'button3d', 'tag', 'glow', 'shine'] } },
+      { group: 'Kolory', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true, when: { key: 'layout', is: ['one', 'row', 'column', 'grid', 'icons'] } },
     ],
   },
 ];

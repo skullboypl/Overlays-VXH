@@ -75,14 +75,44 @@ const handleOf = (label: string) => {
   return i >= 0 ? clean.slice(i + 1) : clean;
 };
 
+/**
+ * Socials rotator. Layouts: one at a time, row, column, 2-column grid, icons (only the active one shows its text)
+ * and a continuous marquee. Everything is drawn at a size that fits the OBS source, so nothing gets cut.
+ */
 export const SocialsWidget = ({ params }: { params: Params }) => {
   const parsed = parseSocials(String(params.items ?? ''));
   const shuffleKey = params.shuffle ? String(params.items) : '';
   // Shuffled once per list, so the order does not jump on every render.
   const list = useMemo(() => (shuffleKey ? [...parsed].sort(() => Math.random() - 0.5) : parsed), [shuffleKey, String(params.items)]); // eslint-disable-line react-hooks/exhaustive-deps
   const every = Number(params.every ?? 5) * 1000;
-  const index = useRotation(list.length, every);
   const layout = String(params.layout ?? 'one');
+  const index = useRotation(layout === 'marquee' ? 0 : list.length, every);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(1);
+
+  // Hidden copies of the layout (one per active item) give the largest size it ever takes; the font scales to fit the source.
+  useLayoutEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const measure = () => {
+      const cs = getComputedStyle(root);
+      const current = parseFloat(cs.getPropertyValue('--fit')) || 1;
+      const roomW = root.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      const roomH = root.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+      let w = 0, h = 0;
+      root.querySelectorAll<HTMLElement>('.wd-soc-ghost').forEach((g) => { w = Math.max(w, g.offsetWidth); h = Math.max(h, g.offsetHeight); });
+      if (!w || !h) return;
+      const byW = layout === 'marquee' ? Infinity : roomW / (w / current);
+      const next = Math.max(0.25, Math.min(1, Math.min(byW, roomH / (h / current)) * 0.98));
+      setFit((f) => (Math.abs(f - next) > 0.004 ? next : f));
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+    const ro = new ResizeObserver(measure);
+    ro.observe(root);
+    return () => ro.disconnect();
+  }, [layout, list.length, params.items, params.fontSize, params.font, params.style, params.textMode, params.uppercase, params.showIcon, params.showPrefix, params.prefix, params.gap]);
+
   if (!list.length) return null;
 
   const colorOf = (brand: keyof typeof BRAND_COLORS) => (params.brandColors !== false ? BRAND_COLORS[brand] : String(params.accent ?? '#ff5900'));
@@ -91,23 +121,48 @@ export const SocialsWidget = ({ params }: { params: Params }) => {
     '--bg': String(params.bg ?? '#111114'),
     '--fg': String(params.textColor ?? '#ffffff'),
     '--fs': `${params.fontSize ?? 26}px`,
+    '--fit': fit,
     '--radius': `${params.radius ?? 999}px`,
     '--gap': `${params.gap ?? 14}px`,
     '--font': SCENE_FONTS[String(params.font ?? 'dm')] ?? SCENE_FONTS.dm,
+    '--loop': `${Math.max(6, (every / 1000) * list.length)}s`,
   };
-  const cls = `ov-fill wd-socials layout-${layout} align-${params.align ?? 'left'} icon-${params.iconShape ?? 'circle'} ${params.uppercase ? 'is-upper' : ''} ${params.shadow === false ? 'no-shadow' : ''}`;
-  const chip = (item: (typeof list)[number], active: boolean, key: string | number) => (
-    <div key={key} className={`wd-soc style-${params.style ?? 'pill'} ${layout === 'one' ? `anim-${params.anim ?? 'slide'}` : ''} ${active ? 'is-active' : ''}`}
+  const cls = [
+    'ov-fill wd-socials', `layout-${layout}`, `align-${params.align ?? 'left'}`, `icon-${params.iconShape ?? 'circle'}`,
+    params.uppercase ? 'is-upper' : '', params.shadow === false ? 'no-shadow' : '', params.dimOthers === false ? 'no-dim' : '',
+  ].join(' ');
+  const styleName = String(params.style ?? 'pill');
+  const chip = (item: (typeof list)[number], active: boolean, key: string | number, animated = true) => (
+    <div key={key} className={`wd-soc style-${styleName} ${layout === 'one' && animated ? `anim-${params.anim ?? 'slide'}` : ''} ${active ? 'is-active' : ''}`}
       style={{ '--accent': colorOf(item.brand) } as Vars}>
       {params.showIcon !== false && <span className="wd-soc-icon"><BrandIcon brand={item.brand} size="1.3em" /></span>}
-      <span className="wd-soc-text">{textOf(item.label)}</span>
-      {params.progress !== false && active && list.length > 1 && <span className="wd-soc-bar" style={{ animationDuration: `${every}ms` }} />}
+      <span className="wd-soc-text"><span>{textOf(item.label)}</span></span>
+      {animated && params.progress !== false && active && list.length > 1 && layout !== 'marquee' && <span className="wd-soc-bar" style={{ animationDuration: `${every}ms` }} />}
     </div>
   );
+  const prefix = params.showPrefix && params.prefix ? <span className="wd-soc-prefix">{String(params.prefix)}</span> : null;
+  const content = (active: number, animated: boolean) => {
+    if (layout === 'one') return chip(list[active], true, animated ? active : 0, animated);
+    if (layout === 'marquee') return <div className="wd-soc-run">{list.map((item, i) => chip(item, true, i, animated))}</div>;
+    return list.map((item, i) => chip(item, i === active, i, animated));
+  };
+  const ghosts = layout === 'one' || layout === 'icons' ? list.map((_, a) => a) : [0];
   return (
-    <div className={cls} style={style}>
-      {params.showPrefix && params.prefix && <span className="wd-soc-prefix">{String(params.prefix)}</span>}
-      {layout === 'one' ? chip(list[index], true, index) : list.map((item, i) => chip(item, i === index, i))}
+    <div ref={rootRef} className={cls} style={style}>
+      <div className="wd-soc-wrap">
+        {prefix}
+        {layout === 'marquee' ? (
+          <div className="wd-soc-marquee"><div className="wd-soc-track">{content(0, true)}{content(0, true)}</div></div>
+        ) : layout === 'one' || layout === 'icons' ? content(index, true) : <div className="wd-soc-group">{content(index, true)}</div>}
+      </div>
+      <div className="wd-soc-ghosts" aria-hidden>
+        {ghosts.map((a) => (
+          <div key={a} className="wd-soc-wrap wd-soc-ghost">
+            {prefix}
+            {layout === 'one' || layout === 'icons' || layout === 'marquee' ? content(a, false) : <div className="wd-soc-group">{content(a, false)}</div>}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
