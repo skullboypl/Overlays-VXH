@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { PHOTO_IDS, VIDEO_URLS } from './backgrounds';
@@ -46,10 +46,35 @@ const useNow = (active: boolean) => {
   return now;
 };
 
+/** Big title that shrinks (never grows) to the width its layout gives it, so it cannot run into the timer or chat. */
 const Title = ({ text, anim }: { text: string; anim: string }) => {
   const chars = Array.from(text);
+  const ref = useRef<HTMLHeadingElement>(null);
+  const [fit, setFit] = useState(1);
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const measure = () => {
+      const current = parseFloat(getComputedStyle(el).getPropertyValue('--fit')) || 1;
+      const natural = el.scrollWidth / current;
+      // Room the layout gives the title: its grid column, or the content box of the text block.
+      const parent = el.parentElement!;
+      const ps = getComputedStyle(parent);
+      const room = ps.display === 'grid' ? el.clientWidth : parent.clientWidth - parseFloat(ps.paddingLeft) - parseFloat(ps.paddingRight);
+      const next = Math.min(1, room / Math.max(1, natural));
+      setFit((f) => (Math.abs(f - next) > 0.01 ? next : f));
+    };
+    measure();
+    // Web fonts change the text width after the first paint; measure again once they are in.
+    document.fonts?.ready.then(measure);
+    const late = setTimeout(measure, 800);
+    const ro = new ResizeObserver(measure);
+    ro.observe(el.parentElement ?? el);
+    ro.observe(el);
+    return () => { ro.disconnect(); clearTimeout(late); };
+  }, [text]);
   return (
-    <h1 className={`sc-title anim-${anim}`} data-text={text}>
+    <h1 ref={ref} className={`sc-title anim-${anim}`} data-text={text} style={{ '--fit': fit } as Vars}>
       {chars.map((ch, i) => (
         <span key={i} style={{ '--i': i } as Vars} className={ch === ' ' ? 'sp' : undefined}>
           {ch === ' ' ? ' ' : ch}
@@ -206,7 +231,11 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
     '--cw': (params.chatWidth as number) ?? 26,
   };
   const chat = Boolean(params.chat);
-  const chatClass = chat ? `has-chat chat-${params.chatSide ?? 'right'} chat-${params.chatStyle ?? 'glass'}` : '';
+  // chatSide: right / left (full height), right-top, right-bottom, left-top, left-bottom, or a strip at the bottom.
+  const side = String(params.chatSide ?? 'right');
+  const chatBase = side === 'bottom' ? 'bottom' : side.startsWith('left') ? 'left' : 'right';
+  const chatV = side.endsWith('-top') ? 'v-top' : side.endsWith('-bottom') ? 'v-bottom' : 'v-full';
+  const chatClass = chat ? `has-chat chat-${chatBase} chat-${chatV} chat-${params.chatStyle ?? 'glass'}` : '';
 
   const effectParams: Params | null = effect && effect !== 'none'
     ? { ...EFFECT_DEFAULTS[effect], ...(effect === 'confetti' || effect === 'fireworks' ? { colors } : {}), ...(effect === 'fireflies' ? { color: colors[1] ?? colors[0] } : {}) }
@@ -214,7 +243,7 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
   const effectKind: EffectKind | null = effect === 'warp' ? 'stars' : (effect as EffectKind);
 
   return (
-    <div className={`sc-root sc-${kind} ${chatClass}`} style={style}>
+    <div className={`sc-root sc-${kind} ${chatClass} lay-${params.layout ?? 'center'}`} style={style}>
       <div className="sc-layers">
         <Background bg={params.bg as string} colors={colors} params={params} />
         {effectParams && <ParticleLayer key={effect} kind={effectKind!} params={effectParams} />}

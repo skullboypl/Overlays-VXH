@@ -148,7 +148,28 @@ type SceneDefaults = {
   bg: string; colors: string[]; effect: string; titleAnim: string; next?: string;
 };
 
+// Thumbnail of a screen layout: blocks as [x, y, w, h, colour] in % of the frame.
+const layoutThumb = (blocks: [number, number, number, number, string][]) =>
+  blocks.map(([x, y, w, h, c]) => `linear-gradient(${c}, ${c}) ${w >= 100 ? 0 : +(x / (100 - w) * 100).toFixed(1)}% ${h >= 100 ? 0 : +(y / (100 - h) * 100).toFixed(1)}% / ${w}% ${h}% no-repeat`).join(', ') + ', #15151a';
+const T = '#e8e8ee', K = '#ff5900', S = '#5b5b66', P = 'rgba(255, 255, 255, 0.16)';
+const SCREEN_LAYOUTS: Record<string, { label: string; thumb: string }> = {
+  center: { label: 'Środek', thumb: layoutThumb([[25, 32, 50, 10, T], [38, 50, 24, 9, K], [30, 88, 40, 5, S]]) },
+  left: { label: 'Do lewej', thumb: layoutThumb([[8, 34, 40, 10, T], [8, 50, 20, 9, K], [30, 88, 40, 5, S]]) },
+  right: { label: 'Do prawej', thumb: layoutThumb([[52, 34, 40, 10, T], [72, 50, 20, 9, K], [30, 88, 40, 5, S]]) },
+  lower: { label: 'Pasek dolny', thumb: layoutThumb([[6, 58, 44, 10, T], [6, 72, 18, 8, K], [30, 90, 40, 5, S]]) },
+  top: { label: 'Na górze', thumb: layoutThumb([[25, 10, 50, 10, T], [38, 26, 24, 9, K], [30, 88, 40, 5, S]]) },
+  split: { label: 'Tytuł i licznik obok', thumb: layoutThumb([[8, 38, 44, 12, T], [60, 32, 30, 24, K], [30, 88, 40, 5, S]]) },
+  card: { label: 'Karta', thumb: layoutThumb([[20, 20, 60, 58, P], [28, 32, 44, 10, T], [38, 50, 24, 9, K], [30, 88, 40, 5, S]]) },
+  banner: { label: 'Baner przez ekran', thumb: layoutThumb([[0, 38, 100, 24, P], [6, 44, 46, 12, T], [68, 44, 24, 12, K], [30, 88, 40, 5, S]]) },
+  timer: { label: 'Wielki licznik', thumb: layoutThumb([[34, 20, 32, 7, T], [22, 36, 56, 26, K], [30, 88, 40, 5, S]]) },
+  corner: { label: 'Róg ekranu', thumb: layoutThumb([[56, 64, 38, 8, T], [74, 76, 20, 7, K], [30, 90, 40, 5, S]]) },
+};
+
 const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
+  // ---- layout ----
+  { group: 'Układ', key: 'layout', label: 'Układ ekranu', type: 'select', default: 'center',
+    options: Object.entries(SCREEN_LAYOUTS).map(([value, l]) => ({ value, label: l.label })),
+    swatches: Object.fromEntries(Object.entries(SCREEN_LAYOUTS).map(([value, l]) => [value, l.thumb])) },
   // ---- texts ----
   { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
   { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: d.title, maxLength: 40, when: { key: 'showTitle', is: [true] } },
@@ -176,10 +197,13 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
 
   // ---- chat ----
   { group: 'Czat', key: 'chat', label: 'Miejsce na czat', type: 'toggle', default: false, hint: 'Zostawia ramkę, na którą kładziesz źródło czatu w OBS' },
-  { group: 'Czat', key: 'chatSide', label: 'Strona', type: 'select', default: 'right', when: { key: 'chat', is: [true] }, options: [
-    { value: 'left', label: 'Lewa' }, { value: 'right', label: 'Prawa' },
+  { group: 'Czat', key: 'chatSide', label: 'Miejsce czatu', type: 'select', default: 'right', when: { key: 'chat', is: [true] }, options: [
+    { value: 'right', label: 'Prawa, cała wysokość' }, { value: 'left', label: 'Lewa, cała wysokość' },
+    { value: 'right-top', label: 'Prawa, góra' }, { value: 'right-bottom', label: 'Prawa, dół' },
+    { value: 'left-top', label: 'Lewa, góra' }, { value: 'left-bottom', label: 'Lewa, dół' },
+    { value: 'bottom', label: 'Pas na dole' },
   ] },
-  { group: 'Czat', key: 'chatWidth', label: 'Szerokość', type: 'range', min: 18, max: 45, step: 1, default: 26, unit: '%', when: { key: 'chat', is: [true] } },
+  { group: 'Czat', key: 'chatWidth', label: 'Szerokość', type: 'range', min: 18, max: 45, step: 1, default: 26, unit: '%', when: [{ key: 'chat', is: [true] }, { key: 'chatSide', is: ['right', 'left', 'right-top', 'right-bottom', 'left-top', 'left-bottom'] }] },
   { group: 'Czat', key: 'chatStyle', label: 'Wygląd ramki', type: 'select', default: 'glass', when: { key: 'chat', is: [true] }, options: [
     { value: 'glass', label: 'Szkło' }, { value: 'outline', label: 'Obramowanie' }, { value: 'cutout', label: 'Przezroczysta dziura' },
   ] },

@@ -739,3 +739,121 @@
 .cs-root.bg-motion .sc-layers { overflow: hidden; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; }
 .cs-root.bg-motion .sc-layers > :first-child { animation: cs-drift 40s ease-in-out infinite alternate; transform-origin: 40% 50%; }
 @keyframes cs-drift { from { transform: scale(1.04) translate(0, 0); } to { transform: scale(1.12) translate(-2%, -1.5%); } }
+
+/* ---------- screen layouts (lay-*) ---------- */
+/* --lt scales the title for layouts with less room; --ts is the user's own size. */
+.sc-title { font-size: calc(9.5em * var(--ts, 1) * var(--lt, 1)); }
+.has-chat .sc-title { font-size: calc(7.5em * var(--ts, 1) * var(--lt, 1)); }
+.lay-left, .lay-right, .lay-lower, .lay-split, .lay-banner { --lt: 0.66; }
+.lay-card { --lt: 0.8; }
+.lay-timer { --lt: 0.55; }
+.lay-corner { --lt: 0.46; }
+
+.lay-left .sc-inner { align-items: flex-start; }
+.lay-left .sc-center { align-items: flex-start; text-align: left; max-width: 58%; }
+.lay-right .sc-inner { align-items: flex-end; }
+.lay-right .sc-center { align-items: flex-end; text-align: right; max-width: 58%; }
+
+.lay-lower .sc-inner { align-items: flex-start; justify-content: flex-end; padding-bottom: 10em; }
+.lay-lower .sc-center { align-items: flex-start; text-align: left; max-width: 58%; gap: 1em; }
+
+.lay-top .sc-inner { justify-content: flex-start; padding-top: 7em; }
+
+.lay-corner .sc-inner { align-items: flex-end; justify-content: flex-end; padding-bottom: 10em; }
+.lay-corner .sc-center { align-items: flex-end; text-align: right; max-width: 46%; gap: 0.8em; }
+.lay-corner .sc-timer strong { font-size: 4.2em; }
+.lay-corner .sc-sub { font-size: 1.8em; }
+
+/* The equalizer moves to the free side so it never sits under the texts. */
+.lay-left .sc-bars, .lay-lower .sc-bars { left: auto; right: 6em; translate: none; }
+.lay-right .sc-bars, .lay-corner .sc-bars { left: 6em; translate: none; }
+.has-chat.chat-right.lay-left .sc-bars, .has-chat.chat-right.lay-lower .sc-bars { right: calc(var(--cw) * 1cqw + 6cqw); left: auto; }
+.has-chat.chat-left.lay-right .sc-bars, .has-chat.chat-left.lay-corner .sc-bars { left: calc(var(--cw) * 1cqw + 6cqw); }
+
+.lay-card .sc-center {
+  padding: 3.5em 5.5em;
+  border-radius: 2em;
+  background: rgba(10, 10, 16, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 3em 8em rgba(0, 0, 0, 0.5);
+}
+
+/* Two columns: texts left, countdown right. Banner adds a band across the screen. */
+.lay-split .sc-center, .lay-banner .sc-center {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  column-gap: 5em;
+  row-gap: 1em;
+  align-items: center;
+  justify-items: start;
+  text-align: left;
+  width: 100%;
+}
+.lay-split .sc-center > *, .lay-banner .sc-center > * { grid-column: 1; }
+.lay-split .sc-center > .sc-timer, .lay-banner .sc-center > .sc-timer { grid-column: 2; grid-row: 1 / span 5; margin: 0; }
+.lay-split .sc-timer strong { font-size: 10em; }
+.lay-banner .sc-inner { padding-left: 0; padding-right: 0; }
+.lay-banner.has-chat.chat-right .sc-inner { padding-right: calc(var(--cw) * 1cqw + 6cqw); }
+.lay-banner.has-chat.chat-left .sc-inner { padding-left: calc(var(--cw) * 1cqw + 6cqw); }
+.lay-banner .sc-center {
+  padding: 3em 7em;
+  background: linear-gradient(90deg, rgba(8, 8, 14, 0.78), rgba(8, 8, 14, 0.5));
+  border-top: 0.25em solid var(--c1);
+  border-bottom: 0.25em solid var(--c1);
+  backdrop-filter: blur(10px);
+}
+.lay-banner .sc-timer { align-items: flex-end; }
+
+.lay-timer .sc-center { gap: 0.8em; }
+.lay-timer .sc-timer strong { font-size: 15em; }
+.lay-timer .sc-progress { width: 60em; }
+
+/* ---------- title fit + chat places ---------- */
+.sc-title { font-size: calc(9.5em * var(--ts, 1) * var(--lt, 1) * var(--fit, 1)); max-width: 100%; }
+.has-chat .sc-title { font-size: calc(7.5em * var(--ts, 1) * var(--lt, 1) * var(--fit, 1)); }
+.lay-split .sc-center > .sc-title, .lay-banner .sc-center > .sc-title { width: 100%; }
+
+.has-chat { --chat-t: 6cqh; --chat-h: 88cqh; }
+.has-chat.chat-v-top { --chat-h: 46cqh; }
+.has-chat.chat-v-bottom { --chat-t: 40cqh; --chat-h: 54cqh; }
+.has-chat .sc-chat { top: var(--chat-t); bottom: auto; height: var(--chat-h); }
+.chat-cutout .sc-layers { -webkit-mask-size: calc(var(--cw) * 1cqw) var(--chat-h), auto; mask-size: calc(var(--cw) * 1cqw) var(--chat-h), auto; }
+.chat-cutout.chat-right .sc-layers { -webkit-mask-position: calc(97cqw - var(--cw) * 1cqw) var(--chat-t), 0 0; mask-position: calc(97cqw - var(--cw) * 1cqw) var(--chat-t), 0 0; }
+.chat-cutout.chat-left .sc-layers { -webkit-mask-position: 3cqw var(--chat-t), 0 0; mask-position: 3cqw var(--chat-t), 0 0; }
+
+/* Strip at the bottom: content sits above it, the equalizer moves to the top. */
+.has-chat.chat-bottom { --chat-t: 62cqh; --chat-h: 24cqh; }
+.chat-bottom .sc-chat { left: 3cqw; right: 3cqw; width: auto; }
+.chat-cutout.chat-bottom .sc-layers { -webkit-mask-size: 94cqw var(--chat-h), auto; mask-size: 94cqw var(--chat-h), auto; -webkit-mask-position: 3cqw var(--chat-t), 0 0; mask-position: 3cqw var(--chat-t), 0 0; }
+.sc-root.has-chat.chat-bottom .sc-inner { padding-top: 13cqh; padding-bottom: calc(100cqh - var(--chat-t) + 3cqh); justify-content: center; }
+.sc-root.has-chat.chat-bottom.lay-top .sc-inner { justify-content: flex-start; }
+.sc-root.has-chat.chat-bottom.lay-lower .sc-inner, .sc-root.has-chat.chat-bottom.lay-corner .sc-inner { justify-content: flex-end; }
+.chat-bottom .sc-bars { bottom: auto; top: 4cqh; height: 6cqh; }
+.chat-bottom .sc-chat-head { font-size: 1.8cqh; }
+.sc-root.has-chat.chat-bottom .sc-bars { left: 50%; right: auto; translate: -50% 0; }
+/* Two-column layouts: fixed 3:2 split, so a long "done" text cannot squeeze the title column. */
+.lay-split .sc-center, .lay-banner .sc-center { grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); }
+.lay-split .sc-center > .sc-timer, .lay-banner .sc-center > .sc-timer { justify-self: end; max-width: 100%; }
+.lay-split .sc-timer strong { font-size: 8.5em; }
+.lay-split .sc-timer strong.sc-done, .lay-banner .sc-timer strong.sc-done, .lay-corner .sc-timer strong.sc-done { font-size: 3.4em; white-space: normal; text-align: right; }
+.lay-split .sc-progress, .lay-banner .sc-progress { width: 100%; max-width: 30em; }
+.lay-split .sc-sub, .lay-banner .sc-sub { max-width: 100%; }
+/* Less height above a bottom chat strip: everything a notch smaller. */
+.sc-title { font-size: calc(9.5em * var(--ts, 1) * var(--lt, 1) * var(--fit, 1) * var(--cb, 1)); }
+.has-chat .sc-title { font-size: calc(7.5em * var(--ts, 1) * var(--lt, 1) * var(--fit, 1) * var(--cb, 1)); }
+.has-chat.chat-bottom { --cb: 0.72; }
+.chat-bottom .sc-center { gap: 0.7em; }
+.chat-bottom .sc-timer { margin-top: 0; gap: 0.3em; }
+.chat-bottom .sc-timer strong { font-size: 4.6em; }
+.chat-bottom .sc-sub { font-size: 1.9em; }
+.chat-bottom .sc-next { font-size: 1.6em; padding: 0.35em 1em; }
+.chat-bottom .sc-kicker { font-size: 1.3em; }
+.chat-bottom.lay-split .sc-timer strong, .chat-bottom.lay-banner .sc-timer strong { font-size: 6em; }
+.chat-bottom.lay-timer .sc-timer strong { font-size: 7.5em; }
+.lay-timer .sc-timer strong { font-size: 12.5em; }
+/* The text block takes the width its layout allows (the title fits to it, see Title). */
+.sc-center { width: 100%; }
+.lay-left .sc-center, .lay-right .sc-center, .lay-lower .sc-center { width: 58%; max-width: 58%; }
+.lay-corner .sc-center { width: 46%; max-width: 46%; }
+.lay-card .sc-center { width: min(100%, 78em); }
