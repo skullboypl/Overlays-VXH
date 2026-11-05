@@ -87,11 +87,25 @@ export const camLayout = (layout: string, g: number, chat: boolean, camSize: num
       };
     }
     case 'theater': {
-      const screenW = 1560;
-      const screenH = Math.round(screenW * 9 / 16);
-      const camW = Math.round(440 * camSize);
+      // Game centred like a cinema screen; the cam sits above or below it, lined up with one edge,
+      // and the chat takes the free side margin. Nothing overlaps.
+      const camW = Math.round(400 * camSize);
       const camH = Math.round(camW * 9 / 16);
-      return { screen: { x: Math.round((W - screenW) / 2), y: Math.round((H - screenH) / 2), w: screenW, h: screenH }, cam: cornerRect(corner, camW, camH, g, 70, 80) };
+      const screenH = fullH - camH - g;
+      const screenW = Math.min(Math.round(screenH * 16 / 9), W - 2 * g);
+      const camTop = corner === 'tl' || corner === 'tr';
+      const camLeft = corner === 'tl' || corner === 'bl';
+      const chatW = chat ? Math.min(380, W - screenW - 3 * g) : 0;
+      const withChat = chatW >= 240;
+      // Screen and chat are centred together as one block.
+      const x0 = Math.round((W - screenW - (withChat ? chatW + g : 0)) / 2);
+      const sx = withChat && !camLeft ? x0 + chatW + g : x0;
+      const sy = camTop ? top + camH + g : top;
+      return {
+        screen: { x: sx, y: sy, w: screenW, h: screenH },
+        cam: { x: camLeft ? sx : sx + screenW - camW, y: camTop ? top : sy + screenH + g, w: camW, h: camH },
+        ...(withChat ? { chat: { x: camLeft ? sx + screenW + g : x0, y: top, w: chatW, h: fullH } } : {}),
+      };
     }
     case 'screen-top': {
       const stripH = Math.round(300 * camSize);
