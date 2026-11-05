@@ -175,7 +175,7 @@ const ImageFrame = ({ theme, params, variant, label, src }: { theme: Theme; para
             <span key={corner} className={`hf-deco hf-deco-3d ${corner}`} style={{ '--dl': `${i * -1.1}s` } as Vars}>{emoji}</span>
           ))}
       </div>
-      {label && <div className="hf-label"><span>{label}</span></div>}
+      {label && <div className={`hf-label at-${params.labelPos ?? 'bottom'}`} style={{ '--label-size': `${params.labelSize ?? 15}px` } as Vars}><span>{label}</span></div>}
     </div>
   );
 };
@@ -234,7 +234,7 @@ export const HolidayFrame = ({ params }: { params: Params }) => {
           </span>
         ))}
 
-      {label && <div className="hf-label"><span>{label}</span></div>}
+      {label && <div className={`hf-label at-${params.labelPos ?? 'bottom'}`} style={{ '--label-size': `${params.labelSize ?? 15}px` } as Vars}><span>{label}</span></div>}
     </div>
   );
 };

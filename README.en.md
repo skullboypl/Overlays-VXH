@@ -7,9 +7,37 @@
 [![Live](https://img.shields.io/badge/live-overlays.vxh.pl-ff5900?style=for-the-badge)](https://overlays.vxh.pl/)
 [![MIT](https://img.shields.io/badge/license-MIT-111?style=for-the-badge)](./LICENSE)
 
-[Open the studio](https://overlays.vxh.pl/) · [Adding to OBS (PL)](https://overlays.vxh.pl/jak-dodac-overlay-do-obs) · [FAQ (PL)](https://overlays.vxh.pl/faq) · [Polski](./README.md)
+[Open the studio](https://overlays.vxh.pl/) · [Adding to OBS (PL)](https://overlays.vxh.pl/en/docs/obs) · [FAQ (PL)](https://overlays.vxh.pl/en/docs/faq) · [Polski](./README.md)
 
 </div>
+
+<p align="center">
+  <a href="https://overlays.vxh.pl/"><img src="docs/media/brag.gif" alt="VXH Overlays in 20 seconds" width="900"></a><br>
+  <sub>The studio in 20 seconds · <a href="docs/media/brag.mp4">MP4 version with sound</a></sub>
+</p>
+
+## Gallery
+
+| Starting soon | Be right back | Stream ending |
+|---|---|---|
+| <img src="docs/media/starting.gif" alt="Starting soon screen"> | <img src="docs/media/brb.gif" alt="BRB screen"> | <img src="docs/media/ending.gif" alt="Ending screen"> |
+
+| Christmas | Halloween | Fireworks |
+|---|---|---|
+| <img src="docs/media/xmas.gif" alt="Christmas webcam frame"> | <img src="docs/media/halloween.gif" alt="Halloween frame"> | <img src="docs/media/fireworks.gif" alt="Fireworks"> |
+
+| Snow | Confetti | Socials rotator |
+|---|---|---|
+| <img src="docs/media/snow.gif" alt="Snow"> | <img src="docs/media/confetti.gif" alt="Confetti"> | <img src="docs/media/socials.webp" alt="Socials rotator"> |
+
+<p align="center">
+  <img src="docs/media/studio.webp" alt="Studio: list, preview, settings and OBS link" width="860"><br>
+  <sub>Studio: overlay list, live preview, grouped settings and the OBS link</sub>
+</p>
+
+| Background picker (19) | Phone | Phone menu |
+|---|---|---|
+| <img src="docs/media/backgrounds-picker.webp" alt="Background picker" width="260"> | <img src="docs/media/mobile.webp" alt="Studio on a phone" width="220"> | <img src="docs/media/mobile-menu.webp" alt="Bottom menu" width="220"> |
 
 ---
 
@@ -17,7 +45,7 @@
 
 A studio with a list of overlays, a live preview and a settings panel. Every overlay is a plain web page with a transparent background, and all settings live in the link. No account, no plugins, no watermark and no backend: it is a static site served by nginx.
 
-Part of the [VXH](https://vxh.pl/) toolset for streamers (next to [FACEIT Banner Studio](https://faceitbanner.vxh.pl/)). The UI and site copy are in Polish.
+Part of the [VXH](https://vxh.pl/) toolset for streamers (next to [FACEIT Banner Studio](https://faceitbanner.vxh.pl/)). The interface and docs come in 10 languages: Polish, English, German, Czech, Spanish, French, Portuguese, Russian, Turkish and Ukrainian. The docs (wiki) live under `/docs`.
 
 ## Overlays
 
@@ -56,7 +84,7 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 | `neon` | Neonowa ramka (neon frame) | rotating gradient of up to 5 colors, thickness, radius, glow, speed |
 | `corners` | Narożniki HUD (HUD corners) | crosshair corners, scan line, REC dot, breathing |
 | `nametag` | Ramka z podpisem (name tag) | frame with a bar for a nick and caption, 5 bar positions, periodic shine |
-| `holiday` | Ramki świąteczne (holiday frames) | 8 themes: Christmas, Winter, New Year's Eve, Valentine's, Easter, Halloween, Polish Independence Day (Nov 11), Birthday; corner decorations, garland, inner effect |
+| `holiday` | Ramki świąteczne (holiday frames) | 8 themes: Christmas, Winter, New Year's Eve, Valentine's, Easter, Halloween, Polish Independence Day (Nov 11), Birthday; corner decorations, garland, inner effect; each in 5 versions: animated, realistic (AI), 3D, cartoon, neon; label with size and position |
 
 ### 📰 Bars and text
 

@@ -177,7 +177,7 @@
   border-radius: 999px;
   background: rgba(14, 14, 18, 0.92);
   color: #fff;
-  font: 700 15px/1.2 'DM Sans', sans-serif;
+  font: 700 var(--label-size, 15px)/1.2 'DM Sans', sans-serif;
   letter-spacing: 0.02em;
 }
 
@@ -288,3 +288,8 @@
   64% { opacity: 1; }
 }
 @keyframes hf-neon-glow { 50% { opacity: 0.6; } }
+
+/* Label size and position (holiday frames). */
+.hf-label span { padding: 0.33em 1.05em; }
+.hf-label.at-top { bottom: auto; top: calc(var(--inset) - 14px); }
+.hf-img .hf-label.at-top { top: 4%; bottom: auto; }

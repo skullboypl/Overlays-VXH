@@ -319,6 +319,10 @@ export const OVERLAYS: OverlayDef[] = [
         { value: 'cartoon', label: 'Kreskówka' }, { value: 'neon', label: 'Neon' },
       ], hint: 'Realistyczna, 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
       { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji, puste pole ukrywa napis' },
+      { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px' },
+      { group: 'Okazja', key: 'labelPos', label: 'Pozycja napisu', type: 'select', default: 'bottom', options: [
+        { value: 'bottom', label: 'Na dole' }, { value: 'top', label: 'Na górze' },
+      ] },
       { group: 'Dekoracje', key: 'decorations', label: 'Dekoracje w rogach', type: 'toggle', default: true },
       { key: 'decoSize', label: 'Wielkość dekoracji', type: 'range', min: 16, max: 90, step: 1, default: 44, unit: 'px', when: { key: 'decorations', is: [true] } },
       { key: 'garland', label: 'Girlanda / lampki', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] }, hint: 'Lampki, chorągiewki albo czapa śniegu, zależnie od okazji' },

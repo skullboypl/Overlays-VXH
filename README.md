@@ -7,9 +7,37 @@
 [![Live](https://img.shields.io/badge/live-overlays.vxh.pl-ff5900?style=for-the-badge)](https://overlays.vxh.pl/)
 [![MIT](https://img.shields.io/badge/licencja-MIT-111?style=for-the-badge)](./LICENSE)
 
-[Otwórz studio](https://overlays.vxh.pl/) · [Jak dodać do OBS](https://overlays.vxh.pl/jak-dodac-overlay-do-obs) · [FAQ](https://overlays.vxh.pl/faq) · [English](./README.en.md)
+[Otwórz studio](https://overlays.vxh.pl/) · [Jak dodać do OBS](https://overlays.vxh.pl/docs/obs) · [FAQ](https://overlays.vxh.pl/docs/faq) · [English](./README.en.md)
 
 </div>
+
+<p align="center">
+  <a href="https://overlays.vxh.pl/"><img src="docs/media/brag.gif" alt="VXH Overlays w 20 sekund" width="900"></a><br>
+  <sub>20 sekund o studiu · <a href="docs/media/brag.mp4">wersja MP4 z dźwiękiem</a></sub>
+</p>
+
+## Galeria
+
+| Zaraz startujemy | Przerwa / BRB | Koniec streama |
+|---|---|---|
+| <img src="docs/media/starting.gif" alt="Ekran Zaraz startujemy"> | <img src="docs/media/brb.gif" alt="Ekran przerwy"> | <img src="docs/media/ending.gif" alt="Ekran końcowy"> |
+
+| Boże Narodzenie | Halloween | Fajerwerki |
+|---|---|---|
+| <img src="docs/media/xmas.gif" alt="Świąteczna ramka na kamerkę"> | <img src="docs/media/halloween.gif" alt="Ramka Halloween"> | <img src="docs/media/fireworks.gif" alt="Fajerwerki"> |
+
+| Śnieg | Konfetti | Rotator sociali |
+|---|---|---|
+| <img src="docs/media/snow.gif" alt="Śnieg"> | <img src="docs/media/confetti.gif" alt="Konfetti"> | <img src="docs/media/socials.webp" alt="Rotator sociali"> |
+
+<p align="center">
+  <img src="docs/media/studio.webp" alt="Studio: lista, podgląd, ustawienia i link do OBS" width="860"><br>
+  <sub>Studio: lista overlayów, podgląd na żywo, ustawienia w sekcjach i link do OBS</sub>
+</p>
+
+| Wybór tła (19 teł) | Telefon | Menu na telefonie |
+|---|---|---|
+| <img src="docs/media/backgrounds-picker.webp" alt="Wybór tła" width="260"> | <img src="docs/media/mobile.webp" alt="Studio na telefonie" width="220"> | <img src="docs/media/mobile-menu.webp" alt="Dolne menu" width="220"> |
 
 ---
 
@@ -17,7 +45,7 @@
 
 Studio z listą overlayów, podglądem na żywo i panelem ustawień. Każdy overlay to zwykła strona z przezroczystym tłem, a wszystkie ustawienia siedzą w linku. Bez konta, bez wtyczek, bez znaku wodnego i bez backendu: to statyczna strona serwowana przez nginx.
 
-Część zestawu narzędzi [VXH](https://vxh.pl/) dla streamerów (obok [FACEIT Banner Studio](https://faceitbanner.vxh.pl/)). Interfejs i teksty strony są po polsku.
+Część zestawu narzędzi [VXH](https://vxh.pl/) dla streamerów (obok [FACEIT Banner Studio](https://faceitbanner.vxh.pl/)). Interfejs i dokumentacja są w 10 językach: polskim, angielskim, niemieckim, czeskim, hiszpańskim, francuskim, portugalskim, rosyjskim, tureckim i ukraińskim. Dokumentacja (wiki) jest pod `/docs`.
 
 ## Overlaye
 
@@ -56,7 +84,7 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `neon` | Neonowa ramka | obracający się gradient z do 5 kolorów, grubość, zaokrąglenie, poświata, prędkość |
 | `corners` | Narożniki HUD | narożniki celownika, linia skanu, kropka REC, oddychanie |
 | `nametag` | Ramka z podpisem | ramka z paskiem na nick i podpis, 5 pozycji paska, błysk co kilka sekund |
-| `holiday` | Ramki świąteczne | 8 motywów: Boże Narodzenie, Zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, Urodziny; dekoracje w rogach, girlanda, efekt w środku |
+| `holiday` | Ramki świąteczne | 8 motywów: Boże Narodzenie, Zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, Urodziny; dekoracje w rogach, girlanda, efekt w środku; każde w 5 wersjach: animowana, realistyczna (AI), 3D, kreskówka, neon; napis z wyborem wielkości i pozycji |
 
 ### 📰 Paski i napisy
 
