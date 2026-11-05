@@ -98,6 +98,19 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
   const [backdrop, setBackdrop] = useState<Backdrop>('scene');
   const [camera, setCamera] = useState(true);
   const [size, setSize] = useState(def.size);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false);
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [menuOpen]);
+
+  const jumpTo = (selector: string) => {
+    setMenuOpen(false);
+    document.querySelector(selector)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   useEffect(() => {
     if (!home) document.title = seoFor(def).title;
@@ -138,12 +151,17 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
       </header>
 
       <div className="st-body">
-        <aside className="st-list" aria-label="Lista overlayów">
+        {menuOpen && <div className="st-backdrop" onClick={() => setMenuOpen(false)} aria-hidden />}
+        <aside id="st-menu" className={`st-list ${menuOpen ? 'is-open' : ''}`} aria-label="Lista overlayów">
+          <div className="st-sheet-head">
+            <b>Wszystkie overlaye</b>
+            <button type="button" className="st-icon-btn" onClick={() => setMenuOpen(false)} aria-label="Zamknij menu">✕</button>
+          </div>
           {SECTIONS.map((sec) => (
             <section key={sec.id}>
               <h2>{sec.title}<small>{sec.note}</small></h2>
               {OVERLAYS.filter((o) => o.category === sec.id).map((o) => (
-                <Link key={o.id} to={`/${o.id}`} className={`st-item ${o.id === def.id ? 'is-active' : ''}`}>
+                <Link key={o.id} to={`/${o.id}`} onClick={() => setMenuOpen(false)} className={`st-item ${o.id === def.id ? 'is-active' : ''}`}>
                   <span className="st-item-icon" aria-hidden>{o.icon}</span>
                   <span className="st-item-text">
                     <b>{o.name}</b>
@@ -200,6 +218,26 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
         </aside>
       </div>
       <SeoSection def={def} home={home} />
+
+      {/* Phone / tablet: the overlay list lives in a bottom sheet behind this bar. */}
+      <nav className="st-bottombar" aria-label="Nawigacja studia">
+        <button type="button" onClick={() => setMenuOpen((v) => !v)} aria-expanded={menuOpen} aria-controls="st-menu">
+          <span className="st-burger" aria-hidden><i /><i /><i /></span>
+          <small>Overlaye</small>
+        </button>
+        <button type="button" className="st-bottombar-current" onClick={() => jumpTo('.st-stage')}>
+          <span aria-hidden>{def.icon}</span>
+          <b>{def.name}</b>
+        </button>
+        <button type="button" onClick={() => jumpTo('.st-settings')}>
+          <span aria-hidden>⚙</span>
+          <small>Ustawienia</small>
+        </button>
+        <button type="button" onClick={() => jumpTo('.st-out')}>
+          <span aria-hidden>🔗</span>
+          <small>Link</small>
+        </button>
+      </nav>
     </div>
   );
 };
