@@ -1,11 +1,13 @@
 // Shared shape of every overlay: what it is called, which settings it has and how they map to the URL.
 
+export type Cond = { key: string; is: (string | boolean)[] };
+
 export type FieldBase = {
   key: string;
   label: string;
   hint?: string;
-  /** Show the control only when another setting has one of these values. */
-  when?: { key: string; is: (string | boolean)[] };
+  /** Show the control only when other settings have one of these values (all conditions must hold). */
+  when?: Cond | Cond[];
   /** Section heading in the settings panel; fields with the same group sit together. */
   group?: string;
   /** The default text is a phrase (not a nick or URL): the studio offers it in the visitor's language. */
@@ -23,6 +25,8 @@ export type Field =
       options: { value: string; label: string }[];
       /** CSS background per option: shows a picture grid instead of buttons. */
       swatches?: Record<string, string>;
+      /** Hide options the current settings cannot use (e.g. a frame version not generated for this holiday). */
+      optionFilter?: (params: Params) => (value: string) => boolean;
     })
   | (FieldBase & {
       type: 'text';
@@ -49,7 +53,22 @@ export type OverlayDef = {
 };
 
 export const isFieldVisible = (field: Field, params: Params) =>
-  !field.when || field.when.is.includes(params[field.when.key] as string | boolean);
+  !field.when || (Array.isArray(field.when) ? field.when : [field.when]).every((c) => c.is.includes(params[c.key] as string | boolean));
+
+/** Options of a select that the current settings can use. */
+export const visibleOptions = (field: Field, params: Params) =>
+  field.type === 'select' && field.optionFilter ? field.options.filter((o) => field.optionFilter!(params)(o.value)) : field.type === 'select' ? field.options : [];
+
+/** A select whose value is no longer offered falls back to its first offered option. */
+export const normalizeParams = (fields: Field[], params: Params): Params => {
+  let out = params;
+  for (const f of fields) {
+    if (f.type !== 'select' || !f.optionFilter) continue;
+    const opts = visibleOptions(f, out);
+    if (opts.length && !opts.some((o) => o.value === out[f.key])) out = { ...out, [f.key]: opts[0].value };
+  }
+  return out;
+};
 
 export const defaultParams = (def: OverlayDef): Params =>
   Object.fromEntries(def.fields.map((f) => [f.key, f.default]));

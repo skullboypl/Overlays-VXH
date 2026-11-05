@@ -1,5 +1,5 @@
 import type { Field, OverlayDef } from './schema';
-import { CHARACTERS, CHARACTER_LABELS, PHOTO_IDS } from './backgrounds';
+import { CHARACTERS, CHARACTER_LABELS, FRAME_URLS, PHOTO_IDS } from './backgrounds';
 
 const FULL_HD = { w: 1920, h: 1080 };
 const CAM = { w: 640, h: 360 };
@@ -80,7 +80,7 @@ const proFields = (d: { colors: string[]; shape?: string }): Field[] => [
   ] },
   { group: 'Obramowanie', key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: d.colors },
   { group: 'Obramowanie', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 30, step: 1, default: 6, unit: 'px' },
-  { group: 'Obramowanie', key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 50, step: 1, default: 14, unit: 'px' },
+  { group: 'Obramowanie', key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 50, step: 1, default: 14, unit: 'px', when: { key: 'border', is: ['gradient', 'solid', 'double', 'dashed'] } },
   { group: 'Obramowanie', key: 'shadow', label: 'Cień pod ramką', type: 'toggle', default: true },
   { group: 'Animacja', key: 'anim', label: 'Animacja', type: 'select', default: 'spin', options: [
     { value: 'none', label: 'Brak' }, { value: 'spin', label: 'Obrót gradientu' }, { value: 'pulse', label: 'Pulsowanie' },
@@ -194,7 +194,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     fields: [
       density(180), speed(1), size(1), wind(0.3), opacity(0.85),
       { key: 'color', label: 'Kolor', type: 'color', default: '#ffffff' },
-      { key: 'blur', label: 'Rozmycie głębi', type: 'toggle', default: true, hint: 'Bliższe płatki są większe i bardziej rozmyte' },
+      { key: 'blur', label: 'Rozmycie głębi', type: 'toggle', default: true, when: { key: 'flakes', is: ['dots', 'mix'] }, hint: 'Bliższe płatki są większe i bardziej rozmyte' },
       { key: 'flakes', label: 'Kształt', type: 'select', default: 'dots', options: [
         { value: 'dots', label: 'Kropki' }, { value: 'crystals', label: 'Kryształki ❄' }, { value: 'mix', label: 'Mieszane' },
       ] },
@@ -367,16 +367,16 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Okazja', key: 'variant', label: 'Wersja ramki', type: 'select', default: 'anim', options: [
         { value: 'anim', label: 'Animowana' }, { value: 'real', label: 'Realistyczna' }, { value: '3d', label: '3D' },
         { value: 'cartoon', label: 'Kreskówka' }, { value: 'neon', label: 'Neon' },
-      ], hint: 'Realistyczna, 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
+      ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczna, 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
       { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji, puste pole ukrywa napis' },
       { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px' },
       { group: 'Okazja', key: 'labelPos', label: 'Pozycja napisu', type: 'select', default: 'bottom', options: [
         { value: 'bottom', label: 'Na dole' }, { value: 'top', label: 'Na górze' },
       ] },
-      { group: 'Dekoracje', key: 'decorations', label: 'Dekoracje w rogach', type: 'toggle', default: true },
-      { key: 'decoSize', label: 'Wielkość dekoracji', type: 'range', min: 16, max: 90, step: 1, default: 44, unit: 'px', when: { key: 'decorations', is: [true] } },
+      { group: 'Dekoracje', key: 'decorations', label: 'Dekoracje w rogach', type: 'toggle', default: true, when: { key: 'variant', is: ['anim', '3d', 'cartoon'] } },
+      { key: 'decoSize', label: 'Wielkość dekoracji', type: 'range', min: 16, max: 90, step: 1, default: 44, unit: 'px', when: [{ key: 'decorations', is: [true] }, { key: 'variant', is: ['anim', '3d', 'cartoon'] }] },
       { key: 'garland', label: 'Girlanda / lampki', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] }, hint: 'Lampki, chorągiewki albo czapa śniegu, zależnie od okazji' },
-      { key: 'shine', label: 'Błysk światła', type: 'toggle', default: true, when: { key: 'variant', is: ['real', '3d', 'cartoon', 'neon'] } },
+      { key: 'shine', label: 'Błysk światła', type: 'toggle', default: true, when: { key: 'variant', is: ['real', '3d', 'cartoon'] } },
       { key: 'depth', label: 'Siła ruchu', type: 'range', min: 0, max: 2.5, step: 0.1, default: 1, unit: '×', when: { key: 'variant', is: ['3d', 'cartoon', 'neon'] }, hint: '0 zatrzymuje ruch' },
       { key: 'particles', label: 'Efekt (śnieg, serca...)', type: 'toggle', default: true },
       { key: 'amount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'particles', is: [true] } },
@@ -396,15 +396,40 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'faceitcam', name: 'Kamerka + FACEIT', icon: '🎯', category: 'camera', size: { w: 640, h: 360 },
     description: 'Ramka na kamerkę z banerem z faceitbanner.vxh.pl: ELO, level i wybrane staty.',
     fields: [
-      { group: 'FACEIT', key: 'banner', label: 'Link do banera FACEIT', type: 'text', default: '', maxLength: 2000, placeholder: 'https://faceitbanner.vxh.pl/widget/?player_id=...', hint: 'Zrób baner na faceitbanner.vxh.pl (ELO, level, staty), skopiuj jego link do OBS i wklej tutaj' },
-      { group: 'FACEIT', key: 'bannerPos', label: 'Pozycja banera', type: 'select', default: 'bl', options: [
+      { group: 'FACEIT', key: 'source', label: 'Skąd dane', type: 'select', default: 'api', options: [
+        { value: 'api', label: 'Nick FACEIT (staty w ramce)' }, { value: 'link', label: 'Link do banera z FACEIT Banner' },
+      ] },
+      { group: 'FACEIT', key: 'player', label: 'Nick albo player_id', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'source', is: ['api'] }, hint: 'Możesz też wkleić link z faceitbanner.vxh.pl, wyciągniemy z niego gracza' },
+      { group: 'Wygląd statów', key: 'look', label: 'Wygląd', type: 'select', default: 'card', when: { key: 'source', is: ['api'] }, options: [
+        { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
+        { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },
+      ] },
+      { group: 'Wygląd statów', key: 'stats', label: 'Staty', type: 'select', default: 'kd,wr,hs', when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'bar', 'neon', 'hud'] }], options: [
+        { value: 'kd,wr,hs', label: 'K/D, WR, HS' }, { value: 'kd,adr,hs', label: 'K/D, ADR, HS' }, { value: 'kd,kills,wr', label: 'K/D, średnie kille, WR' },
+        { value: 'kd', label: 'Tylko K/D' }, { value: 'kd,wr,hs,adr,kills', label: 'Wszystkie' }, { value: 'none', label: 'Bez statów' },
+      ] },
+      { group: 'Wygląd statów', key: 'matches', label: 'Z ilu ostatnich meczów', type: 'range', min: 5, max: 50, step: 1, default: 20, when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'bar', 'neon', 'hud'] }] },
+      { group: 'Wygląd statów', key: 'form', label: 'Forma W/L (5 ostatnich)', type: 'toggle', default: true, when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'pill', 'bar', 'neon', 'hud'] }] },
+      { group: 'Wygląd statów', key: 'session', label: 'Zmiana ELO na streamie', type: 'toggle', default: true, when: { key: 'source', is: ['api'] }, hint: 'Liczona od chwili, gdy OBS wczyta źródło' },
+      { group: 'Wygląd statów', key: 'avatar', label: 'Avatar', type: 'toggle', default: true, when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card'] }] },
+      { group: 'Wygląd statów', key: 'statsPos', label: 'Pozycja', type: 'select', default: 'bl', when: { key: 'source', is: ['api'] }, options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tc', label: 'Góra, środek' }, { value: 'tr', label: 'Góra, prawo' },
+        { value: 'bl', label: 'Dół, lewo' }, { value: 'bc', label: 'Dół, środek' }, { value: 'br', label: 'Dół, prawo' }, { value: 'below', label: 'Pod kamerką' },
+      ] },
+      { group: 'Wygląd statów', key: 'statsScale', label: 'Wielkość', type: 'range', min: 0.5, max: 2.5, step: 0.05, default: 1, unit: '×', when: { key: 'source', is: ['api'] } },
+      { group: 'Wygląd statów', key: 'statsAccent', label: 'Akcent', type: 'color', default: '#ff5500', when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'bar', 'minimal', 'neon', 'hud'] }] },
+      { group: 'Wygląd statów', key: 'panel', label: 'Tło panelu', type: 'color', default: '#111114', when: [{ key: 'source', is: ['api'] }, { key: 'look', is: ['card', 'pill', 'bar', 'hud'] }] },
+      { group: 'Wygląd statów', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff', when: { key: 'source', is: ['api'] } },
+      { group: 'Wygląd statów', key: 'refresh', label: 'Odświeżanie co', type: 'range', min: 30, max: 600, step: 10, default: 60, unit: 's', when: { key: 'source', is: ['api'] } },
+      { group: 'Baner (link)', when: { key: 'source', is: ['link'] }, key: 'banner', label: 'Link do banera FACEIT', type: 'text', default: '', maxLength: 2000, placeholder: 'https://faceitbanner.vxh.pl/widget/?player_id=...', hint: 'Zrób baner na faceitbanner.vxh.pl (ELO, level, staty), skopiuj jego link do OBS i wklej tutaj' },
+      { group: 'Baner (link)', when: { key: 'source', is: ['link'] }, key: 'bannerPos', label: 'Pozycja banera', type: 'select', default: 'bl', options: [
         { value: 'tl', label: 'Góra, lewo' }, { value: 'tc', label: 'Góra, środek' }, { value: 'tr', label: 'Góra, prawo' },
         { value: 'bl', label: 'Dół, lewo' }, { value: 'bc', label: 'Dół, środek' }, { value: 'br', label: 'Dół, prawo' },
         { value: 'below', label: 'Pod kamerką' },
       ] },
-      { group: 'FACEIT', key: 'bannerScale', label: 'Skala banera', type: 'range', min: 0.3, max: 2, step: 0.05, default: 0.8, unit: '×' },
-      { group: 'FACEIT', key: 'bannerW', label: 'Szerokość banera', type: 'range', min: 150, max: 1200, step: 10, default: 420, unit: 'px', hint: 'Ta sama co w FACEIT Banner' },
-      { group: 'FACEIT', key: 'bannerH', label: 'Wysokość banera', type: 'range', min: 40, max: 600, step: 5, default: 120, unit: 'px' },
+      { group: 'Baner (link)', when: { key: 'source', is: ['link'] }, key: 'bannerScale', label: 'Skala banera', type: 'range', min: 0.3, max: 2, step: 0.05, default: 0.8, unit: '×' },
+      { group: 'Baner (link)', when: { key: 'source', is: ['link'] }, key: 'bannerW', label: 'Szerokość banera', type: 'range', min: 150, max: 1200, step: 10, default: 420, unit: 'px', hint: 'Ta sama co w FACEIT Banner' },
+      { group: 'Baner (link)', when: { key: 'source', is: ['link'] }, key: 'bannerH', label: 'Wysokość banera', type: 'range', min: 40, max: 600, step: 5, default: 120, unit: 'px' },
       ...proFields({ colors: ['#ff5500', '#ffffff'] }),
     ],
   },

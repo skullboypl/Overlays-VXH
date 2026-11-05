@@ -18,7 +18,7 @@ const LivePreview = ({ id, lang }: { id: string; lang: LangId }) => {
   return (
     <div className={`docs-preview cat-${def.category}`}>
       {def.category === 'camera' && <div className="st-cam" aria-hidden><span /></div>}
-      {show && <Overlay id={def.id} params={{ ...localizedDefaults(def, (s) => translate(lang, s)), _lang: lang }} />}
+      {show && <Overlay id={def.id} params={{ ...localizedDefaults(def, (s) => translate(lang, s)), _lang: lang, _preview: true }} />}
     </div>
   );
 };

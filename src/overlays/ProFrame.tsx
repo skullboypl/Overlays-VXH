@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { Params } from './schema';
+import { FaceitStats } from './FaceitStats';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -63,6 +64,17 @@ export const FaceitCam = ({ params }: { params: Params }) => {
   const pos = String(params.bannerPos ?? 'bl');
   const below = pos === 'below';
   const box = { width: w * scale, height: h * scale };
+  if (params.source !== 'link') {
+    const under = params.statsPos === 'below';
+    return (
+      <div className="ov-fill">
+        <div className="ov-fill" style={under ? { height: 'calc(100% - 72px)' } : undefined}>
+          <ProFrame params={params}>{!under && <FaceitStats params={params} />}</ProFrame>
+        </div>
+        {under && <FaceitStats params={params} />}
+      </div>
+    );
+  }
   const banner = src ? (
     <div className={`fc-banner pos-${pos}`} style={box}>
       <iframe title="FACEIT" src={src} width={w} height={h} style={{ transform: `scale(${scale})` }}

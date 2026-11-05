@@ -132,3 +132,68 @@
 .is-peek.is-out.pos-br .ch-actor, .is-peek.is-out.pos-tr .ch-actor { transform: translateX(130%); }
 .is-peek.is-out.pos-bl .ch-actor, .is-peek.is-out.pos-tl .ch-actor { transform: translateX(-130%); }
 .is-peek.is-out.pos-bc .ch-actor { transform: translateY(110%); }
+
+/* ---------- native FACEIT stats (FaceitStats) ---------- */
+.fs {
+  position: absolute;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  color: var(--fs-fg);
+  font-family: 'DM Sans', system-ui, sans-serif;
+  transform: scale(var(--fs-scale));
+  white-space: nowrap;
+}
+.fs.pos-tl { left: calc(var(--inset, 16px) + 10px); top: calc(var(--inset, 16px) + 10px); transform-origin: 0 0; }
+.fs.pos-tr { right: calc(var(--inset, 16px) + 10px); top: calc(var(--inset, 16px) + 10px); transform-origin: 100% 0; }
+.fs.pos-bl { left: calc(var(--inset, 16px) + 10px); bottom: calc(var(--inset, 16px) + 10px); transform-origin: 0 100%; }
+.fs.pos-br { right: calc(var(--inset, 16px) + 10px); bottom: calc(var(--inset, 16px) + 10px); transform-origin: 100% 100%; }
+.fs.pos-bc { left: 50%; bottom: calc(var(--inset, 16px) + 10px); translate: -50% 0; transform-origin: 50% 100%; }
+.fs.pos-tc { left: 50%; top: calc(var(--inset, 16px) + 10px); translate: -50% 0; transform-origin: 50% 0; }
+.fs.pos-below { left: 50%; bottom: 4px; translate: -50% 0; transform-origin: 50% 100%; }
+.fs-level { width: 40px; height: 40px; flex: none; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5)); }
+.fs-avatar { width: 40px; height: 40px; border-radius: 10px; object-fit: cover; flex: none; }
+.fs-main { display: flex; flex-direction: column; line-height: 1.05; }
+.fs-nick { font-size: 13px; font-weight: 700; opacity: 0.85; }
+.fs-elo { display: flex; align-items: baseline; gap: 4px; }
+.fs-elo b { font-size: 26px; font-weight: 800; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; }
+.fs-elo small { font-size: 11px; font-weight: 700; opacity: 0.7; letter-spacing: 0.08em; }
+.fs-elo em { font-style: normal; font-size: 13px; font-weight: 800; margin-left: 4px; }
+.fs-elo em.up { color: #3ddc84; }
+.fs-elo em.down { color: #ff4d5e; }
+.fs-stats { display: flex; gap: 10px; padding-left: 10px; border-left: 1px solid rgba(255, 255, 255, 0.15); }
+.fs-stat { display: flex; flex-direction: column; align-items: center; line-height: 1.05; }
+.fs-stat small { font-size: 10px; font-weight: 700; opacity: 0.6; letter-spacing: 0.08em; }
+.fs-stat b { font-size: 17px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.fs-form { display: flex; gap: 3px; }
+.fs-form i { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 5px; font: 800 10px/1 'DM Sans', sans-serif; font-style: normal; }
+.fs-form i.w { background: #1f9d55; }
+.fs-form i.l { background: #c8323e; }
+.fs-note { position: absolute; left: 0; top: calc(100% + 4px); font-size: 10px; color: #ffb27a; white-space: nowrap; }
+
+/* Looks */
+.fs-card, .fs-bar, .fs-pill { background: color-mix(in srgb, var(--fs-bg) 88%, transparent); border-radius: 14px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45); }
+.fs-card { border-left: 4px solid var(--fs-accent); }
+.fs-pill { border-radius: 999px; padding: 5px 14px 5px 6px; border: 2px solid var(--fs-lv); }
+.fs-bar { border-radius: 10px; border-bottom: 3px solid var(--fs-accent); }
+.fs-minimal { padding: 0; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8); }
+.fs-minimal .fs-elo b { font-size: 42px; color: var(--fs-accent); }
+.fs-neon {
+  border: 2px solid var(--fs-accent);
+  border-radius: 14px;
+  background: rgba(5, 5, 10, 0.55);
+  box-shadow: 0 0 12px var(--fs-accent), inset 0 0 12px color-mix(in srgb, var(--fs-accent) 40%, transparent);
+  text-shadow: 0 0 8px var(--fs-accent);
+  animation: fs-neon 4s steps(1) infinite;
+}
+@keyframes fs-neon { 0%, 100% { opacity: 1; } 47% { opacity: 0.75; } 48% { opacity: 1; } }
+.fs-hud {
+  background: linear-gradient(90deg, color-mix(in srgb, var(--fs-bg) 92%, transparent), transparent);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 14px) 100%, 0 100%);
+  padding-right: 26px;
+  border-left: 3px solid var(--fs-accent);
+  border-top: 1px solid color-mix(in srgb, var(--fs-accent) 60%, transparent);
+}
+.fs-hud .fs-nick { text-transform: uppercase; letter-spacing: 0.12em; font-size: 11px; color: var(--fs-accent); }

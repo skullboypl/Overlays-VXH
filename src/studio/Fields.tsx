@@ -1,8 +1,8 @@
-import type { Field, Params } from '../overlays/schema';
+import { visibleOptions, type Field, type Params } from '../overlays/schema';
 import { LinesEditor, SocialsEditor } from './ListEditors';
 import { useT } from '../i18n';
 
-type Props = { field: Field; value: Params[string]; onChange: (v: Params[string]) => void };
+type Props = { field: Field; value: Params[string]; onChange: (v: Params[string]) => void; params?: Params };
 
 const fmt = (v: number, step: number) => (step < 1 ? v.toFixed(step < 0.1 ? 2 : 1) : String(v));
 
@@ -12,7 +12,7 @@ const ColorInput = ({ value, onChange }: { value: string; onChange: (v: string) 
   </label>
 );
 
-export const FieldControl = ({ field, value, onChange }: Props) => {
+export const FieldControl = ({ field, value, onChange, params = {} }: Props) => {
   const { t } = useT();
   switch (field.type) {
     case 'range': {
@@ -90,7 +90,7 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
           <div className="st-field">
             <div className="st-field-head"><span>{t(field.label)}</span></div>
             <div className="st-tiles">
-              {field.options.map((o) => (
+              {visibleOptions(field, params).map((o) => (
                 <button key={o.value} type="button" className={`st-tile ${o.value === value ? 'is-active' : ''}`} onClick={() => onChange(o.value)}>
                   <span className="st-tile-img" style={{ background: field.swatches![o.value] ?? '#222' }} />
                   <span className="st-tile-label">{t(o.label)}</span>
@@ -102,8 +102,8 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
       return (
         <div className="st-field">
           <div className="st-field-head"><span>{t(field.label)}</span></div>
-          <div className={`st-seg ${field.options.length > 3 ? 'is-wrap' : ''}`}>
-            {field.options.map((o) => (
+          <div className={`st-seg ${visibleOptions(field, params).length > 3 ? 'is-wrap' : ''}`}>
+            {visibleOptions(field, params).map((o) => (
               <button
                 key={o.value}
                 type="button"

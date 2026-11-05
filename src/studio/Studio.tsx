@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { OVERLAYS, findOverlay } from '../overlays/registry';
-import { defaultParams, isFieldVisible, paramsToQuery, queryToParams, type OverlayDef, type Params } from '../overlays/schema';
+import { defaultParams, isFieldVisible, normalizeParams, paramsToQuery, queryToParams, type OverlayDef, type Params } from '../overlays/schema';
 import { Overlay } from '../overlays/Overlay';
 import { FieldControl } from './Fields';
 import { OutputPanel } from './OutputPanel';
@@ -84,7 +84,7 @@ const Preview = ({ def, params, backdrop, camera, size }: {
         style={{ width: size.w, height: size.h, transform: `translate(-50%, -50%) scale(${scale})` }}
       >
         {isCam && camera && <div className="st-cam" aria-hidden><span /></div>}
-        <Overlay id={def.id} params={{ ...params, _lang: lang }} />
+        <Overlay id={def.id} params={{ ...params, _lang: lang, _preview: true }} />
       </div>
     </div>
   );
@@ -175,7 +175,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
   const visible = def.fields.filter((f) => isFieldVisible(f, params));
   let currentGroup: string | undefined;
 
-  const set = (key: string, v: Params[string]) => setParams((p) => ({ ...p, [key]: v }));
+  const set = (key: string, v: Params[string]) => setParams((p) => normalizeParams(def.fields, { ...p, [key]: v }));
 
   return (
     <div className="studio">
@@ -257,7 +257,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
               return (
                 <Fragment key={f.key}>
                   {heading && <h3 className="st-group">{t(heading)}</h3>}
-                  <FieldControl field={f} value={params[f.key]} onChange={(v) => set(f.key, v)} />
+                  <FieldControl field={f} value={params[f.key]} params={params} onChange={(v) => set(f.key, v)} />
                 </Fragment>
               );
             })}
