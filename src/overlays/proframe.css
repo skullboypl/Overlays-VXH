@@ -1,0 +1,134 @@
+/* Ramka Pro + Kamerka z FACEIT. Uses --neon-angle from overlay.css for the spinning gradient. */
+.pf-box {
+  position: absolute;
+  inset: var(--inset);
+  border-radius: var(--radius);
+}
+.shape-circle .pf-box {
+  inset: var(--inset) auto;
+  left: 50%;
+  aspect-ratio: 1;
+  height: calc(100% - var(--inset) * 2);
+  translate: -50% 0;
+  border-radius: 50%;
+}
+
+/* Border styles drawn on the box itself. */
+.border-solid .pf-box { border: var(--thick) solid var(--c1); }
+.border-dashed .pf-box { border: var(--thick) dashed var(--c1); }
+.border-double .pf-box { border: max(var(--thick), 4px) double var(--c1); }
+.border-glass .pf-box {
+  border: var(--thick) solid rgba(255, 255, 255, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5), inset 0 8px 24px rgba(255, 255, 255, 0.12), 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+.pf-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: var(--thick);
+  background: var(--grad);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+}
+.pf-ring-glow { filter: blur(var(--glow)); opacity: 0.85; }
+.border-solid .pf-box, .border-dashed .pf-box, .border-double .pf-box {
+  filter: drop-shadow(0 0 calc(var(--glow) / 2) var(--c1));
+}
+.pf-box.has-shadow { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55); }
+.border-glass .pf-box.has-shadow { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.5), 0 10px 30px rgba(0, 0, 0, 0.55); }
+
+/* Colour outside the shape: hides the corners of a rectangular webcam under a round frame. */
+.pf-box.has-mask::before {
+  content: '';
+  position: absolute;
+  inset: calc(var(--thick) * -1);
+  border-radius: inherit;
+  box-shadow: 0 0 0 200vmax var(--outside);
+  pointer-events: none;
+}
+
+/* Animations */
+.anim-pulse .pf-box { animation: pf-pulse calc(var(--speed) * 0.6) ease-in-out infinite; }
+.anim-breathe .pf-box { animation: pf-breathe calc(var(--speed) * 0.8) ease-in-out infinite; }
+.anim-hue .pf-box { animation: pf-hue calc(var(--speed) * 2) linear infinite; }
+@keyframes pf-pulse { 50% { filter: drop-shadow(0 0 calc(var(--glow) * 1.4) var(--c2)) brightness(1.2); } }
+@keyframes pf-breathe { 50% { transform: scale(0.985); } }
+.shape-circle.anim-breathe .pf-box { animation-name: pf-breathe-c; }
+@keyframes pf-breathe-c { 50% { scale: 0.985; } }
+@keyframes pf-hue { to { filter: hue-rotate(360deg); } }
+
+/* Accents in the four corners */
+.pf-accent { position: absolute; width: var(--accent); height: var(--accent); }
+.pf-accent.tl { left: calc(var(--inset) - 6px); top: calc(var(--inset) - 6px); }
+.pf-accent.tr { right: calc(var(--inset) - 6px); top: calc(var(--inset) - 6px); }
+.pf-accent.bl { left: calc(var(--inset) - 6px); bottom: calc(var(--inset) - 6px); }
+.pf-accent.br { right: calc(var(--inset) - 6px); bottom: calc(var(--inset) - 6px); }
+.a-corners { border: 0 solid var(--c2); filter: drop-shadow(0 0 6px var(--c2)); }
+.a-corners.tl { border-top-width: 4px; border-left-width: 4px; }
+.a-corners.tr { border-top-width: 4px; border-right-width: 4px; }
+.a-corners.bl { border-bottom-width: 4px; border-left-width: 4px; }
+.a-corners.br { border-bottom-width: 4px; border-right-width: 4px; }
+.a-dots::after {
+  content: '';
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+  background: var(--c2);
+  box-shadow: 0 0 12px var(--c2);
+  animation: ov-blink 1.6s steps(1) infinite;
+}
+.a-tape {
+  width: calc(var(--accent) * 2.4);
+  height: calc(var(--accent) * 0.8);
+  background: color-mix(in srgb, var(--c2) 55%, rgba(255, 255, 255, 0.6));
+  opacity: 0.85;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+.a-tape.tl { rotate: -38deg; left: calc(var(--inset) - var(--accent) * 0.7); top: calc(var(--inset) + var(--accent) * 0.1); }
+.a-tape.tr { rotate: 38deg; right: calc(var(--inset) - var(--accent) * 0.7); top: calc(var(--inset) + var(--accent) * 0.1); }
+.a-tape.bl { rotate: 38deg; left: calc(var(--inset) - var(--accent) * 0.7); bottom: calc(var(--inset) + var(--accent) * 0.1); }
+.a-tape.br { rotate: -38deg; right: calc(var(--inset) - var(--accent) * 0.7); bottom: calc(var(--inset) + var(--accent) * 0.1); }
+.shape-circle .pf-accent { display: none; }
+
+/* FACEIT banner slot */
+.fc-banner { position: absolute; overflow: hidden; z-index: 3; }
+.fc-banner iframe { border: 0; background: transparent; transform-origin: 0 0; display: block; }
+.fc-banner.pos-tl { left: calc(var(--inset) + var(--thick) + 8px); top: calc(var(--inset) + var(--thick) + 8px); }
+.fc-banner.pos-tc { left: 50%; translate: -50% 0; top: calc(var(--inset) + var(--thick) + 8px); }
+.fc-banner.pos-tr { right: calc(var(--inset) + var(--thick) + 8px); top: calc(var(--inset) + var(--thick) + 8px); }
+.fc-banner.pos-bl { left: calc(var(--inset) + var(--thick) + 8px); bottom: calc(var(--inset) + var(--thick) + 8px); }
+.fc-banner.pos-bc { left: 50%; translate: -50% 0; bottom: calc(var(--inset) + var(--thick) + 8px); }
+.fc-banner.pos-br { right: calc(var(--inset) + var(--thick) + 8px); bottom: calc(var(--inset) + var(--thick) + 8px); }
+.fc-banner.pos-below { left: 50%; translate: -50% 0; bottom: 0; }
+.fc-empty {
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  border: 2px dashed rgba(255, 89, 0, 0.7);
+  background: rgba(11, 11, 12, 0.7);
+  color: #ff8a3d;
+  font: 700 14px/1 'DM Sans', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+/* ---------- animated characters ---------- */
+.ch-root { overflow: hidden; }
+.ch-actor {
+  position: absolute;
+  height: var(--h);
+  aspect-ratio: 2 / 3;
+  filter: var(--shadow);
+  transition: transform 0.9s cubic-bezier(0.2, 0.9, 0.2, 1), opacity 0.6s ease;
+}
+.ch-actor video { width: 100%; height: 100%; object-fit: contain; display: block; }
+.ch-actor.is-mirror video { transform: scaleX(-1); }
+.pos-br .ch-actor { right: var(--off); bottom: 0; }
+.pos-bl .ch-actor { left: var(--off); bottom: 0; }
+.pos-bc .ch-actor { left: 50%; bottom: 0; translate: -50% 0; }
+.pos-tr .ch-actor { right: var(--off); top: var(--off); }
+.pos-tl .ch-actor { left: var(--off); top: var(--off); }
+/* Peek: slides in from its own edge, then back out. */
+.is-peek.is-out.pos-br .ch-actor, .is-peek.is-out.pos-tr .ch-actor { transform: translateX(130%); }
+.is-peek.is-out.pos-bl .ch-actor, .is-peek.is-out.pos-tl .ch-actor { transform: translateX(-130%); }
+.is-peek.is-out.pos-bc .ch-actor { transform: translateY(110%); }

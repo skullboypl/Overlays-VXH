@@ -35,7 +35,7 @@ export type Field =
 
 export type Params = Record<string, number | string | boolean | string[]>;
 
-export type Category = 'scene' | 'screen' | 'camera' | 'widget';
+export type Category = 'scene' | 'screen' | 'character' | 'camera' | 'widget';
 
 export type OverlayDef = {
   id: string;

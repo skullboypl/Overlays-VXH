@@ -1,5 +1,5 @@
 import type { Field, OverlayDef } from './schema';
-import { PHOTO_IDS } from './backgrounds';
+import { CHARACTERS, CHARACTER_LABELS, PHOTO_IDS } from './backgrounds';
 
 const FULL_HD = { w: 1920, h: 1080 };
 const CAM = { w: 640, h: 360 };
@@ -64,6 +64,34 @@ const BG_SWATCHES: Record<string, string> = {
   ...Object.fromEntries(PHOTO_IDS.map((id) => [id, `url(/bg/${id}-thumb.webp) center / cover`])),
   custom: 'repeating-linear-gradient(45deg, #222 0 6px, #2b2b2e 6px 12px)',
 };
+
+// Shared knobs of "Ramka Pro" and "Kamerka + FACEIT".
+const proFields = (d: { colors: string[]; shape?: string }): Field[] => [
+  { group: 'Kształt', key: 'shape', label: 'Kształt', type: 'select', default: d.shape ?? 'rounded', options: [
+    { value: 'rounded', label: 'Zaokrąglony' }, { value: 'rect', label: 'Prostokąt' }, { value: 'pill', label: 'Pigułka' }, { value: 'circle', label: 'Koło' },
+  ] },
+  { group: 'Kształt', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 120, step: 1, default: 22, unit: 'px', when: { key: 'shape', is: ['rounded'] } },
+  { group: 'Kształt', key: 'inset', label: 'Margines', type: 'range', min: 0, max: 80, step: 1, default: 16, unit: 'px' },
+  { group: 'Kształt', key: 'mask', label: 'Zasłoń tło wokół kształtu', type: 'toggle', default: false, hint: 'Przydatne przy okrągłej ramce: zakrywa rogi kamerki' },
+  { group: 'Kształt', key: 'outsideColor', label: 'Kolor wokół', type: 'color', default: '#0b0b0c', when: { key: 'mask', is: [true] } },
+  { group: 'Obramowanie', key: 'border', label: 'Styl obramowania', type: 'select', default: 'gradient', options: [
+    { value: 'gradient', label: 'Gradient' }, { value: 'solid', label: 'Pełne' }, { value: 'double', label: 'Podwójne' },
+    { value: 'dashed', label: 'Przerywane' }, { value: 'glass', label: 'Szkło' },
+  ] },
+  { group: 'Obramowanie', key: 'colors', label: 'Kolory', type: 'colors', max: 5, default: d.colors },
+  { group: 'Obramowanie', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 30, step: 1, default: 6, unit: 'px' },
+  { group: 'Obramowanie', key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 50, step: 1, default: 14, unit: 'px' },
+  { group: 'Obramowanie', key: 'shadow', label: 'Cień pod ramką', type: 'toggle', default: true },
+  { group: 'Animacja', key: 'anim', label: 'Animacja', type: 'select', default: 'spin', options: [
+    { value: 'none', label: 'Brak' }, { value: 'spin', label: 'Obrót gradientu' }, { value: 'pulse', label: 'Pulsowanie' },
+    { value: 'breathe', label: 'Oddech' }, { value: 'hue', label: 'Tęcza' },
+  ] },
+  { group: 'Animacja', key: 'speed', label: 'Prędkość', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'anim', is: ['spin', 'pulse', 'breathe', 'hue'] } },
+  { group: 'Akcenty', key: 'accent', label: 'Akcenty w rogach', type: 'select', default: 'none', options: [
+    { value: 'none', label: 'Brak' }, { value: 'corners', label: 'Narożniki' }, { value: 'dots', label: 'Kropki' }, { value: 'tape', label: 'Taśma' },
+  ] },
+  { group: 'Akcenty', key: 'accentSize', label: 'Wielkość akcentów', type: 'range', min: 10, max: 70, step: 1, default: 28, unit: 'px', when: { key: 'accent', is: ['corners', 'dots', 'tape'] } },
+];
 
 type SceneDefaults = {
   title: string; subtitle: string; timer: string; timerLabel: string; doneText: string;
@@ -132,7 +160,7 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
 ];
 
-export const OVERLAYS: OverlayDef[] = [
+const ALL_OVERLAYS: OverlayDef[] = [
   {
     id: 'starting', name: 'Zaraz startujemy', icon: '⏳', category: 'scene', size: FULL_HD,
     description: 'Ekran przed streamem z odliczaniem, socialami i animowanym tłem.',
@@ -265,6 +293,28 @@ export const OVERLAYS: OverlayDef[] = [
     ],
   },
   {
+    id: 'character', name: 'Animowane postacie', icon: '🎅', category: 'character', size: FULL_HD,
+    description: 'Mikołaj, elf, bałwan, dynia i inne postacie animowane w pętli, z przezroczystym tłem.',
+    fields: [
+      { group: 'Postać', key: 'char', label: 'Postać', type: 'select', default: Object.keys(CHARACTERS)[0] ?? 'santa-game',
+        options: Object.keys(CHARACTERS).map((id) => ({ value: id, label: CHARACTER_LABELS[id] ?? id })),
+        swatches: Object.fromEntries(Object.entries(CHARACTERS).map(([id, c]) => [id, `url(${c.poster}) center / contain no-repeat, #1a1a1c`])) },
+      { group: 'Postać', key: 'mirror', label: 'Odbicie lustrzane', type: 'toggle', default: false },
+      { group: 'Postać', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+      { group: 'Ułożenie', key: 'position', label: 'Pozycja', type: 'select', default: 'br', options: [
+        { value: 'bl', label: 'Dół, lewo' }, { value: 'bc', label: 'Dół, środek' }, { value: 'br', label: 'Dół, prawo' },
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' },
+      ] },
+      { group: 'Ułożenie', key: 'size', label: 'Wielkość', type: 'range', min: 10, max: 100, step: 1, default: 45, unit: '%', hint: 'Procent wysokości źródła' },
+      { group: 'Ułożenie', key: 'offset', label: 'Odsunięcie od krawędzi', type: 'range', min: 0, max: 30, step: 0.5, default: 2, unit: '%' },
+      { group: 'Pojawianie się', key: 'mode', label: 'Tryb', type: 'select', default: 'loop', options: [
+        { value: 'loop', label: 'Zawsze widoczna' }, { value: 'peek', label: 'Wychodzi co jakiś czas' },
+      ] },
+      { group: 'Pojawianie się', key: 'every', label: 'Co ile', type: 'range', min: 5, max: 300, step: 5, default: 30, unit: 's', when: { key: 'mode', is: ['peek'] } },
+      { group: 'Pojawianie się', key: 'stay', label: 'Jak długo zostaje', type: 'range', min: 2, max: 60, step: 1, default: 8, unit: 's', when: { key: 'mode', is: ['peek'] } },
+    ],
+  },
+  {
     id: 'neon', name: 'Neonowa ramka', icon: '🌈', category: 'camera', size: CAM,
     description: 'Obracający się gradient wokół kamerki z poświatą.',
     fields: [
@@ -338,6 +388,27 @@ export const OVERLAYS: OverlayDef[] = [
     ],
   },
   {
+    id: 'proframe', name: 'Ramka Pro', icon: '🟧', category: 'camera', size: CAM,
+    description: 'Ramka z wieloma opcjami: kształt, styl obramowania, animacja, akcenty i maska wokół.',
+    fields: proFields({ colors: ['#ff5900', '#ff2d6f', '#7a5cff'] }),
+  },
+  {
+    id: 'faceitcam', name: 'Kamerka + FACEIT', icon: '🎯', category: 'camera', size: { w: 640, h: 360 },
+    description: 'Ramka na kamerkę z banerem z faceitbanner.vxh.pl: ELO, level i wybrane staty.',
+    fields: [
+      { group: 'FACEIT', key: 'banner', label: 'Link do banera FACEIT', type: 'text', default: '', maxLength: 2000, placeholder: 'https://faceitbanner.vxh.pl/widget/?player_id=...', hint: 'Zrób baner na faceitbanner.vxh.pl (ELO, level, staty), skopiuj jego link do OBS i wklej tutaj' },
+      { group: 'FACEIT', key: 'bannerPos', label: 'Pozycja banera', type: 'select', default: 'bl', options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tc', label: 'Góra, środek' }, { value: 'tr', label: 'Góra, prawo' },
+        { value: 'bl', label: 'Dół, lewo' }, { value: 'bc', label: 'Dół, środek' }, { value: 'br', label: 'Dół, prawo' },
+        { value: 'below', label: 'Pod kamerką' },
+      ] },
+      { group: 'FACEIT', key: 'bannerScale', label: 'Skala banera', type: 'range', min: 0.3, max: 2, step: 0.05, default: 0.8, unit: '×' },
+      { group: 'FACEIT', key: 'bannerW', label: 'Szerokość banera', type: 'range', min: 150, max: 1200, step: 10, default: 420, unit: 'px', hint: 'Ta sama co w FACEIT Banner' },
+      { group: 'FACEIT', key: 'bannerH', label: 'Wysokość banera', type: 'range', min: 40, max: 600, step: 5, default: 120, unit: 'px' },
+      ...proFields({ colors: ['#ff5500', '#ffffff'] }),
+    ],
+  },
+  {
     id: 'ticker', name: 'Przewijany pasek', icon: '📰', category: 'widget', size: { w: 1920, h: 64 },
     description: 'Pasek z przesuwającym się tekstem: harmonogram, info, zasady czatu.',
     fields: [
@@ -381,5 +452,8 @@ export const OVERLAYS: OverlayDef[] = [
     ],
   },
 ];
+
+// "Animowane postacie" appears once at least one character clip has been generated.
+export const OVERLAYS = ALL_OVERLAYS.filter((o) => o.id !== 'character' || Object.keys(CHARACTERS).length > 0);
 
 export const findOverlay = (id: string | undefined) => OVERLAYS.find((o) => o.id === id);
