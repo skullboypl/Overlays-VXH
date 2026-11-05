@@ -5,6 +5,7 @@ import { FaceitStats } from './FaceitStats';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { EFFECT_DEFAULTS, SCENE_FONTS } from './SceneScreen';
 import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { HolidayLayer } from './HolidayLayer';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -32,6 +33,7 @@ export const FullCam = ({ params }: { params: Params }) => {
         <ParticleLayer key={effect} kind={(effect === 'warp' ? 'stars' : effect) as EffectKind} params={{ ...EFFECT_DEFAULTS[effect], ...(effect === 'confetti' ? { colors } : {}) }} />
       )}
       {params.vignette && <div className="sc-vignette" style={{ opacity: Number(params.vignetteStrength ?? 0.6) }} />}
+      <HolidayLayer params={params} />
       <ProFrame params={{ ...params, mask: false }}>
         {params.showFaceit && <FaceitStats params={{ ...params, source: 'api' }} />}
       </ProFrame>

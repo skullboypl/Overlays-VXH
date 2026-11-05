@@ -99,7 +99,13 @@ def finish(raw, cut, path, glow=False):
     if glow:
         # Neon light on black: brightness is the shape, so keep anything clearly lit.
         alpha = ImageChops.lighter(alpha, raw.convert('L').point(lambda v: max(0, min(255, (v - 28) * 4))))
-    alpha = ImageChops.subtract(alpha, background_mask(raw))
+    # Guard: if the flood fill would wipe out most of the artwork (dark decorations touching the
+    # background), keep the cut-out model's mask alone.
+    cleaned = ImageChops.subtract(alpha, background_mask(raw))
+    before = sum(alpha.point(lambda v: 1 if v > 128 else 0).getdata())
+    after = sum(cleaned.point(lambda v: 1 if v > 128 else 0).getdata())
+    if before == 0 or after / before > 0.45:
+        alpha = cleaned
     # The camera must stay visible: clear a feathered rectangle in the middle.
     hole = Image.new('L', (W, H), 255)
     ImageDraw.Draw(hole).rounded_rectangle((int(W * 0.15), int(H * 0.2), int(W * 0.85), int(H * 0.8)), radius=40, fill=0)

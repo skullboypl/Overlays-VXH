@@ -35,7 +35,7 @@ export const CornersFrame = ({ params }: { params: Params }) => {
   };
   return (
     <div className={`ov-fill ov-corners ${params.breathe ? 'is-breathing' : ''}`} style={style}>
-      {['tl', 'tr', 'bl', 'br'].map((pos) => <span key={pos} className={`ov-corner ${pos}`} />)}
+      {params.showCorners !== false && ['tl', 'tr', 'bl', 'br'].map((pos) => <span key={pos} className={`ov-corner ${pos}`} />)}
       {params.scan && <div className="ov-scan" />}
       {params.rec && (
         <div className="ov-rec">
@@ -58,7 +58,7 @@ export const NameTagFrame = ({ params }: { params: Params }) => {
   };
   return (
     <div className="ov-fill ov-nametag" style={style}>
-      <div className="ov-nametag-border" />
+      {params.showBorder !== false && <div className="ov-nametag-border" />}
       {params.showTag !== false && (params.text || params.sub) && (
         <div className={`ov-tag pos-${pos} ${params.shine ? 'is-shining' : ''}`}>
           <div className="ov-tag-text">

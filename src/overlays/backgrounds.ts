@@ -33,6 +33,23 @@ export const CHARACTER_LABELS: Record<string, string> = {
   'bunny-game': 'Zajączek wielkanocny',
   'cupid-game': 'Amorek',
   'partygirl-game': 'Sylwestrowa impreza',
+  'gingerbread-game': 'Piernikowy ludzik',
+  'penguin-game': 'Pingwin',
+  'ghost-game': 'Duszek',
+  'skeleton-game': 'Szkielet',
+  'robot-game': 'Robot',
+  'dragon-game': 'Smoczek',
+  'cat-game': 'Kotek',
+  'panda-game': 'Panda',
+  'astronaut-game': 'Astronauta',
+  'knight-game': 'Rycerz',
+  'gamer-game': 'Gamer',
+  'angel-game': 'Aniołek',
+  'elf-real': 'Elf (realistyczny)',
+  'witch-real': 'Czarownica (realistyczna)',
+  'snowman-real': 'Bałwan (realistyczny)',
+  'reindeer-real': 'Renifer (realistyczny)',
+  'bunny-real': 'Zajączek (realistyczny)',
 };
 
 // Looping realistic video backgrounds (Wan 2.2 from the photo backgrounds), src/assets/videos/<photo id>.mp4.

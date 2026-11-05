@@ -99,6 +99,27 @@ const proFields = (d: { colors: string[]; shape?: string }): Field[] => [
 // Full-screen webcam frame: a little thicker and rounder than on a 640×360 source.
 const FULLCAM_DEFAULTS: Record<string, number> = { inset: 24, thickness: 8, radius: 28 };
 
+// Holiday layer for the camera scenes (HolidayLayer): same art as "Ramki świąteczne".
+const holidayFields = (): Field[] => [
+  { group: 'Święta', key: 'holiday', label: 'Świąteczna oprawa', type: 'select', default: 'none', options: [{ value: 'none', label: 'Brak' }, ...HOLIDAY_OPTIONS] },
+  { group: 'Święta', key: 'holidayVariant', label: 'Wersja ramki', type: 'select', default: 'real', when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) },
+    optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.holiday}-${v}`]), options: [
+    { value: 'anim', label: 'Animowana' }, { value: 'real', label: 'Realistyczna' }, { value: '3d', label: '3D' },
+    { value: 'cartoon', label: 'Kreskówka' }, { value: 'neon', label: 'Neon' },
+  ] },
+  { group: 'Święta', key: 'holidayLabelOn', label: 'Pokaż napis', type: 'toggle', default: true, when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) } },
+  { group: 'Święta', key: 'holidayLabel', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayLabelOn', is: [true] }] },
+  { group: 'Święta', key: 'holidayLabelSize', label: 'Wielkość napisu', type: 'range', min: 12, max: 60, step: 1, default: 22, unit: 'px', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayLabelOn', is: [true] }] },
+  { group: 'Święta', key: 'holidayLabelPos', label: 'Pozycja napisu', type: 'select', default: 'top', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayLabelOn', is: [true] }], options: [
+    { value: 'bottom', label: 'Na dole' }, { value: 'top', label: 'Na górze' },
+  ] },
+  { group: 'Święta', key: 'holidayDeco', label: 'Dekoracje w rogach', type: 'toggle', default: true, when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayVariant', is: ['anim', '3d', 'cartoon'] }] },
+  { group: 'Święta', key: 'holidayDecoSize', label: 'Wielkość dekoracji', type: 'range', min: 20, max: 140, step: 2, default: 64, unit: 'px', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayDeco', is: [true] }, { key: 'holidayVariant', is: ['anim', '3d', 'cartoon'] }] },
+  { group: 'Święta', key: 'holidayGarland', label: 'Girlanda / lampki', type: 'toggle', default: true, when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayVariant', is: ['anim'] }] },
+  { group: 'Święta', key: 'holidayParticles', label: 'Efekt (śnieg, serca...)', type: 'toggle', default: true, when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) } },
+  { group: 'Święta', key: 'holidayAmount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1.4, unit: '×', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayParticles', is: [true] }] },
+];
+
 type SceneDefaults = {
   title: string; subtitle: string; timer: string; timerLabel: string; doneText: string;
   bg: string; colors: string[]; effect: string; titleAnim: string; next?: string;
@@ -315,8 +336,9 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Sociale', key: 'socialsAlign', label: 'Wyrównanie', type: 'select', default: 'right', when: { key: 'showSocials', is: [true] }, optionFilter: (p) => (v) => p.showName === false || !(v === 'left' && (p.namePos ?? 'bl') === 'bl') && !(v === 'right' && p.namePos === 'br'), options: [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
       ] },
-      { group: 'FACEIT', key: 'showFaceit', label: 'Pokaż staty FACEIT na kamerce', type: 'toggle', default: false },
-      { group: 'FACEIT', key: 'player', label: 'Nick albo player_id', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'showFaceit', is: [true] } },
+      ...holidayFields(),
+      { group: 'FACEIT', key: 'showFaceit', label: 'Pokaż staty FACEIT na kamerce', type: 'toggle', default: false, hint: 'Po włączeniu wpisz swój nick FACEIT poniżej' },
+      { group: 'FACEIT', key: 'player', label: 'Nick FACEIT', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'showFaceit', is: [true] }, hint: 'Nick z faceit.com, player_id albo link z faceitbanner.vxh.pl' },
       { group: 'FACEIT', key: 'look', label: 'Wygląd', type: 'select', default: 'card', when: { key: 'showFaceit', is: [true] }, options: [
         { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
         { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },
@@ -394,8 +416,9 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
       { group: 'Sociale', key: 'showSocials', label: 'Pokaż sociale', type: 'toggle', default: true },
       { group: 'Sociale', when: { key: 'showSocials', is: [true] }, key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.gg/skullmedia | youtube.com/@skullboypl', maxLength: 300 },
-      { group: 'FACEIT', key: 'showFaceit', label: 'Pokaż staty FACEIT na kamerce', type: 'toggle', default: false },
-      { group: 'FACEIT', key: 'player', label: 'Nick albo player_id', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'showFaceit', is: [true] } },
+      ...holidayFields(),
+      { group: 'FACEIT', key: 'showFaceit', label: 'Pokaż staty FACEIT na kamerce', type: 'toggle', default: false, hint: 'Po włączeniu wpisz swój nick FACEIT poniżej' },
+      { group: 'FACEIT', key: 'player', label: 'Nick FACEIT', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'showFaceit', is: [true] }, hint: 'Nick z faceit.com, player_id albo link z faceitbanner.vxh.pl' },
       { group: 'FACEIT', key: 'look', label: 'Wygląd', type: 'select', default: 'pill', when: { key: 'showFaceit', is: [true] }, options: [
         { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
         { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },
@@ -484,6 +507,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'corners', name: 'Narożniki HUD', icon: '⌜', category: 'camera', size: CAM,
     description: 'Celownikowe narożniki z opcjonalną linią skanu i napisem REC.',
     fields: [
+      { key: 'showCorners', label: 'Pokaż narożniki', type: 'toggle', default: true },
       { key: 'color', label: 'Kolor', type: 'color', default: '#ff5900' },
       { key: 'length', label: 'Długość narożnika', type: 'range', min: 10, max: 200, step: 2, default: 56, unit: 'px' },
       { key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 16, step: 1, default: 4, unit: 'px' },
@@ -502,6 +526,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'text', label: 'Nick / tytuł', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'showTag', is: [true] } },
       { group: 'Teksty', key: 'showSub', label: 'Pokaż podpis', type: 'toggle', default: true, when: { key: 'showTag', is: [true] } },
       { group: 'Teksty', when: [{ key: 'showTag', is: [true] }, { key: 'showSub', is: [true] }], key: 'sub', label: 'Podpis pod spodem', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 60, placeholder: 'np. social, opcjonalnie' },
+      { group: 'Wygląd', key: 'showBorder', label: 'Pokaż ramkę', type: 'toggle', default: true },
       { group: 'Wygląd', key: 'color', label: 'Kolor ramki', type: 'color', default: '#ff5900' },
       { key: 'bg', label: 'Tło paska', type: 'color', default: '#111114' },
       { key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
@@ -557,7 +582,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'FACEIT', key: 'source', label: 'Skąd dane', type: 'select', default: 'api', options: [
         { value: 'api', label: 'Nick FACEIT (staty w ramce)' }, { value: 'link', label: 'Link do banera z FACEIT Banner' },
       ] },
-      { group: 'FACEIT', key: 'player', label: 'Nick albo player_id', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'source', is: ['api'] }, hint: 'Możesz też wkleić link z faceitbanner.vxh.pl, wyciągniemy z niego gracza' },
+      { group: 'FACEIT', key: 'player', label: 'Nick FACEIT', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'source', is: ['api'] }, hint: 'Nick z faceit.com, player_id albo link z faceitbanner.vxh.pl' },
       { group: 'Wygląd statów', key: 'look', label: 'Wygląd', type: 'select', default: 'card', when: { key: 'source', is: ['api'] }, options: [
         { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
         { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },

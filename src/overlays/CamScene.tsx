@@ -5,6 +5,7 @@ import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { FaceitStats } from './FaceitStats';
 import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
 import { isLang, translate, tx } from '../i18n';
+import { HolidayLayer } from './HolidayLayer';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Rect = { x: number; y: number; w: number; h: number };
@@ -94,13 +95,13 @@ export const camLayout = (layout: string, g: number, chat: boolean, camSize: num
     }
     case 'screen-top': {
       const stripH = Math.round(300 * camSize);
-      const screenH = H - top - stripH - 2 * g - 20;
+      const screenH = H - top - stripH - 2 * g - 80;
       const screenW = Math.round(screenH * 16 / 9);
       const camW = Math.round(stripH * 16 / 9);
       return {
         screen: { x: Math.round((W - screenW) / 2), y: top, w: screenW, h: screenH },
-        cam: { x: g, y: H - stripH - g - 20, w: camW, h: stripH },
-        ...(chat ? { chat: { x: camW + 2 * g, y: H - stripH - g - 20, w: W - camW - 3 * g, h: stripH } } : {}),
+        cam: { x: g, y: H - stripH - g - 80, w: camW, h: stripH },
+        ...(chat ? { chat: { x: camW + 2 * g, y: H - stripH - g - 80, w: W - camW - 3 * g, h: stripH } } : {}),
       };
     }
     case 'split': {
@@ -204,6 +205,10 @@ export const CamScene = ({ params }: { params: Params }) => {
           {k === 'chat' && params.chatTitle && params.showChatTitle !== false && <div className="cs-chat-head">{String(params.chatTitle)}</div>}
         </div>
       ))}
+
+      {params.holiday && params.holiday !== 'none' && (
+        <div className="cs-holiday" style={pct(cam)}><HolidayLayer params={params} /></div>
+      )}
 
       <div className="sc-inner cs-inner">
         {params.showTitle !== false && params.title && (

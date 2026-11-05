@@ -707,3 +707,7 @@
 .fc-socials.align-right { left: auto; width: fit-content; max-width: 60%; }
 .fc-socials.align-left { right: auto; width: fit-content; max-width: 60%; }
 .fc-socials.align-center { left: 50%; right: auto; translate: -50% 0; width: fit-content; max-width: 50%; }
+
+/* Holiday frame drawn over the camera slot of a scene. */
+.cs-holiday { position: absolute; z-index: 2; pointer-events: none; }
+.hl-layer { z-index: 2; }
