@@ -600,3 +600,66 @@
   0%, 100% { top: 105%; transform: scale(1); }
   50% { top: -25%; transform: scale(1.25); }
 }
+
+/* ---------- Kamerka fullscreen (CamScene) ---------- */
+.cs-root { background: transparent; }
+.cs-root .sc-layers { background: var(--base); }
+.cs-frame { position: absolute; border-radius: var(--radius); pointer-events: none; z-index: 2; }
+.cs-frame.is-round { border-radius: 50%; }
+.cs-frame.border-solid { border: var(--thick) solid var(--c1); box-shadow: 0 0 var(--glow) var(--c1); }
+.cs-frame.border-glass { border: var(--thick) solid rgba(255, 255, 255, 0.35); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4), 0 12px 30px rgba(0, 0, 0, 0.45); }
+.cs-frame.border-glow { box-shadow: 0 0 0 var(--thick) var(--c1), 0 0 calc(var(--glow) * 2) var(--c1), 0 0 calc(var(--glow) * 4) var(--c2); }
+.cs-frame .pf-ring { border-radius: inherit; }
+.cs-chat-head {
+  position: absolute;
+  left: 0; right: 0; top: 0;
+  padding: 0.8cqh 1.4cqh;
+  font: 700 1.8cqh/1 'DM Sans', sans-serif;
+  letter-spacing: 0.2em;
+  color: #fff;
+  background: linear-gradient(90deg, var(--c1), var(--c2));
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+.cs-ph {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: var(--radius);
+  background: repeating-linear-gradient(45deg, #1d1f2a 0 18px, #222533 18px 36px);
+  color: rgba(255, 255, 255, 0.35);
+  font: 700 2.2cqh/1 'DM Sans', sans-serif;
+  letter-spacing: 0.25em;
+}
+.cs-ph.ph-screen { background: linear-gradient(180deg, #1b2440, #3b3561 55%, #c2667a); }
+.cs-ph.is-round { border-radius: 50%; aspect-ratio: 1; justify-self: center; }
+.cs-ph b { position: relative; z-index: 1; }
+.cs-inner { padding: 0; display: block; }
+.cs-topbar {
+  position: absolute;
+  left: 2.2cqh; top: 1.6cqh;
+  display: flex; align-items: center; gap: 1.2cqh;
+  padding: 1cqh 2cqh;
+  border-radius: 999px;
+  background: rgba(10, 10, 14, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  backdrop-filter: blur(10px);
+  font-family: var(--font);
+  font-size: 2.6cqh;
+}
+.cs-topbar b { font-weight: 800; letter-spacing: 0.02em; }
+.cs-live { width: 1.2cqh; height: 1.2cqh; border-radius: 50%; background: #ff2b2b; box-shadow: 0 0 1cqh #ff2b2b; animation: ov-blink 1.4s steps(1) infinite; }
+.cs-clock { font: 600 2.2cqh/1 'DM Sans', sans-serif; opacity: 0.8; padding-left: 1.2cqh; border-left: 1px solid rgba(255, 255, 255, 0.25); }
+.cs-name {
+  position: absolute;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 0 1.6cqh;
+  border-left: 0.5cqh solid var(--c1);
+  background: linear-gradient(90deg, rgba(10, 10, 14, 0.75), transparent);
+  font-family: 'DM Sans', sans-serif;
+  z-index: 3;
+}
+.cs-name b { font-family: var(--font); font-size: 3cqh; font-weight: 800; line-height: 1.05; }
+.cs-name small { font-size: 1.8cqh; opacity: 0.75; }
+.cs-socials { bottom: 1.6cqh; font-size: calc(100cqh / 1080 * 13); }
+.cs-faceit { position: absolute; z-index: 4; }

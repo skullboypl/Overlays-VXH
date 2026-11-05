@@ -21,6 +21,7 @@ type Backdrop = (typeof BACKDROPS)[number]['id'];
 
 const SECTIONS = [
   { id: 'scene', title: tx('Ekrany'), note: tx('Start, przerwa, koniec') },
+  { id: 'camscene', title: tx('Kamerka fullscreen'), note: tx('Układy sceny z kamerką') },
   { id: 'screen', title: tx('Efekty'), note: tx('Na całą scenę') },
   { id: 'character', title: tx('Postacie'), note: tx('Animowane w pętli') },
   { id: 'camera', title: tx('Kamerka'), note: tx('Ramki i święta') },

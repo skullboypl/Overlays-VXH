@@ -74,7 +74,7 @@ const Photo = ({ src, params }: { src: string; params: Params }) => (
   </div>
 );
 
-const Background = ({ bg, colors, params }: { bg: string; colors: string[]; params: Params }) => {
+export const Background = ({ bg, colors, params }: { bg: string; colors: string[]; params: Params }) => {
   const [a, b = a, c = b] = colors;
   if (PHOTO_IDS.includes(bg)) return <Photo src={`/bg/${bg}.webp`} params={params} />;
   switch (bg) {
@@ -147,7 +147,7 @@ const Background = ({ bg, colors, params }: { bg: string; colors: string[]; para
   }
 };
 
-const EFFECT_DEFAULTS: Record<string, Params> = {
+export const EFFECT_DEFAULTS: Record<string, Params> = {
   snow: { count: 160, speed: 0.9, size: 1.1, wind: 0.3, opacity: 0.85, color: '#ffffff', blur: true, flakes: 'mix', area: 'full' },
   stars: { count: 260, speed: 1, size: 1, opacity: 0.9, color: '#ffffff', mode: 'twinkle', shooting: true },
   warp: { count: 320, speed: 1, size: 1, opacity: 0.85, color: '#ffffff', mode: 'warp' },

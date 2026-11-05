@@ -36,8 +36,8 @@ EMPTY = 'the large rectangular center is completely empty plain black, solid pur
 STYLES = {
     'real': 'photorealistic decorative {d} forming a thick frame border along all four edges of the image like a picture frame, '
             'isolated, studio product photo, sharp focus, rich detail, ' + EMPTY,
-    '3d': 'stylized 3D video game art of a decorative {d} forming a thick frame border along all four edges of the image, '
-          'like props from a modern cartoon battle royale game, glossy materials, soft studio lighting, ' + EMPTY,
+    '3d': 'high-end 3D render (Blender, Octane) of decorative 3D objects: {d}, with real depth, volumetric soft shadows and glossy reflections, '
+          'arranged as a thick frame border along all four edges of the image, like premium 3D game assets, ' + EMPTY,
     'cartoon': 'flat 2D cartoon illustration of a decorative {d} forming a thick frame border along all four edges of the image, '
                'bold clean outlines, cheerful saturated colors, sticker style, vector art, ' + EMPTY,
     'neon': 'glowing neon light tube sign art: a thin frame border along all four edges of the image decorated with neon line drawings of {n}, '
@@ -73,13 +73,33 @@ def fetch(im):
     return Image.open(io.BytesIO(urllib.request.urlopen(f'{API}/view?{q}').read()))
 
 
-def finish(raw, cut, path):
+def background_mask(raw):
+    """Plain background the cut-out model kept: flood-filled from the empty centre and from plain corners."""
+    W, H = raw.size
+    work = raw.copy()
+    KEY = (255, 0, 255)
+    seeds = [(W // 2, H // 2), (W // 3, H // 2), (2 * W // 3, H // 2), (W // 2, H // 3), (W // 2, 2 * H // 3)]
+    for x, y in [(2, 2), (W - 3, 2), (2, H - 3), (W - 3, H - 3), (W // 2, 2), (W // 2, H - 3), (2, H // 2), (W - 3, H // 2)]:
+        r, g, b = raw.getpixel((x, y))
+        if max(r, g, b) - min(r, g, b) < 18 and (max(r, g, b) < 40 or min(r, g, b) > 225):
+            seeds.append((x, y))
+    for xy in seeds:
+        if work.getpixel(xy) != KEY:
+            ImageDraw.floodfill(work, xy, KEY, thresh=46)
+    r, g, b = work.split()
+    mask = ImageChops.multiply(ImageChops.multiply(r.point(lambda v: 255 if v == 255 else 0), g.point(lambda v: 255 if v == 0 else 0)),
+                               b.point(lambda v: 255 if v == 255 else 0))
+    return mask.filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(1.5))
+
+
+def finish(raw, cut, path, glow=False):
     W, H = 1280, 720
     raw = raw.convert('RGB').resize((W, H), Image.LANCZOS)
     alpha = cut.convert('RGBA').resize((W, H), Image.LANCZOS).split()[3]
-    # Glowing bits (lights, neon) on black can be missed by the cut-out; keep anything clearly bright.
-    lum = raw.convert('L').point(lambda v: max(0, min(255, (v - 28) * 4)))
-    alpha = ImageChops.lighter(alpha, lum)
+    if glow:
+        # Neon light on black: brightness is the shape, so keep anything clearly lit.
+        alpha = ImageChops.lighter(alpha, raw.convert('L').point(lambda v: max(0, min(255, (v - 28) * 4))))
+    alpha = ImageChops.subtract(alpha, background_mask(raw))
     # The camera must stay visible: clear a feathered rectangle in the middle.
     hole = Image.new('L', (W, H), 255)
     ImageDraw.Draw(hole).rounded_rectangle((int(W * 0.15), int(H * 0.2), int(W * 0.85), int(H * 0.8)), radius=40, fill=0)
@@ -104,6 +124,6 @@ for theme, d in DETAILS.items():
             e = hist[pid]
             if e.get('status', {}).get('status_str') == 'error':
                 raise RuntimeError(f'{name}: ' + json.dumps(e['status'])[:800])
-            finish(fetch(e['outputs']['9']['images'][0]), fetch(e['outputs']['11']['images'][0]), f'{OUT}/{name}.webp')
+            finish(fetch(e['outputs']['9']['images'][0]), fetch(e['outputs']['11']['images'][0]), f'{OUT}/{name}.webp', glow=style == 'neon')
             print(name, 'ok', round(time.time() - t0), 's', flush=True)
             break

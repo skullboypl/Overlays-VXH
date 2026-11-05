@@ -4,6 +4,7 @@ import { docsPath, type SeoPage } from './content';
 
 export const CATEGORY_LABEL: Record<string, string> = {
   scene: 'Ekrany startu, przerwy i końca',
+  camscene: 'Kamerka fullscreen',
   screen: 'Efekty na cały ekran',
   character: 'Animowane postacie',
   camera: 'Ramki na kamerkę',
