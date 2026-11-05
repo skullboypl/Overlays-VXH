@@ -112,12 +112,36 @@ def unmultiply_black(raw):
     return Image.fromarray(np.clip(col, 0, 255).astype(np.uint8)), Image.fromarray(np.clip(a * 255, 0, 255).astype(np.uint8))
 
 
+def rebuild_neon(raw):
+    """For raws whose bloom floods the whole picture: keep only the bright tube cores and grow an even
+    glow from them, tinted with the light's own colour."""
+    src = np.asarray(raw, dtype=np.float32)
+    lum = src.min(axis=2)  # tube cores are near white; the bloom is saturated, so it is dark here
+    t = np.clip((lum - 110) / (190 - 110), 0, 1)
+    core = t * t * (3 - 2 * t)
+    hue_src = np.asarray(raw.filter(ImageFilter.GaussianBlur(6)), dtype=np.float32)
+    hue = hue_src / np.maximum(hue_src.max(axis=2), 1)[..., None]
+    m = Image.fromarray((core * 255).astype(np.uint8))
+    glow = (np.asarray(m.filter(ImageFilter.GaussianBlur(9)), dtype=np.float32) * 1.4
+            + np.asarray(m.filter(ImageFilter.GaussianBlur(26)), dtype=np.float32) * 0.9) / 255
+    glow_rgb = hue * np.clip(glow, 0, 1)[..., None] * 255
+    core_rgb = src * core[..., None]
+    light = 255 - (255 - core_rgb) * (255 - glow_rgb) / 255
+    return Image.fromarray(np.clip(light, 0, 255).astype(np.uint8))
+
+
+# Neon raws where Flux flooded the background with bloom.
+REBUILD = {'valentine-neon'}
+
+
 def finish(raw, cut, path, glow=False):
     W, H = 1920, 1080
     raw = raw.convert('RGB').resize((W, H), Image.LANCZOS)
     alpha = cut.convert('RGBA').resize((W, H), Image.LANCZOS).split()[3]
     if glow:
         # Neon: alpha comes from the light itself, colours are un-multiplied from black.
+        if os.path.basename(path)[:-5] in REBUILD:
+            raw = rebuild_neon(raw)
         raw, alpha = unmultiply_black(raw)
         hole = Image.new('L', (W, H), 255)
         ImageDraw.Draw(hole).rounded_rectangle((int(W * 0.15), int(H * 0.2), int(W * 0.85), int(H * 0.8)), radius=60, fill=0)
