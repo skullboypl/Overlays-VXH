@@ -1,0 +1,40 @@
+name: Overlay idea / Suggestion
+description: Pomysł na nowy overlay albo opcję / Idea for a new overlay or option.
+labels: ["suggestion"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Rodzaj / Kind
+      options:
+        - Nowy overlay / New overlay
+        - Nowa opcja w istniejącym / New option in an existing one
+        - Studio / konfigurator
+    validations:
+      required: true
+  - type: dropdown
+    id: category
+    attributes:
+      label: Kategoria / Category
+      options:
+        - Ekran (start, przerwa, koniec) / Screen
+        - Efekt na cały ekran / Full screen effect
+        - Kamerka / Camera frame
+        - Pasek albo napis / Bar or text widget
+        - Nie wiem / Not sure
+    validations:
+      required: false
+  - type: textarea
+    id: idea
+    attributes:
+      label: Pomysł / Idea
+      description: Opisz, jak ma wyglądać i działać. Przykład z innego streama albo szkic mile widziany / Describe how it should look and behave. A reference or sketch is welcome.
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: Opcje / Options
+      description: Co ma się dać ustawić (kolory, prędkość, tekst...)? / What should be configurable (colors, speed, text...)?
+    validations:
+      required: false

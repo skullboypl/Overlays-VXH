@@ -1,0 +1,209 @@
+/* Holiday webcam frames. Border and glow reuse .ov-neon-ring from overlay.css. */
+
+.hf-inside {
+  position: absolute;
+  inset: calc(var(--inset) + var(--thick));
+  border-radius: calc(var(--radius) - var(--thick));
+  overflow: hidden;
+}
+
+/* ---------- corner decorations ---------- */
+.hf-deco {
+  position: absolute;
+  font-size: var(--deco);
+  line-height: 1;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+  z-index: 3;
+}
+.hf-deco.tl { left: calc(var(--inset) - var(--deco) * 0.35); top: calc(var(--inset) - var(--deco) * 0.4); }
+.hf-deco.tr { right: calc(var(--inset) - var(--deco) * 0.35); top: calc(var(--inset) - var(--deco) * 0.4); }
+.hf-deco.bl { left: calc(var(--inset) - var(--deco) * 0.3); bottom: calc(var(--inset) - var(--deco) * 0.3); }
+.hf-deco.br { right: calc(var(--inset) - var(--deco) * 0.3); bottom: calc(var(--inset) - var(--deco) * 0.3); }
+.hf-deco.m-bob { animation: hf-bob 2.8s ease-in-out var(--dl) infinite; }
+.hf-deco.m-swing { transform-origin: 50% 0; animation: hf-swing 2.4s ease-in-out var(--dl) infinite; }
+.hf-deco.m-pulse { animation: hf-pulse 1.3s ease-in-out var(--dl) infinite; }
+.hf-deco.m-spin { animation: hf-spin 9s linear var(--dl) infinite; }
+
+/* ---------- lights ---------- */
+.hf-lights {
+  position: absolute;
+  left: calc(var(--inset) + var(--radius) * 0.4);
+  right: calc(var(--inset) + var(--radius) * 0.4);
+  top: calc(var(--inset) - 8px);
+  height: 30px;
+  z-index: 2;
+}
+.hf-lights svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.hf-lights i {
+  position: absolute;
+  top: 9px;
+  width: 9px;
+  height: 14px;
+  margin-left: -4.5px;
+  border-radius: 50% 50% 45% 45% / 40% 40% 60% 60%;
+  background: var(--bulb);
+  box-shadow: 0 0 10px 2px var(--bulb);
+  animation: hf-bulb 1.4s steps(1) var(--dl) infinite;
+}
+.hf-lights i::before {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: -4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 1px;
+  background: #333;
+}
+
+/* ---------- bunting ---------- */
+.hf-bunting {
+  position: absolute;
+  left: calc(var(--inset) + 20px);
+  right: calc(var(--inset) + 20px);
+  top: calc(var(--inset) - 2px);
+  height: 40px;
+  z-index: 2;
+  border-top: 2px solid rgba(255, 255, 255, 0.6);
+  border-radius: 0 0 50% 50% / 0 0 30px 30px;
+}
+.hf-bunting i {
+  position: absolute;
+  width: 20px;
+  height: 26px;
+  margin-left: -10px;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform-origin: top;
+  animation: hf-flag 2s ease-in-out var(--dl) infinite;
+}
+
+/* ---------- snow cap ---------- */
+.hf-snowcap {
+  position: absolute;
+  left: calc(var(--inset) - 4px);
+  right: calc(var(--inset) - 4px);
+  top: calc(var(--inset) - 6px);
+  width: calc(100% - var(--inset) * 2 + 8px);
+  height: 26px;
+  z-index: 2;
+  filter: drop-shadow(0 2px 3px rgba(0, 40, 90, 0.35));
+}
+
+/* ---------- halloween ---------- */
+.hf-web {
+  position: absolute;
+  left: var(--inset);
+  top: var(--inset);
+  width: 110px;
+  height: 110px;
+  z-index: 2;
+}
+.hf-spider {
+  position: absolute;
+  left: 38%;
+  top: var(--inset);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: hf-dangle 5s ease-in-out infinite;
+  transform-origin: top;
+}
+.hf-spider i { width: 1px; height: 46px; background: rgba(255, 255, 255, 0.7); }
+.hf-spider span { font-size: 26px; margin-top: -4px; }
+.hf-bat {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  font-size: 26px;
+  z-index: 3;
+  animation: hf-bat 9s linear infinite;
+}
+.hf-bat.b2 { top: 60px; font-size: 20px; animation-duration: 12s; animation-delay: -4s; }
+.hf-bat.b3 { top: 18px; font-size: 16px; animation-duration: 14s; animation-delay: -9s; }
+
+/* ---------- 11.11 ribbon ---------- */
+.hf-ribbon {
+  position: absolute;
+  left: var(--inset);
+  top: var(--inset);
+  width: 130px;
+  height: 130px;
+  overflow: hidden;
+  border-top-left-radius: var(--radius);
+  z-index: 2;
+}
+.hf-ribbon span {
+  position: absolute;
+  left: -46px;
+  top: 30px;
+  width: 200px;
+  height: 34px;
+  transform: rotate(-45deg);
+  background: linear-gradient(#fff 0 50%, #dc143c 50%);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- easter grass ---------- */
+.hf-grass {
+  position: absolute;
+  left: calc(var(--inset) + var(--thick));
+  right: calc(var(--inset) + var(--thick));
+  bottom: calc(var(--inset) + var(--thick));
+  height: 26px;
+  border-radius: 0 0 calc(var(--radius) - var(--thick)) calc(var(--radius) - var(--thick));
+  background:
+    radial-gradient(circle at 10px 26px, #5fbf5a 9px, transparent 10px) 0 0 / 18px 26px repeat-x,
+    linear-gradient(transparent 60%, #4aa64a 60%);
+  z-index: 2;
+}
+
+/* ---------- label ---------- */
+.hf-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--inset) - 14px);
+  translate: -50% 0;
+  z-index: 4;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--grad);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+}
+.hf-label span {
+  display: block;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: rgba(14, 14, 18, 0.92);
+  color: #fff;
+  font: 700 15px/1.2 'DM Sans', sans-serif;
+  letter-spacing: 0.02em;
+}
+
+@keyframes hf-bob { 50% { transform: translateY(-6px) rotate(-4deg); } }
+@keyframes hf-swing {
+  0%, 100% { transform: rotate(-9deg); }
+  50% { transform: rotate(9deg); }
+}
+@keyframes hf-pulse { 50% { transform: scale(1.16); } }
+@keyframes hf-spin { to { transform: rotate(360deg); } }
+@keyframes hf-bulb {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; box-shadow: none; }
+}
+@keyframes hf-flag {
+  50% { transform: rotate(6deg); }
+}
+@keyframes hf-dangle {
+  0%, 100% { transform: translateY(-10px) rotate(-3deg); }
+  50% { transform: translateY(14px) rotate(3deg); }
+}
+@keyframes hf-bat {
+  0% { transform: translate(-40px, 0) scaleX(1); }
+  25% { transform: translate(25cqw, -14px); }
+  50% { transform: translate(55cqw, 10px); }
+  75% { transform: translate(80cqw, -10px); }
+  100% { transform: translate(calc(100cqw + 40px), 0); }
+}
+.hf-root { container-type: size; }

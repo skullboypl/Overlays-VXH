@@ -1,0 +1,312 @@
+// Page copy for search engines and answer engines. The same text renders visibly under the studio
+// and is pre-rendered into static HTML at build time, so crawlers and AI assistants see it without JS.
+
+import { OVERLAYS } from '../overlays/registry';
+import type { OverlayDef } from '../overlays/schema';
+
+export const SITE = {
+  url: 'https://overlays.vxh.pl',
+  name: 'VXH Overlays',
+  brand: 'VXH',
+  author: 'skullboypl',
+};
+
+export type Faq = { q: string; a: string };
+export type SeoPage = {
+  path: string;
+  title: string;
+  description: string;
+  h1: string;
+  intro: string[];
+  features?: string[];
+  steps?: string[];
+  faq: Faq[];
+  keywords: string[];
+};
+
+const OBS_STEPS = (def: OverlayDef) => [
+  `Wybierz „${def.name}” na liście i ustaw wygląd na podglądzie: kolory, teksty, prędkość i inne opcje.`,
+  'Kliknij „Kopiuj” przy linku do Browser Source.',
+  'W OBS Studio dodaj źródło: Źródła → + → Przeglądarka (Browser Source) i wklej link w pole URL.',
+  `Ustaw rozmiar źródła na ${def.size.w}×${def.size.h} px. Tło jest przezroczyste, nie trzeba dodawać własnego CSS.`,
+  def.category === 'camera'
+    ? 'Ułóż źródło nad kamerką i dopasuj je do jej rozmiaru.'
+    : def.category === 'scene'
+      ? 'Dodaj ekran jako osobną scenę w OBS i przełączaj się na nią przed streamem, w przerwie albo na koniec.'
+      : 'Przeciągnij źródło nad inne warstwy, żeby było widoczne na streamie.',
+];
+
+const COMMON_FAQ: Faq[] = [
+  {
+    q: 'Czy overlaye są darmowe?',
+    a: 'Tak. Wszystkie overlaye na overlays.vxh.pl są darmowe, bez rejestracji, bez znaku wodnego i bez limitu.',
+  },
+  {
+    q: 'Czy działa to w Streamlabs, Meld i TikTok Live Studio?',
+    a: 'Tak, w każdym programie, który ma źródło przeglądarki (Browser Source): OBS Studio, Streamlabs Desktop, Meld Studio, XSplit i TikTok Live Studio.',
+  },
+  {
+    q: 'Gdzie są zapisane moje ustawienia?',
+    a: 'Całe ustawienia są w samym linku do OBS. Dodatkowo możesz zapisać je pod nazwą w zakładce „Zapisane”, ale ten zapis jest tylko w pamięci tej przeglądarki (localStorage). Na innym komputerze go nie będzie, dlatego do przenoszenia służy kod udostępniania VXH1-.',
+  },
+  {
+    q: 'Czy overlay obciąża komputer?',
+    a: 'Efekty są rysowane na jednym canvasie lub w CSS i działają płynnie w OBS. Jeśli masz słabszy komputer, zmniejsz suwak „Ilość” albo rozmiar źródła.',
+  },
+];
+
+type Copy = { title: string; description: string; intro: string[]; features: string[]; faq: Faq[]; keywords: string[] };
+
+const COPY: Record<string, Copy> = {
+  starting: {
+    title: 'Ekran „Zaraz startujemy” do OBS z odliczaniem – darmowy, animowany',
+    description: 'Animowany ekran startowy streama do OBS: odliczanie do startu, sociale z ikonami, miejsce na czat, 5 teł i efekty. Ustaw i skopiuj link do Browser Source.',
+    intro: [
+      'Ekran „Zaraz startujemy” (starting soon) to pierwsza rzecz, jaką widzą widzowie. Tutaj zrobisz go w minutę: duży animowany tytuł, licznik do startu, Twoje kanały i miejsce na czat, żeby ludzie mogli się przywitać, zanim zaczniesz.',
+      'Odliczanie może liczyć minuty od włączenia sceny albo do konkretnej godziny, np. 20:00. Po zakończeniu pokazuje własny napis, np. „Już startujemy!”.',
+    ],
+    features: ['Odliczanie w minutach albo do godziny', 'Pasek postępu', 'Sociale z ikonami Twitch, Kick, YouTube, Discord, TikTok', 'Miejsce na czat: szkło, obramowanie albo przezroczysta dziura', '19 teł: 9 animowanych (zorza, synthwave, fale, kosmos, lava...) i 10 obrazków (pokój nocą, miasto neon, święta, Halloween...) albo własny obrazek', '5 animacji tytułu i 6 czcionek'],
+    faq: [
+      { q: 'Jak zrobić odliczanie przed streamem w OBS?', a: 'Wybierz ekran „Zaraz startujemy”, w sekcji „Odliczanie” ustaw „Minuty” albo „Do godziny”, skopiuj link i dodaj go w OBS jako źródło Przeglądarka 1920×1080.' },
+      { q: 'Czy odliczanie restartuje się po przełączeniu sceny?', a: 'Licznik w minutach startuje, gdy OBS wczyta źródło. Jeśli chcesz stałą godzinę startu niezależnie od sceny, wybierz „Do godziny”.' },
+      { q: 'Jak dodać czat na ekran startowy?', a: 'Włącz „Miejsce na czat” w sekcji „Czat”, wybierz stronę i szerokość, a potem połóż w OBS swoje źródło czatu na zostawionej ramce.' },
+    ],
+    keywords: ['starting soon obs', 'ekran startowy stream', 'zaraz startujemy obs', 'odliczanie obs', 'countdown obs browser source'],
+  },
+  brb: {
+    title: 'Ekran przerwy BRB do OBS – „Zaraz wracam” z licznikiem',
+    description: 'Darmowy animowany ekran przerwy (BRB) do OBS z licznikiem powrotu, neonowym tytułem, socialami i miejscem na czat.',
+    intro: [
+      'Ekran przerwy trzyma widzów na streamie, kiedy idziesz po kawę. Neonowy napis „Zaraz wracam”, licznik powrotu i Twoje sociale wyglądają lepiej niż wyciszona kamera.',
+      'Możesz zmienić tekst, tło, kolory i czcionkę, dodać efekt na wierzchu i zostawić miejsce na czat.',
+    ],
+    features: ['Licznik powrotu', 'Animowane tła CSS, 10 obrazków z powolnym ruchem albo własny obrazek', 'Neon, glitch, fala i inne animacje napisu', 'Miejsce na czat', 'Sociale z ikonami'],
+    faq: [
+      { q: 'Co to jest ekran BRB?', a: 'BRB to skrót od „be right back”, czyli „zaraz wracam”. To scena pokazywana widzom podczas przerwy w streamie.' },
+      { q: 'Jak ustawić, za ile minut wracam?', a: 'W sekcji „Odliczanie” wybierz „Minuty” i ustaw suwak. Licznik ruszy, gdy przełączysz się na scenę z tym ekranem.' },
+    ],
+    keywords: ['brb obs', 'ekran przerwy stream', 'zaraz wracam obs', 'be right back screen', 'przerwa na streamie'],
+  },
+  ending: {
+    title: 'Ekran końcowy streama do OBS – „Dzięki za dziś”, następny stream, sociale',
+    description: 'Animowany ekran końca streama: podziękowanie, termin następnego streama, sociale z ikonami i miejsce na czat. Darmowy overlay do OBS.',
+    intro: [
+      'Ekran końcowy to dobre miejsce, żeby podziękować widzom, podać termin następnego streama i przypomnieć o Discordzie czy YouTube.',
+      'Zostaw miejsce na czat, żeby widzowie mogli się pożegnać, i dodaj efekt, np. świetliki albo fajerwerki.',
+    ],
+    features: ['Pole „Następny stream”', 'Sociale z ikonami', 'Miejsce na czat', 'Animowane tła, obrazki i efekty', 'Opcjonalne odliczanie do końca'],
+    faq: [
+      { q: 'Co pokazać na ekranie końcowym streama?', a: 'Podziękowanie, termin kolejnego streama, linki do Discorda i innych kanałów oraz czat, żeby widzowie mogli się pożegnać.' },
+      { q: 'Czy mogę dodać raid albo licznik do końca?', a: 'Możesz włączyć odliczanie, np. 2 minuty do końca streama. Raid robisz już na Twitchu komendą /raid.' },
+    ],
+    keywords: ['ekran końcowy stream', 'ending screen obs', 'koniec streama overlay', 'outro stream obs'],
+  },
+  snow: {
+    title: 'Śnieg na stream do OBS – darmowy overlay padającego śniegu',
+    description: 'Animowany śnieg na cały ekran do OBS i Streamlabs. Płatki, kryształki, wiatr, rozmycie głębi i przezroczyste tło. Skopiuj link do Browser Source.',
+    intro: ['Padający śnieg to najprostszy sposób na zimowy klimat streama. Ustawisz ilość, wielkość, prędkość, wiatr i kształt płatków, a tło zostaje przezroczyste, więc śnieg pada nad grą i kamerką.'],
+    features: ['Kropki, kryształki ❄ albo mieszane', 'Rozmycie głębi', 'Wiatr w lewo lub prawo', 'Śnieg tylko po bokach albo na pół ekranu'],
+    faq: [{ q: 'Jak dodać śnieg na stream w OBS?', a: 'Ustaw wygląd śniegu, skopiuj link i dodaj go w OBS jako źródło Przeglądarka 1920×1080 nad pozostałymi warstwami.' }],
+    keywords: ['śnieg obs', 'snow overlay obs', 'padający śnieg stream', 'zimowy overlay'],
+  },
+  rain: {
+    title: 'Deszcz na stream do OBS – animowany overlay deszczu',
+    description: 'Overlay deszczu do OBS: od mżawki po ulewę, ukośne krople, rozbryzgi i przezroczyste tło.',
+    intro: ['Deszcz dodaje nastroju spokojnym streamom, lo-fi i horrorom. Ustawisz siłę opadu, kąt wiatru, kolor kropli i rozbryzgi na dole ekranu.'],
+    features: ['Ilość od mżawki do ulewy', 'Wiatr i kąt kropli', 'Rozbryzgi', 'Własny kolor'],
+    faq: [{ q: 'Czy deszcz zasłania grę?', a: 'Krople są półprzezroczyste. Krycie i ilość ustawisz suwakami, więc łatwo dobrać efekt, który nie przeszkadza.' }],
+    keywords: ['deszcz obs', 'rain overlay', 'deszcz na stream'],
+  },
+  confetti: {
+    title: 'Konfetti do OBS – overlay konfetti na stream, ciągłe lub wybuch',
+    description: 'Wirujące konfetti do OBS: ciągły deszcz albo wybuch z rogów co kilka sekund, własne kolory i przezroczyste tło.',
+    intro: ['Konfetti świetnie sprawdza się przy celebracjach: urodziny kanału, cel subów, wygrana. Wybierz ciągły deszcz albo wybuch z dolnych rogów ekranu co ustaloną liczbę sekund.'],
+    features: ['Tryb ciągły albo wybuch', 'Do 6 własnych kolorów', 'Wiatr i prędkość'],
+    faq: [{ q: 'Jak zrobić wybuch konfetti na streamie?', a: 'Ustaw tryb „Wybuch z dołu” i odstęp między wybuchami. Możesz też włączać źródło w OBS tylko wtedy, kiedy chcesz świętować.' }],
+    keywords: ['konfetti obs', 'confetti overlay', 'konfetti na stream'],
+  },
+  emoji: {
+    title: 'Unoszące się emoji i serduszka na stream – overlay do OBS',
+    description: 'Serduszka, gwiazdki i dowolne emoji płynące po ekranie. Darmowy overlay do OBS z przezroczystym tłem.',
+    intro: ['Wpisz dowolne emoji, a overlay będzie je losować i puszczać w górę albo w dół ekranu. Pasuje na walentynki, streamy just chatting i podziękowania dla widzów.'],
+    features: ['Dowolne emoji', 'Kierunek w górę lub w dół', 'Ilość, rozmiar i prędkość'],
+    faq: [{ q: 'Czy mogę użyć własnych emoji?', a: 'Tak, wpisz je w pole „Emoji”. Systemowe emoji wyglądają w OBS tak jak w Windowsie.' }],
+    keywords: ['serduszka obs', 'emoji overlay', 'floating hearts obs'],
+  },
+  fireflies: {
+    title: 'Świetliki na stream – świecące drobinki, overlay do OBS',
+    description: 'Pulsujące świetliki błądzące po ekranie. Spokojny, klimatyczny overlay do OBS.',
+    intro: ['Świetliki to delikatny efekt świecących drobinek, które powoli błądzą po ekranie i pulsują. Dobrze wyglądają na ekranach przerwy i spokojnych streamach.'],
+    features: ['Kolor i siła poświaty', 'Ilość i rozmiar', 'Obszar: cały ekran albo boki'],
+    faq: [{ q: 'Jak zmienić kolor świetlików?', a: 'Wybierz kolor w ustawieniach. Ciepłe żółte wyglądają naturalnie, zielone albo fioletowe pasują do Halloween.' }],
+    keywords: ['świetliki obs', 'particles overlay', 'glowing particles stream'],
+  },
+  petals: {
+    title: 'Płatki wiśni i jesienne liście – overlay do OBS',
+    description: 'Opadające płatki sakury albo jesienne liście na stream. Własne kolory, wiatr, przezroczyste tło.',
+    intro: ['Płatki wiśni na wiosnę, kolorowe liście na jesień. Wybierz kształt, kolory i siłę wiatru.'],
+    features: ['Płatek albo liść', 'Do 5 kolorów', 'Wiatr i prędkość'],
+    faq: [{ q: 'Jak zrobić jesienne liście?', a: 'Wybierz kształt „Liść” i ustaw kolory, np. pomarańczowy, czerwony i brązowy.' }],
+    keywords: ['sakura obs', 'jesienne liście overlay', 'płatki wiśni stream'],
+  },
+  fireworks: {
+    title: 'Fajerwerki na stream do OBS – overlay na Sylwestra',
+    description: 'Animowane fajerwerki do OBS: salwy rakiet, wybuchy w kształcie pierścienia lub serca, własne kolory, przezroczyste tło.',
+    intro: ['Fajerwerki na Sylwestra, cel subów albo zwycięstwo. Ustawisz liczbę rakiet w salwie, odstęp między salwami, kolory i kształt wybuchu.'],
+    features: ['Salwy rakiet', 'Kształt: mieszany, pierścień, serce', 'Migotanie iskier'],
+    faq: [{ q: 'Czy fajerwerki zostawiają ślad na ekranie?', a: 'Iskry mają krótkie smugi, które same znikają. Tło zostaje przezroczyste przez cały czas.' }],
+    keywords: ['fajerwerki obs', 'fireworks overlay', 'sylwester stream'],
+  },
+  stars: {
+    title: 'Gwiazdy i warp do OBS – animowane niebo na stream',
+    description: 'Migoczące gwiazdy ze spadającymi gwiazdami albo efekt lotu w hiperprzestrzeń. Overlay do OBS.',
+    intro: ['Dwa tryby: spokojne migoczące niebo ze spadającymi gwiazdami albo warp, czyli lot w hiperprzestrzeń. Dobre na ekrany przerwy i streamy sci-fi.'],
+    features: ['Tryb migotania i warp', 'Spadające gwiazdy', 'Kolor, ilość, prędkość'],
+    faq: [{ q: 'Jak zrobić efekt hiperprzestrzeni?', a: 'Wybierz tryb „Warp” i zwiększ prędkość.' }],
+    keywords: ['gwiazdy obs', 'starfield overlay', 'warp effect obs'],
+  },
+  grain: {
+    title: 'Ziarno filmowe, winieta i VHS – overlay do OBS',
+    description: 'Filmowe ziarno, winieta, linie VHS i migotanie na stream. Overlay do OBS z przezroczystym tłem.',
+    intro: ['Ziarno filmowe i winieta nadają obrazowi kinowy albo retro klimat. Dodaj linie VHS i migotanie, jeśli chcesz efektu starej kasety.'],
+    features: ['Siła ziarna', 'Winieta', 'Linie VHS', 'Migotanie'],
+    faq: [{ q: 'Czy ziarno obciąża OBS?', a: 'Szum jest generowany w małej rozdzielczości i odświeżany 24 razy na sekundę, więc obciążenie jest minimalne.' }],
+    keywords: ['film grain obs', 'vhs overlay', 'winieta obs'],
+  },
+  neon: {
+    title: 'Neonowa ramka na kamerkę do OBS – animowany gradient',
+    description: 'Ramka na kamerkę z obracającym się gradientem i poświatą. Grubość, zaokrąglenie, kolory i prędkość do ustawienia.',
+    intro: ['Neonowa ramka wokół kamerki z płynnie obracającym się gradientem RGB. Dobierzesz kolory pod swój branding, grubość, zaokrąglenie rogów i siłę poświaty.'],
+    features: ['Do 5 kolorów gradientu', 'Poświata', 'Zaokrąglone rogi', 'Prędkość obrotu'],
+    faq: [{ q: 'Jak dopasować ramkę do kamerki w OBS?', a: 'Ustaw w OBS ten sam rozmiar źródła co kamerki, połóż ramkę nad nią i ewentualnie zmień margines w ustawieniach.' }],
+    keywords: ['ramka na kamerkę obs', 'webcam frame', 'neon webcam border', 'rgb ramka kamerki'],
+  },
+  corners: {
+    title: 'Narożniki HUD na kamerkę – ramka w stylu gamingowym do OBS',
+    description: 'Celownikowe narożniki wokół kamerki, linia skanu i kropka REC. Gamingowa ramka do OBS.',
+    intro: ['Minimalistyczna ramka z samych narożników w stylu HUD z gier. Opcjonalnie z linią skanu i migającą kropką REC.'],
+    features: ['Długość i grubość narożników', 'Linia skanu', 'Kropka REC', 'Oddychająca animacja'],
+    faq: [{ q: 'Czy narożniki zasłaniają twarz?', a: 'Nie, rysowane są tylko rogi. Środek kamerki zostaje czysty.' }],
+    keywords: ['hud webcam frame', 'narożniki kamerka', 'gaming webcam overlay'],
+  },
+  nametag: {
+    title: 'Ramka na kamerkę z nickiem – overlay do OBS',
+    description: 'Ramka na kamerkę z paskiem na nick i social. Pozycja paska, kolory, zaokrąglenie i błysk do ustawienia.',
+    intro: ['Czysta ramka na kamerkę z paskiem, na którym widać Twój nick i np. adres kanału. Wybierz pozycję paska, kolory i zaokrąglenie.'],
+    features: ['Nick i podpis', '5 pozycji paska', 'Błysk co kilka sekund'],
+    faq: [{ q: 'Czy mogę wpisać polskie znaki?', a: 'Tak, nick i podpis obsługują polskie znaki i emoji.' }],
+    keywords: ['ramka z nickiem', 'webcam name tag', 'nick na kamerce obs'],
+  },
+  holiday: {
+    title: 'Świąteczne ramki na kamerkę do OBS – Boże Narodzenie, Halloween, Walentynki',
+    description: 'Ramki na kamerkę na każde święto: Boże Narodzenie z lampkami, zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada i urodziny. Z efektami i dekoracjami.',
+    intro: [
+      'Jedna ramka na kamerkę, osiem okazji. Każdy motyw ma swoje kolory, dekoracje w rogach i efekt w środku: lampki choinkowe i śnieg na Boże Narodzenie, pajęczynę, nietoperze i dynię na Halloween, serduszka na Walentynki, chorągiewki i konfetti na urodziny.',
+      'Napis „auto” wstawia życzenia pasujące do okazji, ale możesz wpisać własny.',
+    ],
+    features: ['Boże Narodzenie, zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, urodziny', 'Lampki, chorągiewki albo czapa śniegu', 'Efekt w środku: śnieg, serca, konfetti, świetliki', 'Dekoracje w rogach z animacją'],
+    faq: [
+      { q: 'Jak zrobić świąteczną ramkę na kamerkę?', a: 'Wybierz „Ramki świąteczne”, ustaw okazję „Boże Narodzenie”, skopiuj link i dodaj go w OBS jako Przeglądarkę o rozmiarze kamerki.' },
+      { q: 'Czy mogę szybko zmieniać ramki na różne święta?', a: 'Tak. Zapisz każdy motyw w zakładce „Zapisane” albo zrób w OBS kilka źródeł z różnymi linkami i włączaj ten, który pasuje.' },
+    ],
+    keywords: ['świąteczna ramka kamerka', 'christmas webcam frame', 'halloween webcam overlay', 'ramka na kamerkę boże narodzenie', 'walentynki overlay'],
+  },
+  ticker: {
+    title: 'Przewijany pasek z tekstem do OBS – ticker na stream',
+    description: 'Pasek z przesuwającym się tekstem na stream: harmonogram, komendy, zasady czatu. Etykieta, styl, prędkość i czcionka.',
+    intro: ['Przewijany pasek (ticker) pokazuje po kolei Twoje komunikaty: kiedy streamujesz, jakie są komendy, link do Discorda. Każdy komunikat wpisujesz w osobnym wierszu.'],
+    features: ['Lista komunikatów', 'Etykieta „INFO” z lewej', 'Styl pełny, szkło albo bez tła', 'Stała prędkość w px/s'],
+    faq: [{ q: 'Jak zrobić przewijany tekst w OBS bez wtyczek?', a: 'Wpisz komunikaty w „Przewijany pasek”, skopiuj link i dodaj go jako Przeglądarkę 1920×64. Nie potrzebujesz filtra przewijania OBS.' }],
+    keywords: ['przewijany tekst obs', 'ticker obs', 'pasek informacyjny stream', 'scrolling text overlay'],
+  },
+  socials: {
+    title: 'Rotator sociali do OBS – Twitch, YouTube, Discord, TikTok z ikonami',
+    description: 'Overlay, który po kolei pokazuje Twoje kanały z ikonami serwisów: Twitch, Kick, YouTube, Discord, TikTok, Instagram, X.',
+    intro: ['Rotator sociali pokazuje jeden kanał na raz i co kilka sekund zmienia na kolejny. Ikona i kolor dobierają się same po wybranym serwisie.'],
+    features: ['Twitch, Kick, YouTube, Discord, TikTok, Instagram, X, Facebook', 'Styl pigułka, karta albo bez tła', '3 animacje zmiany', 'Pasek czasu'],
+    faq: [{ q: 'Jak dodać sociale na stream?', a: 'W „Rotatorze sociali” dodaj serwisy i nicki, skopiuj link i wstaw go w OBS jako Przeglądarkę 560×100.' }],
+    keywords: ['social media overlay obs', 'sociale na stream', 'rotator sociali', 'twitch youtube discord overlay'],
+  },
+};
+
+export const seoFor = (def: OverlayDef): SeoPage => {
+  const c = COPY[def.id];
+  return {
+    path: `/${def.id}`,
+    title: `${c?.title ?? `${def.name} – overlay do OBS`} | ${SITE.name}`,
+    description: c?.description ?? def.description,
+    h1: def.name,
+    intro: c?.intro ?? [def.description],
+    features: c?.features,
+    steps: OBS_STEPS(def),
+    faq: [...(c?.faq ?? []), ...COMMON_FAQ],
+    keywords: c?.keywords ?? [],
+  };
+};
+
+export const HOME: SeoPage = {
+  path: '/',
+  title: `Darmowe overlaye do OBS: ekran startowy, ramki na kamerkę, śnieg | ${SITE.name}`,
+  description: 'Darmowe animowane overlaye do OBS i Streamlabs: ekrany startu, przerwy i końca streama, świąteczne ramki na kamerkę, śnieg, konfetti, fajerwerki, pasek z tekstem i sociale. Ustaw na podglądzie i skopiuj link.',
+  h1: 'Darmowe overlaye do OBS z konfiguratorem',
+  intro: [
+    'VXH Overlays to darmowe studio animowanych overlayów na stream. Wybierasz efekt, ustawiasz go na podglądzie i kopiujesz jeden link do źródła Przeglądarka (Browser Source) w OBS Studio, Streamlabs albo innym programie do streamowania.',
+    'Bez rejestracji, bez instalowania wtyczek, bez znaku wodnego. Tło każdego overlaya jest przezroczyste, a wszystkie ustawienia siedzą w linku.',
+  ],
+  features: [
+    'Ekrany: Zaraz startujemy, Przerwa / BRB, Koniec streama, z odliczaniem i miejscem na czat',
+    'Efekty na cały ekran: śnieg, deszcz, konfetti, emoji, świetliki, płatki, fajerwerki, gwiazdy, ziarno filmowe',
+    'Ramki na kamerkę: neon, narożniki HUD, ramka z nickiem i 8 świątecznych motywów',
+    'Paski i napisy: przewijany ticker i rotator sociali',
+    'Zapisywanie ustawień w przeglądarce i kody udostępniania do przenoszenia między komputerami',
+  ],
+  faq: [
+    { q: 'Jak dodać overlay do OBS?', a: 'Skopiuj link z konfiguratora, w OBS kliknij Źródła → + → Przeglądarka, wklej link w pole URL i ustaw rozmiar podany pod podglądem.' },
+    ...COMMON_FAQ,
+  ],
+  keywords: ['overlay obs', 'darmowe overlaye', 'overlay na stream', 'ramka na kamerkę', 'starting soon', 'brb screen', 'overlay twitch'],
+};
+
+export const GUIDE: SeoPage = {
+  path: '/jak-dodac-overlay-do-obs',
+  title: `Jak dodać overlay do OBS (Browser Source) – poradnik krok po kroku | ${SITE.name}`,
+  description: 'Jak dodać overlay z linku do OBS Studio i Streamlabs: źródło Przeglądarka, rozmiar, kolejność warstw, ramka na kamerkę i ekran startowy. Krótki poradnik z odpowiedziami na częste problemy.',
+  h1: 'Jak dodać overlay do OBS',
+  intro: [
+    'Overlaye z overlays.vxh.pl to zwykłe strony internetowe z przezroczystym tłem. OBS wyświetla je przez źródło „Przeglądarka” (Browser Source), więc nie trzeba niczego instalować.',
+  ],
+  steps: [
+    'Otwórz overlays.vxh.pl i wybierz overlay z listy po lewej.',
+    'Ustaw wygląd w panelu „Ustawienia” po prawej. Podgląd zmienia się od razu.',
+    'Pod podglądem kliknij „Kopiuj” przy „Link do Browser Source”.',
+    'W OBS Studio w panelu „Źródła” kliknij +, wybierz „Przeglądarka” i nadaj nazwę.',
+    'Wklej link w pole „URL”. Wpisz szerokość i wysokość podane pod podglądem (np. 1920×1080 albo 640×360 dla kamerki).',
+    'Zatwierdź OK. Ustaw kolejność: efekty i ramki nad grą i kamerką, ekrany startu, przerwy i końca jako osobne sceny.',
+    'Jeśli później zmienisz ustawienia, skopiuj nowy link i podmień go we właściwościach źródła.',
+  ],
+  faq: [
+    { q: 'Overlay ma czarne tło zamiast przezroczystego. Co zrobić?', a: 'Upewnij się, że to źródło „Przeglądarka”, a nie „Okno” czy „Obraz”. We właściwościach źródła usuń własny CSS, jeśli ustawia tło.' },
+    { q: 'Animacja się nie rusza albo zacina.', a: 'Zaznacz we właściwościach źródła „Wyłącz, gdy niewidoczne”, żeby niewidoczne overlaye nie obciążały komputera, i sprawdź, czy rozmiar źródła nie jest większy niż potrzeba.' },
+    { q: 'Jak odświeżyć overlay po zmianie ustawień?', a: 'Wklej nowy link we właściwościach źródła albo kliknij „Odśwież pamięć podręczną bieżącej strony”.' },
+    { q: 'Czy to działa w Streamlabs?', a: 'Tak. W Streamlabs Desktop dodaj źródło „Browser Source” i wklej ten sam link.' },
+    ...COMMON_FAQ.slice(2),
+  ],
+  keywords: ['jak dodać overlay do obs', 'browser source obs', 'obs przeglądarka źródło', 'overlay streamlabs'],
+};
+
+export const FAQ_PAGE: SeoPage = {
+  path: '/faq',
+  title: `FAQ – najczęstsze pytania o overlaye do OBS | ${SITE.name}`,
+  description: 'Odpowiedzi na pytania o darmowe overlaye do OBS: zapisywanie ustawień, kody udostępniania, Streamlabs, przezroczyste tło, ekrany startowe i ramki na kamerkę.',
+  h1: 'Najczęstsze pytania',
+  intro: ['Zebraliśmy tu odpowiedzi na pytania, które pojawiają się najczęściej przy dodawaniu overlayów do OBS.'],
+  faq: [
+    ...HOME.faq,
+    { q: 'Jak przenieść ustawienia na inny komputer?', a: 'W zakładce „Udostępnij / import” skopiuj kod VXH1- i wklej go na drugim komputerze. Możesz też skopiować „Link do edycji”.' },
+    { q: 'Czy mogę udostępnić swój overlay znajomemu?', a: 'Tak. Wyślij mu kod udostępniania albo link do edycji. Zobaczy dokładnie Twoje ustawienia i może je zmienić u siebie.' },
+    ...OVERLAYS.flatMap((o) => (COPY[o.id]?.faq ?? []).slice(0, 1)),
+  ].filter((f, i, all) => all.findIndex((x) => x.q === f.q) === i),
+  keywords: ['overlay obs faq', 'pytania overlay'],
+};
+
+export const ALL_PAGES: SeoPage[] = [HOME, ...OVERLAYS.map(seoFor), GUIDE, FAQ_PAGE];

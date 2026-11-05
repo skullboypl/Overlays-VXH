@@ -1,0 +1,57 @@
+{
+  "name": "vxh-overlays",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "packageManager": "pnpm@10.33.0",
+  "description": "VXH Overlays: free animated OBS / Streamlabs Browser Source overlays (starting soon, BRB and ending screens, snow, confetti, fireworks, webcam frames, ticker, socials) with an in-browser configurator.",
+  "keywords": [
+    "obs",
+    "obs-studio",
+    "streamlabs",
+    "browser-source",
+    "overlay",
+    "stream-overlay",
+    "twitch",
+    "kick",
+    "youtube",
+    "starting-soon",
+    "brb",
+    "webcam-frame",
+    "vite",
+    "react",
+    "typescript"
+  ],
+  "author": {
+    "name": "skullboypl (Artur Spychalski)",
+    "url": "https://github.com/skullboypl"
+  },
+  "license": "MIT",
+  "homepage": "https://overlays.vxh.pl/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skullboypl/Overlays-VXH.git"
+  },
+  "bugs": {
+    "url": "https://github.com/skullboypl/Overlays-VXH/issues"
+  },
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build && pnpm run prerender",
+    "preview": "vite preview",
+    "prerender": "vite build --ssr src/seo/prerender.tsx --outDir .ssr --emptyOutDir && node .ssr/prerender.js"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-router-dom": "6.29.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.5",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react-swc": "^4.3.3",
+    "typescript": "5.7.3",
+    "vite": "^7.3.7"
+  }
+}

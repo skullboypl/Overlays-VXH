@@ -1,0 +1,45 @@
+name: Bug Report
+description: Coś nie działa / Something does not work.
+labels: ["bug"]
+body:
+  - type: input
+    id: overlay
+    attributes:
+      label: Overlay
+      description: Który overlay? ID albo nazwa / Which overlay? ID or name.
+      placeholder: "snow, starting, holiday..."
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link
+      description: Link do OBS albo link do edycji z tymi ustawieniami / OBS link or edit link with these settings.
+      placeholder: "https://overlays.vxh.pl/o/snow?count=300"
+    validations:
+      required: false
+  - type: textarea
+    id: describe
+    attributes:
+      label: Opis / Description
+      description: Co się stało i czego się spodziewałeś? Zrzut ekranu bardzo pomaga / What happened and what did you expect? A screenshot helps a lot.
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Gdzie / Where
+      options:
+        - OBS Studio (Browser Source)
+        - Streamlabs Desktop
+        - Inny program / Other streaming app
+        - Studio w przeglądarce / Studio in the browser
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Wersja programu i przeglądarki / App and browser version
+      placeholder: "OBS Studio 31.0.1, Chrome 130"
+    validations:
+      required: false

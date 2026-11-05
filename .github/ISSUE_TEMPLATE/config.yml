@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: VXH Overlays (live)
+    url: https://overlays.vxh.pl/
+    about: Studio i FAQ / Studio and FAQ.
+  - name: Security issue / Problem z bezpieczeństwem
+    url: https://github.com/skullboypl/Overlays-VXH/security/advisories/new
+    about: Zgłoś prywatnie, nie w publicznym issue / Report privately, not in a public issue.
