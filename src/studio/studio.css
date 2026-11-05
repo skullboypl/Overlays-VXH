@@ -821,3 +821,7 @@ a { color: inherit; text-decoration: none; }
 }
 .lang-list button:hover, .lang-list button[aria-selected='true'] { background: var(--input); color: var(--text); }
 @media (max-width: 900px) { .lang-name { display: none; } }
+/* Long tile names (layouts) wrap instead of widening the panel. */
+.st-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.st-tile { min-width: 0; }
+.st-tile-label { white-space: normal; line-height: 1.25; overflow-wrap: anywhere; }

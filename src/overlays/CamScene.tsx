@@ -8,7 +8,7 @@ import { isLang, translate, tx } from '../i18n';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Rect = { x: number; y: number; w: number; h: number };
-type Slot = 'cam' | 'screen' | 'chat';
+type Slot = 'cam' | 'cam2' | 'cam3' | 'cam4' | 'screen' | 'chat';
 
 const W = 1920, H = 1080;
 
@@ -16,7 +16,7 @@ const W = 1920, H = 1080;
  * Layouts in a 1920×1080 grid. `g` is the gap; `chat` decides whether a chat column is reserved.
  * Every slot is a transparent hole in the scene: OBS sources placed under the overlay show through.
  */
-export const camLayout = (layout: string, g: number, chat: boolean, camSize: number): Partial<Record<Slot, Rect>> => {
+export const camLayout = (layout: string, g: number, chat: boolean, camSize: number, corner = 'bl'): Partial<Record<Slot, Rect>> => {
   const top = 70 + g; // room for the title bar
   const bottom = 90 + g; // room for name and socials
   const fullH = H - top - bottom;
@@ -43,7 +43,65 @@ export const camLayout = (layout: string, g: number, chat: boolean, camSize: num
     case 'screen-corner': {
       const camW = Math.round(520 * camSize);
       const camH = Math.round(camW * 9 / 16);
-      return { screen: { x: 0, y: 0, w: W, h: H }, cam: { x: g, y: H - camH - g - 60, w: camW, h: camH } };
+      return { screen: { x: 0, y: 0, w: W, h: H }, cam: cornerRect(corner, camW, camH, g, 70, 80) };
+    }
+    case 'duo': {
+      const cols = chat ? W - 400 - 4 * g : W - 3 * g;
+      const each = Math.round(cols / 2);
+      const h = Math.min(fullH, Math.round(each * 9 / 16) + 120);
+      const y = top + Math.round((fullH - h) / 2);
+      return {
+        cam: { x: g, y, w: each, h }, cam2: { x: 2 * g + each, y, w: each, h },
+        ...(chat ? { chat: { x: W - 400 - g, y: top, w: 400, h: fullH } } : {}),
+      };
+    }
+    case 'squad': {
+      const cols = chat ? W - 400 - 4 * g : W - 3 * g;
+      const each = Math.round(cols / 2);
+      const h = Math.round((fullH - g) / 2);
+      return {
+        cam: { x: g, y: top, w: each, h }, cam2: { x: 2 * g + each, y: top, w: each, h },
+        cam3: { x: g, y: top + h + g, w: each, h }, cam4: { x: 2 * g + each, y: top + h + g, w: each, h },
+        ...(chat ? { chat: { x: W - 400 - g, y: top, w: 400, h: fullH } } : {}),
+      };
+    }
+    case 'game-duo': {
+      const side = Math.round(500 * camSize);
+      const screenW = W - 3 * g - side;
+      const camH = Math.round((fullH - g) / 2);
+      return {
+        screen: { x: g, y: top, w: screenW, h: Math.min(Math.round(screenW * 9 / 16), fullH) },
+        cam: { x: 2 * g + screenW, y: top, w: side, h: camH },
+        cam2: { x: 2 * g + screenW, y: top + camH + g, w: side, h: camH },
+      };
+    }
+    case 'vertical': {
+      const camH = fullH;
+      const camW = Math.round(camH * 9 / 16 * camSize);
+      const screenW = W - 3 * g - camW - (chat ? 380 + g : 0);
+      return {
+        cam: { x: g, y: top, w: camW, h: camH },
+        screen: { x: 2 * g + camW, y: top, w: screenW, h: Math.min(Math.round(screenW * 9 / 16), fullH) },
+        ...(chat ? { chat: { x: W - 380 - g, y: top, w: 380, h: fullH } } : {}),
+      };
+    }
+    case 'theater': {
+      const screenW = 1560;
+      const screenH = Math.round(screenW * 9 / 16);
+      const camW = Math.round(440 * camSize);
+      const camH = Math.round(camW * 9 / 16);
+      return { screen: { x: Math.round((W - screenW) / 2), y: Math.round((H - screenH) / 2), w: screenW, h: screenH }, cam: cornerRect(corner, camW, camH, g, 70, 80) };
+    }
+    case 'screen-top': {
+      const stripH = Math.round(300 * camSize);
+      const screenH = H - top - stripH - 2 * g - 20;
+      const screenW = Math.round(screenH * 16 / 9);
+      const camW = Math.round(stripH * 16 / 9);
+      return {
+        screen: { x: Math.round((W - screenW) / 2), y: top, w: screenW, h: screenH },
+        cam: { x: g, y: H - stripH - g - 20, w: camW, h: stripH },
+        ...(chat ? { chat: { x: camW + 2 * g, y: H - stripH - g - 20, w: W - camW - 3 * g, h: stripH } } : {}),
+      };
     }
     case 'split': {
       const each = Math.round((W - 3 * g) / 2);
@@ -63,6 +121,13 @@ export const camLayout = (layout: string, g: number, chat: boolean, camSize: num
 };
 
 const mirrorRect = (r: Rect): Rect => ({ ...r, x: W - r.x - r.w });
+
+/** A small camera pinned to one corner, clear of the title bar on top and the socials at the bottom. */
+const cornerRect = (corner: string, w: number, h: number, g: number, topPad: number, bottomPad: number): Rect => ({
+  x: corner.endsWith('r') ? W - w - g : g,
+  y: corner.startsWith('t') ? topPad + g : H - h - g - bottomPad,
+  w, h,
+});
 
 /** A path with the whole canvas filled and every slot cut out (even-odd), as an SVG mask image. */
 const holesMask = (rects: Rect[], radius: number, circle: Rect | null) => {
@@ -87,13 +152,13 @@ const Clock = () => {
   return <span className="cs-clock">{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>;
 };
 
-const LABELS: Record<Slot, string> = { cam: tx('KAMERA'), screen: tx('GRA / EKRAN'), chat: tx('CZAT') };
+const LABELS: Record<Slot, string> = { cam: tx('KAMERA'), cam2: tx('KAMERA 2'), cam3: tx('KAMERA 3'), cam4: tx('KAMERA 4'), screen: tx('GRA / EKRAN'), chat: tx('CZAT') };
 
 export const CamScene = ({ params }: { params: Params }) => {
   const colors = (params.colors as string[]) ?? ['#ff5900', '#ff2d6f', '#7a5cff'];
   const g = Number(params.gap ?? 24);
   const radius = Number(params.radius ?? 18);
-  let slots = camLayout(String(params.layout ?? 'screen-cam'), g, Boolean(params.chat), Number(params.camSize ?? 1));
+  let slots = camLayout(String(params.layout ?? 'screen-cam'), g, Boolean(params.chat), Number(params.camSize ?? 1), String(params.camCorner ?? 'bl'));
   if (params.mirror) slots = Object.fromEntries(Object.entries(slots).map(([k, r]) => [k, mirrorRect(r!)])) as typeof slots;
   const round = params.camShape === 'circle' && slots.cam;
   const holes = (Object.entries(slots) as [Slot, Rect][]).filter(([k]) => !(round && k === 'cam')).map(([, r]) => r);
@@ -118,7 +183,7 @@ export const CamScene = ({ params }: { params: Params }) => {
       {/* Preview only: stand-ins for the OBS sources that will sit under the holes. */}
       {preview && (Object.entries(slots) as [Slot, Rect][]).map(([k, r]) => (
         <div key={k} className={`cs-ph ph-${k} ${round && k === 'cam' ? 'is-round' : ''}`} style={pct(r)}>
-          {k === 'cam' && <div className="st-cam" aria-hidden><span /></div>}
+          {k.startsWith('cam') && <div className="st-cam" aria-hidden><span /></div>}
           <b>{translate(isLang(params._lang) ? params._lang : 'pl', LABELS[k])}</b>
         </div>
       ))}
