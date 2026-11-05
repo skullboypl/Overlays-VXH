@@ -4,6 +4,7 @@ import { Background, EFFECT_DEFAULTS, SCENE_FONTS } from './SceneScreen';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { FaceitStats } from './FaceitStats';
 import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { isLang, translate, tx } from '../i18n';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Rect = { x: number; y: number; w: number; h: number };
@@ -86,7 +87,7 @@ const Clock = () => {
   return <span className="cs-clock">{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>;
 };
 
-const LABELS: Record<Slot, string> = { cam: 'KAMERA', screen: 'GRA / EKRAN', chat: 'CZAT' };
+const LABELS: Record<Slot, string> = { cam: tx('KAMERA'), screen: tx('GRA / EKRAN'), chat: tx('CZAT') };
 
 export const CamScene = ({ params }: { params: Params }) => {
   const colors = (params.colors as string[]) ?? ['#ff5900', '#ff2d6f', '#7a5cff'];
@@ -118,7 +119,7 @@ export const CamScene = ({ params }: { params: Params }) => {
       {preview && (Object.entries(slots) as [Slot, Rect][]).map(([k, r]) => (
         <div key={k} className={`cs-ph ph-${k} ${round && k === 'cam' ? 'is-round' : ''}`} style={pct(r)}>
           {k === 'cam' && <div className="st-cam" aria-hidden><span /></div>}
-          <b>{LABELS[k]}</b>
+          <b>{translate(isLang(params._lang) ? params._lang : 'pl', LABELS[k])}</b>
         </div>
       ))}
 

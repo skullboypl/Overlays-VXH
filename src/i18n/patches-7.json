@@ -1,0 +1,38 @@
+{
+  "en": {
+    "KAMERA": "CAMERA",
+    "GRA / EKRAN": "GAME / SCREEN"
+  },
+  "de": {
+    "KAMERA": "KAMERA",
+    "GRA / EKRAN": "SPIEL / BILDSCHIRM"
+  },
+  "cs": {
+    "KAMERA": "KAMERA",
+    "GRA / EKRAN": "HRA / OBRAZOVKA"
+  },
+  "es": {
+    "KAMERA": "CÁMARA",
+    "GRA / EKRAN": "JUEGO / PANTALLA"
+  },
+  "fr": {
+    "KAMERA": "CAMÉRA",
+    "GRA / EKRAN": "JEU / ÉCRAN"
+  },
+  "pt": {
+    "KAMERA": "CÂMERA",
+    "GRA / EKRAN": "JOGO / TELA"
+  },
+  "ru": {
+    "KAMERA": "КАМЕРА",
+    "GRA / EKRAN": "ИГРА / ЭКРАН"
+  },
+  "tr": {
+    "KAMERA": "KAMERA",
+    "GRA / EKRAN": "OYUN / EKRAN"
+  },
+  "uk": {
+    "KAMERA": "КАМЕРА",
+    "GRA / EKRAN": "ГРА / ЕКРАН"
+  }
+}

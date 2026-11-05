@@ -20,3 +20,4 @@ brag-output/
 
 # AI asset generation scratch
 tools/ai/.work/
+src/i18n/missing.json
