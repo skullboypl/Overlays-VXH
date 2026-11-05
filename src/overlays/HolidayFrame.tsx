@@ -145,8 +145,8 @@ const Web = () => (
  * (public/frames/<theme>-<real|3d>.webp), brought to life with glow, a light sweep and, for 3D,
  * a slow perspective tilt with decorations floating on their own depth layer.
  */
-export type ArtVariant = 'real' | 'real2' | 'real3' | 'real4' | 'real5' | '3d' | 'cartoon' | 'neon';
-export const ART_VARIANTS: ArtVariant[] = ['real', 'real2', 'real3', 'real4', 'real5', '3d', 'cartoon', 'neon'];
+export type ArtVariant = 'real' | 'real2' | 'real3' | 'real4' | 'real5' | '3d' | 'cartoon' | 'neon' | 'neon2' | 'neon3' | 'neon4' | 'neon5';
+export const ART_VARIANTS: ArtVariant[] = ['real', 'real2', 'real3', 'real4', 'real5', '3d', 'cartoon', 'neon', 'neon2', 'neon3', 'neon4', 'neon5'];
 
 const ImageFrame = ({ theme, params, variant, label, src }: { theme: Theme; params: Params; variant: ArtVariant; label: string; src: string }) => {
   const style: Vars = {
@@ -158,7 +158,7 @@ const ImageFrame = ({ theme, params, variant, label, src }: { theme: Theme; para
     '--grad': `linear-gradient(90deg, ${theme.colors.join(', ')})`,
   };
   return (
-    <div className={`ov-fill hf-img variant-${variant}`} style={style}>
+    <div className={`ov-fill hf-img variant-${variant} ${variant.startsWith('neon') && variant !== 'neon' ? 'variant-neon' : ''}`} style={style}>
       {params.particles && theme.particles && (
         <ParticleLayer
           key={`${params.theme}-${variant}`}

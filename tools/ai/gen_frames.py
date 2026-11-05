@@ -193,6 +193,9 @@ def quality_ok(path):
     # Cast shadows the cut kept: dark, semi-transparent smudges in the middle band.
     mid = (slice(int(h * 0.05), int(h * 0.95)), slice(int(w * 0.25), int(w * 0.75)))
     blobs = ((a[..., 3][mid] > 25) & (a[..., :3].max(axis=2)[mid] < 45)).mean()
+    # Neon tubes are thin and half-transparent: count anything visible and accept a smaller share.
+    if '-neon' in path:
+        share = (a[..., 3] > 40).mean() * 0.07 / 0.05
     ok = share >= 0.07 and (dark <= 0.15 or '-neon' in path) and balance >= 0.2 and (blobs <= 0.03 or '-neon' in path)
     if not ok:
         print(f'{os.path.basename(path)} rejected: art {share:.0%}, dark {dark:.0%}, balance {balance:.2f}, blobs {blobs:.1%}', flush=True)

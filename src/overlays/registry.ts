@@ -120,7 +120,12 @@ const FRAME_VARIANTS = [
   { value: '3d', label: '3D' },
   { value: 'cartoon', label: 'Kreskówka' },
   { value: 'neon', label: 'Neon' },
+  { value: 'neon2', label: 'Neon: cienka linia' },
+  { value: 'neon3', label: 'Neon: retro synthwave' },
+  { value: 'neon4', label: 'Neon: girlanda' },
+  { value: 'neon5', label: 'Neon: pastelowe ikony' },
 ];
+const NEON_VARIANTS = ['neon', 'neon2', 'neon3', 'neon4', 'neon5'];
 const PHOTO_VARIANTS = ['real', 'real2', 'real3', 'real4', 'real5'];
 
 // Holiday layer for the camera scenes (HolidayLayer): same art as "Ramki świąteczne".
@@ -677,7 +682,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Okazja', key: 'theme', label: 'Święto', type: 'select', default: 'xmas', options: HOLIDAY_OPTIONS },
       { group: 'Okazja', key: 'variant', label: 'Wersja ramki', type: 'select', default: 'anim', options: [
         ...FRAME_VARIANTS,
-      ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczne (5 wersji), 3D, Kreskówka i Neon to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
+      ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczne (5 wersji), 3D, Kreskówka i Neony (kilka wersji) to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
       { group: 'Okazja', key: 'showLabel', label: 'Pokaż napis', type: 'toggle', default: true },
       { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji', when: { key: 'showLabel', is: [true] } },
       { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px', when: { key: 'showLabel', is: [true] } },
@@ -688,7 +693,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { key: 'decoSize', label: 'Wielkość dekoracji', type: 'range', min: 16, max: 90, step: 1, default: 44, unit: 'px', when: [{ key: 'decorations', is: [true] }, { key: 'variant', is: ['anim', '3d', 'cartoon'] }] },
       { key: 'garland', label: 'Girlanda / lampki', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] }, hint: 'Lampki, chorągiewki albo czapa śniegu, zależnie od okazji' },
       { key: 'shine', label: 'Błysk światła', type: 'toggle', default: true, when: { key: 'variant', is: [...PHOTO_VARIANTS, '3d', 'cartoon'] } },
-      { key: 'depth', label: 'Siła ruchu', type: 'range', min: 0, max: 2.5, step: 0.1, default: 1, unit: '×', when: { key: 'variant', is: ['3d', 'cartoon', 'neon'] }, hint: '0 zatrzymuje ruch' },
+      { key: 'depth', label: 'Siła ruchu', type: 'range', min: 0, max: 2.5, step: 0.1, default: 1, unit: '×', when: { key: 'variant', is: ['3d', 'cartoon', ...NEON_VARIANTS] }, hint: '0 zatrzymuje ruch' },
       { key: 'particles', label: 'Efekt (śnieg, serca...)', type: 'toggle', default: true },
       { key: 'amount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'particles', is: [true] } },
       { group: 'Ramka', key: 'showBorder', label: 'Pokaż ramkę', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] } },

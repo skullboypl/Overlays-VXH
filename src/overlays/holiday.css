@@ -293,3 +293,8 @@
 .hf-label span { padding: 0.33em 1.05em; }
 .hf-label.at-top { bottom: auto; top: calc(var(--inset) - 14px); }
 .hf-img .hf-label.at-top { top: 4%; bottom: auto; }
+
+/* Picture frames: the label shrinks with the frame, so a long text fits a small camera slot. */
+.hf-img { container-type: size; }
+.hf-img .hf-label { max-width: 94cqw; }
+.hf-img .hf-label span { font-size: min(var(--label-size, 15px), 3.4cqw); overflow: hidden; text-overflow: ellipsis; }
