@@ -1,69 +1,89 @@
 import { OVERLAYS } from '../overlays/registry';
-import { FAQ_PAGE, GUIDE, HOME, type SeoPage } from './content';
+import { translate } from '../i18n';
+import { docsPath, type SeoPage } from './content';
 
-const CATEGORY_LABEL: Record<string, string> = {
+export const CATEGORY_LABEL: Record<string, string> = {
   scene: 'Ekrany startu, przerwy i końca',
   screen: 'Efekty na cały ekran',
   camera: 'Ramki na kamerkę',
   widget: 'Paski i napisy',
 };
 
-/** Plain, link-rich article. Rendered by React under the studio and pre-rendered to static HTML. */
-export const SeoArticle = ({ page, currentId }: { page: SeoPage; currentId?: string }) => (
-  <article className="seo">
-    <header>
-      {page.h1 && <h2>{page.h1}</h2>}
-      {page.intro.map((p, i) => <p key={i}>{p}</p>)}
-    </header>
+/** Docs article body. Rendered by React on /docs and pre-rendered to static HTML for crawlers. */
+export const SeoArticle = ({ page }: { page: SeoPage }) => {
+  const tr = (s: string) => translate(page.lang, s);
+  return (
+    <article className="seo">
+      {page.intro.map((p, i) => <p key={i} className={i === 0 ? 'seo-lead' : undefined}>{p}</p>)}
 
-    {page.features && (
+      {page.features && (
+        <section>
+          <h2>{tr('Co możesz ustawić')}</h2>
+          <ul className="seo-features">{page.features.map((f) => <li key={f}>{f}</li>)}</ul>
+        </section>
+      )}
+
+      {page.steps && (
+        <section>
+          <h2>{tr('Jak dodać do OBS krok po kroku')}</h2>
+          <ol className="seo-steps">{page.steps.map((s) => <li key={s}>{s}</li>)}</ol>
+        </section>
+      )}
+
+      {page.slug === '' && (
+        <section>
+          <h2>{tr('Wszystkie overlaye')}</h2>
+          <div className="seo-cards">
+            {OVERLAYS.map((o) => (
+              <a key={o.id} className="seo-card" href={docsPath(page.lang, o.id)}>
+                <span aria-hidden>{o.icon}</span>
+                <b>{tr(o.name)}</b>
+                <small>{tr(o.description)}</small>
+              </a>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section>
-        <h3>Co możesz ustawić</h3>
-        <ul className="seo-features">{page.features.map((f) => <li key={f}>{f}</li>)}</ul>
+        <h2>{tr('Pytania i odpowiedzi')}</h2>
+        <div className="seo-faq">
+          {page.faq.map((f) => (
+            <details key={f.q}>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))}
+        </div>
       </section>
-    )}
+    </article>
+  );
+};
 
-    {page.steps && (
-      <section>
-        <h3>Jak dodać do OBS krok po kroku</h3>
-        <ol className="seo-steps">{page.steps.map((s) => <li key={s}>{s}</li>)}</ol>
-      </section>
-    )}
-
-    <section>
-      <h3>Pytania i odpowiedzi</h3>
-      <div className="seo-faq">
-        {page.faq.map((f) => (
-          <details key={f.q}>
-            <summary>{f.q}</summary>
-            <p>{f.a}</p>
-          </details>
-        ))}
-      </div>
-    </section>
-
-    <nav className="seo-links" aria-label="Wszystkie overlaye">
+/** Wiki sidebar: start pages, then every overlay grouped by category. */
+export const DocsNav = ({ page }: { page: SeoPage }) => {
+  const tr = (s: string) => translate(page.lang, s);
+  const link = (slug: string, label: string, icon?: string) => (
+    <li key={slug || 'home'}>
+      <a href={docsPath(page.lang, slug)} className={page.slug === slug ? 'is-active' : undefined} aria-current={page.slug === slug ? 'page' : undefined}>
+        {icon && <span aria-hidden>{icon}</span>} {label}
+      </a>
+    </li>
+  );
+  return (
+    <nav className="docs-nav" aria-label={tr('Dokumentacja')}>
+      <h3>{tr('Start')}</h3>
+      <ul>
+        {link('', tr('Wszystkie overlaye'), '🏠')}
+        {link('obs', tr('Jak dodać overlay do OBS'), '📘')}
+        {link('faq', tr('Najczęstsze pytania'), '❓')}
+      </ul>
       {Object.entries(CATEGORY_LABEL).map(([cat, label]) => (
         <div key={cat}>
-          <h3>{label}</h3>
-          <ul>
-            {OVERLAYS.filter((o) => o.category === cat).map((o) => (
-              <li key={o.id}>
-                {o.id === currentId ? <b>{o.icon} {o.name}</b> : <a href={`/${o.id}`}>{o.icon} {o.name}</a>}
-              </li>
-            ))}
-          </ul>
+          <h3>{tr(label)}</h3>
+          <ul>{OVERLAYS.filter((o) => o.category === cat).map((o) => link(o.id, tr(o.name), o.icon))}</ul>
         </div>
       ))}
-      <div>
-        <h3>Pomoc</h3>
-        <ul>
-          <li><a href={GUIDE.path}>Jak dodać overlay do OBS</a></li>
-          <li><a href={FAQ_PAGE.path}>Najczęstsze pytania</a></li>
-          <li><a href={HOME.path}>Wszystkie overlaye</a></li>
-          <li><a href="https://vxh.pl/">Inne narzędzia VXH dla streamerów</a></li>
-        </ul>
-      </div>
     </nav>
-  </article>
-);
+  );
+};

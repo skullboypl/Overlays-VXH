@@ -1,5 +1,6 @@
 import type { Field, Params } from '../overlays/schema';
 import { LinesEditor, SocialsEditor } from './ListEditors';
+import { useT } from '../i18n';
 
 type Props = { field: Field; value: Params[string]; onChange: (v: Params[string]) => void };
 
@@ -12,6 +13,7 @@ const ColorInput = ({ value, onChange }: { value: string; onChange: (v: string) 
 );
 
 export const FieldControl = ({ field, value, onChange }: Props) => {
+  const { t } = useT();
   switch (field.type) {
     case 'range': {
       const v = value as number;
@@ -19,7 +21,7 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
       return (
         <div className="st-field">
           <div className="st-field-head">
-            <span>{field.label}</span>
+            <span>{t(field.label)}</span>
             <output>{fmt(v, field.step)}{field.unit ?? ''}</output>
           </div>
           <input
@@ -32,14 +34,14 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
             style={{ '--pct': `${pct}%` } as React.CSSProperties}
             onChange={(e) => onChange(Number(e.currentTarget.value))}
           />
-          {field.hint && <p className="st-hint">{field.hint}</p>}
+          {field.hint && <p className="st-hint">{t(field.hint)}</p>}
         </div>
       );
     }
     case 'color':
       return (
         <div className="st-field st-field-row">
-          <span>{field.label}</span>
+          <span>{t(field.label)}</span>
           <div className="st-color">
             <code>{(value as string).toUpperCase()}</code>
             <ColorInput value={value as string} onChange={onChange} />
@@ -51,20 +53,20 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
       const max = field.max ?? 6;
       return (
         <div className="st-field">
-          <div className="st-field-head"><span>{field.label}</span><output>{list.length}/{max}</output></div>
+          <div className="st-field-head"><span>{t(field.label)}</span><output>{list.length}/{max}</output></div>
           <div className="st-colors">
             {list.map((col, i) => (
               <div key={i} className="st-colors-item">
                 <ColorInput value={col} onChange={(v) => onChange(list.map((c, j) => (j === i ? v : c)))} />
                 {list.length > 1 && (
-                  <button type="button" className="st-colors-x" aria-label="Usuń kolor" onClick={() => onChange(list.filter((_, j) => j !== i))}>
+                  <button type="button" className="st-colors-x" aria-label={t('Usuń kolor')} onClick={() => onChange(list.filter((_, j) => j !== i))}>
                     ×
                   </button>
                 )}
               </div>
             ))}
             {list.length < max && (
-              <button type="button" className="st-colors-add" aria-label="Dodaj kolor" onClick={() => onChange([...list, list[list.length - 1]])}>
+              <button type="button" className="st-colors-add" aria-label={t('Dodaj kolor')} onClick={() => onChange([...list, list[list.length - 1]])}>
                 +
               </button>
             )}
@@ -76,8 +78,8 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
       return (
         <label className="st-field st-field-row st-toggle-row">
           <span>
-            {field.label}
-            {field.hint && <p className="st-hint">{field.hint}</p>}
+            {t(field.label)}
+            {field.hint && <p className="st-hint">{t(field.hint)}</p>}
           </span>
           <input type="checkbox" className="st-toggle" checked={value as boolean} onChange={(e) => onChange(e.currentTarget.checked)} />
         </label>
@@ -86,12 +88,12 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
       if (field.swatches)
         return (
           <div className="st-field">
-            <div className="st-field-head"><span>{field.label}</span></div>
+            <div className="st-field-head"><span>{t(field.label)}</span></div>
             <div className="st-tiles">
               {field.options.map((o) => (
                 <button key={o.value} type="button" className={`st-tile ${o.value === value ? 'is-active' : ''}`} onClick={() => onChange(o.value)}>
                   <span className="st-tile-img" style={{ background: field.swatches![o.value] ?? '#222' }} />
-                  <span className="st-tile-label">{o.label}</span>
+                  <span className="st-tile-label">{t(o.label)}</span>
                 </button>
               ))}
             </div>
@@ -99,7 +101,7 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
         );
       return (
         <div className="st-field">
-          <div className="st-field-head"><span>{field.label}</span></div>
+          <div className="st-field-head"><span>{t(field.label)}</span></div>
           <div className={`st-seg ${field.options.length > 3 ? 'is-wrap' : ''}`}>
             {field.options.map((o) => (
               <button
@@ -108,7 +110,7 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
                 className={o.value === value ? 'is-active' : ''}
                 onClick={() => onChange(o.value)}
               >
-                {o.label}
+                {t(o.label)}
               </button>
             ))}
           </div>
@@ -118,25 +120,25 @@ export const FieldControl = ({ field, value, onChange }: Props) => {
       if (field.list)
         return (
           <div className="st-field">
-            <div className="st-field-head"><span>{field.label}</span></div>
+            <div className="st-field-head"><span>{t(field.label)}</span></div>
             {field.list === 'socials'
               ? <SocialsEditor value={value as string} onChange={onChange} />
-              : <LinesEditor value={value as string} onChange={onChange} placeholder={field.placeholder} />}
-            {field.hint && <p className="st-hint">{field.hint}</p>}
+              : <LinesEditor value={value as string} onChange={onChange} placeholder={field.placeholder && t(field.placeholder)} />}
+            {field.hint && <p className="st-hint">{t(field.hint)}</p>}
           </div>
         );
       return (
         <div className="st-field">
-          <div className="st-field-head"><span>{field.label}</span></div>
+          <div className="st-field-head"><span>{t(field.label)}</span></div>
           <input
             type="text"
             className="st-text"
             value={value as string}
             maxLength={field.maxLength}
-            placeholder={field.placeholder}
+            placeholder={field.placeholder && t(field.placeholder)}
             onChange={(e) => onChange(e.currentTarget.value)}
           />
-          {field.hint && <p className="st-hint">{field.hint}</p>}
+          {field.hint && <p className="st-hint">{t(field.hint)}</p>}
         </div>
       );
   }

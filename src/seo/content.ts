@@ -1,8 +1,9 @@
-// Page copy for search engines and answer engines. The same text renders visibly under the studio
-// and is pre-rendered into static HTML at build time, so crawlers and AI assistants see it without JS.
+// Docs (wiki) copy for search engines and answer engines. Written in Polish; every string is also the
+// translation key, so /<lang>/docs pages come from src/i18n/locales. Pre-rendered to static HTML at build.
 
 import { OVERLAYS } from '../overlays/registry';
 import type { OverlayDef } from '../overlays/schema';
+import { translate, type LangId } from '../i18n';
 
 export const SITE = {
   url: 'https://overlays.vxh.pl',
@@ -13,7 +14,10 @@ export const SITE = {
 
 export type Faq = { q: string; a: string };
 export type SeoPage = {
+  lang: LangId;
+  slug: string;
   path: string;
+  overlay?: string;
   title: string;
   description: string;
   h1: string;
@@ -23,18 +27,6 @@ export type SeoPage = {
   faq: Faq[];
   keywords: string[];
 };
-
-const OBS_STEPS = (def: OverlayDef) => [
-  `Wybierz „${def.name}” na liście i ustaw wygląd na podglądzie: kolory, teksty, prędkość i inne opcje.`,
-  'Kliknij „Kopiuj” przy linku do Browser Source.',
-  'W OBS Studio dodaj źródło: Źródła → + → Przeglądarka (Browser Source) i wklej link w pole URL.',
-  `Ustaw rozmiar źródła na ${def.size.w}×${def.size.h} px. Tło jest przezroczyste, nie trzeba dodawać własnego CSS.`,
-  def.category === 'camera'
-    ? 'Ułóż źródło nad kamerką i dopasuj je do jej rozmiaru.'
-    : def.category === 'scene'
-      ? 'Dodaj ekran jako osobną scenę w OBS i przełączaj się na nią przed streamem, w przerwie albo na koniec.'
-      : 'Przeciągnij źródło nad inne warstwy, żeby było widoczne na streamie.',
-];
 
 const COMMON_FAQ: Faq[] = [
   {
@@ -229,24 +221,62 @@ const COPY: Record<string, Copy> = {
   },
 };
 
-export const seoFor = (def: OverlayDef): SeoPage => {
-  const c = COPY[def.id];
+/** Docs URL: Polish at /docs/<slug>, other languages at /<lang>/docs/<slug>. */
+export const docsPath = (lang: LangId, slug = '') => `${lang === 'pl' ? '' : `/${lang}`}/docs${slug ? `/${slug}` : ''}`;
+
+type Draft = Omit<SeoPage, 'path' | 'lang'>;
+
+/** Every Polish string goes through the dictionary; the title gets the site name. */
+const localize = (lang: LangId, d: Draft): SeoPage => {
+  const tr = (s: string) => translate(lang, s);
   return {
-    path: `/${def.id}`,
-    title: `${c?.title ?? `${def.name} – overlay do OBS`} | ${SITE.name}`,
+    ...d,
+    lang,
+    path: docsPath(lang, d.slug),
+    title: `${tr(d.title)} | ${SITE.name}`,
+    description: tr(d.description),
+    h1: tr(d.h1),
+    intro: d.intro.map(tr),
+    features: d.features?.map(tr),
+    steps: d.steps?.map(tr),
+    faq: d.faq.map((f) => ({ q: tr(f.q), a: tr(f.a) })),
+    keywords: d.keywords.map(tr),
+  };
+};
+
+const obsSteps = (lang: LangId, def: OverlayDef) => {
+  const tr = (s: string, p: (string | number)[] = []) => translate(lang, s, p);
+  return [
+    tr('Wybierz „{0}” na liście i ustaw wygląd na podglądzie: kolory, teksty, prędkość i inne opcje.', [tr(def.name)]),
+    tr('Kliknij „Kopiuj” przy linku do Browser Source.'),
+    tr('W OBS Studio dodaj źródło: Źródła → + → Przeglądarka (Browser Source) i wklej link w pole URL.'),
+    tr('Ustaw rozmiar źródła na {0}×{1} px. Tło jest przezroczyste, nie trzeba dodawać własnego CSS.', [def.size.w, def.size.h]),
+    def.category === 'camera'
+      ? tr('Ułóż źródło nad kamerką i dopasuj je do jej rozmiaru.')
+      : def.category === 'scene'
+        ? tr('Dodaj ekran jako osobną scenę w OBS i przełączaj się na nią przed streamem, w przerwie albo na koniec.')
+        : tr('Przeciągnij źródło nad inne warstwy, żeby było widoczne na streamie.'),
+  ];
+};
+
+export const seoFor = (def: OverlayDef, lang: LangId = 'pl'): SeoPage => {
+  const c = COPY[def.id];
+  const page = localize(lang, {
+    slug: def.id,
+    title: c?.title ?? def.name,
     description: c?.description ?? def.description,
     h1: def.name,
     intro: c?.intro ?? [def.description],
     features: c?.features,
-    steps: OBS_STEPS(def),
     faq: [...(c?.faq ?? []), ...COMMON_FAQ],
     keywords: c?.keywords ?? [],
-  };
+  });
+  return { ...page, steps: obsSteps(lang, def), overlay: def.id };
 };
 
-export const HOME: SeoPage = {
-  path: '/',
-  title: `Darmowe overlaye do OBS: ekran startowy, ramki na kamerkę, śnieg | ${SITE.name}`,
+const HOME: Draft = {
+  slug: '',
+  title: 'Darmowe overlaye do OBS: ekran startowy, ramki na kamerkę, śnieg',
   description: 'Darmowe animowane overlaye do OBS i Streamlabs: ekrany startu, przerwy i końca streama, świąteczne ramki na kamerkę, śnieg, konfetti, fajerwerki, pasek z tekstem i sociale. Ustaw na podglądzie i skopiuj link.',
   h1: 'Darmowe overlaye do OBS z konfiguratorem',
   intro: [
@@ -256,9 +286,10 @@ export const HOME: SeoPage = {
   features: [
     'Ekrany: Zaraz startujemy, Przerwa / BRB, Koniec streama, z odliczaniem i miejscem na czat',
     'Efekty na cały ekran: śnieg, deszcz, konfetti, emoji, świetliki, płatki, fajerwerki, gwiazdy, ziarno filmowe',
-    'Ramki na kamerkę: neon, narożniki HUD, ramka z nickiem i 8 świątecznych motywów',
+    'Ramki na kamerkę: neon, narożniki HUD, ramka z nickiem i 8 świątecznych motywów w wersji animowanej, realistycznej i 3D',
     'Paski i napisy: przewijany ticker i rotator sociali',
     'Zapisywanie ustawień w przeglądarce i kody udostępniania do przenoszenia między komputerami',
+    'Interfejs w 10 językach',
   ],
   faq: [
     { q: 'Jak dodać overlay do OBS?', a: 'Skopiuj link z konfiguratora, w OBS kliknij Źródła → + → Przeglądarka, wklej link w pole URL i ustaw rozmiar podany pod podglądem.' },
@@ -267,9 +298,9 @@ export const HOME: SeoPage = {
   keywords: ['overlay obs', 'darmowe overlaye', 'overlay na stream', 'ramka na kamerkę', 'starting soon', 'brb screen', 'overlay twitch'],
 };
 
-export const GUIDE: SeoPage = {
-  path: '/jak-dodac-overlay-do-obs',
-  title: `Jak dodać overlay do OBS (Browser Source) – poradnik krok po kroku | ${SITE.name}`,
+const GUIDE: Draft = {
+  slug: 'obs',
+  title: 'Jak dodać overlay do OBS (Browser Source) – poradnik krok po kroku',
   description: 'Jak dodać overlay z linku do OBS Studio i Streamlabs: źródło Przeglądarka, rozmiar, kolejność warstw, ramka na kamerkę i ekran startowy. Krótki poradnik z odpowiedziami na częste problemy.',
   h1: 'Jak dodać overlay do OBS',
   intro: [
@@ -294,9 +325,9 @@ export const GUIDE: SeoPage = {
   keywords: ['jak dodać overlay do obs', 'browser source obs', 'obs przeglądarka źródło', 'overlay streamlabs'],
 };
 
-export const FAQ_PAGE: SeoPage = {
-  path: '/faq',
-  title: `FAQ – najczęstsze pytania o overlaye do OBS | ${SITE.name}`,
+const FAQ_DRAFT: Draft = {
+  slug: 'faq',
+  title: 'FAQ – najczęstsze pytania o overlaye do OBS',
   description: 'Odpowiedzi na pytania o darmowe overlaye do OBS: zapisywanie ustawień, kody udostępniania, Streamlabs, przezroczyste tło, ekrany startowe i ramki na kamerkę.',
   h1: 'Najczęstsze pytania',
   intro: ['Zebraliśmy tu odpowiedzi na pytania, które pojawiają się najczęściej przy dodawaniu overlayów do OBS.'],
@@ -304,9 +335,43 @@ export const FAQ_PAGE: SeoPage = {
     ...HOME.faq,
     { q: 'Jak przenieść ustawienia na inny komputer?', a: 'W zakładce „Udostępnij / import” skopiuj kod VXH1- i wklej go na drugim komputerze. Możesz też skopiować „Link do edycji”.' },
     { q: 'Czy mogę udostępnić swój overlay znajomemu?', a: 'Tak. Wyślij mu kod udostępniania albo link do edycji. Zobaczy dokładnie Twoje ustawienia i może je zmienić u siebie.' },
+    { q: 'W jakich językach jest studio?', a: 'Po polsku, angielsku, niemiecku, czesku, hiszpańsku, francusku, portugalsku, rosyjsku, turecku i ukraińsku. Język zmienisz w prawym górnym rogu.' },
     ...OVERLAYS.flatMap((o) => (COPY[o.id]?.faq ?? []).slice(0, 1)),
   ].filter((f, i, all) => all.findIndex((x) => x.q === f.q) === i),
   keywords: ['overlay obs faq', 'pytania overlay'],
 };
 
-export const ALL_PAGES: SeoPage[] = [HOME, ...OVERLAYS.map(seoFor), GUIDE, FAQ_PAGE];
+export const homePage = (lang: LangId = 'pl') => localize(lang, HOME);
+export const guidePage = (lang: LangId = 'pl') => localize(lang, GUIDE);
+export const faqPage = (lang: LangId = 'pl') => localize(lang, FAQ_DRAFT);
+
+export const docsPage = (lang: LangId, slug = ''): SeoPage | null => {
+  if (!slug) return homePage(lang);
+  if (slug === 'obs') return guidePage(lang);
+  if (slug === 'faq') return faqPage(lang);
+  const def = OVERLAYS.find((o) => o.id === slug);
+  return def ? seoFor(def, lang) : null;
+};
+
+export const DOC_SLUGS = ['', ...OVERLAYS.map((o) => o.id), 'obs', 'faq'];
+
+/** Every Polish string the docs use, for the translation source file. */
+export const docsSourceStrings = (): string[] => {
+  const all = new Set<string>();
+  const add = (d: Draft) => {
+    [d.title, d.description, d.h1, ...d.intro, ...(d.features ?? []), ...(d.steps ?? []), ...d.keywords].forEach((s) => all.add(s));
+    d.faq.forEach((f) => { all.add(f.q); all.add(f.a); });
+  };
+  [HOME, GUIDE, FAQ_DRAFT].forEach(add);
+  Object.values(COPY).forEach((c) => add({ slug: '', h1: '', ...c }));
+  [
+    'Wybierz „{0}” na liście i ustaw wygląd na podglądzie: kolory, teksty, prędkość i inne opcje.',
+    'Kliknij „Kopiuj” przy linku do Browser Source.',
+    'W OBS Studio dodaj źródło: Źródła → + → Przeglądarka (Browser Source) i wklej link w pole URL.',
+    'Ustaw rozmiar źródła na {0}×{1} px. Tło jest przezroczyste, nie trzeba dodawać własnego CSS.',
+    'Ułóż źródło nad kamerką i dopasuj je do jej rozmiaru.',
+    'Dodaj ekran jako osobną scenę w OBS i przełączaj się na nią przed streamem, w przerwie albo na koniec.',
+    'Przeciągnij źródło nad inne warstwy, żeby było widoczne na streamie.',
+  ].forEach((s) => all.add(s));
+  return [...all];
+};

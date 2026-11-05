@@ -14,3 +14,6 @@ dist
 deploy-key*
 *.pem
 *.key
+
+# working files of the /brag video
+brag-output/

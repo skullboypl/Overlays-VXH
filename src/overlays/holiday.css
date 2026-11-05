@@ -207,3 +207,55 @@
   100% { transform: translate(calc(100cqw + 40px), 0); }
 }
 .hf-root { container-type: size; }
+
+/* ---------- image variants (Realistyczna / 3D) ---------- */
+.hf-img { perspective: 900px; overflow: hidden; }
+.hf-img-stage {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+}
+.hf-img-art, .hf-img-glow, .hf-img-shine {
+  position: absolute;
+  inset: 0;
+  background: var(--art) center / 100% 100% no-repeat;
+}
+.hf-img-art { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55)); animation: hf-breathe 4.5s ease-in-out infinite; }
+.hf-img-glow {
+  filter: blur(14px) saturate(1.6);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  animation: hf-glow 3.2s ease-in-out infinite;
+}
+/* Light sweep clipped to the painted decorations only. */
+.hf-img-shine {
+  background: linear-gradient(105deg, transparent 38%, rgba(255, 255, 255, 0.55) 50%, transparent 62%) 0 0 / 300% 100% no-repeat;
+  -webkit-mask: var(--art) center / 100% 100% no-repeat;
+  mask: var(--art) center / 100% 100% no-repeat;
+  mix-blend-mode: overlay;
+  animation: hf-sweep 5.5s ease-in-out 1s infinite;
+}
+@keyframes hf-breathe { 50% { filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.55)) brightness(1.12); } }
+@keyframes hf-glow { 50% { opacity: 0.9; } }
+@keyframes hf-sweep {
+  0% { background-position: 120% 0; }
+  60%, 100% { background-position: -40% 0; }
+}
+
+/* 3D: the whole frame floats in perspective; glow sits behind, decorations in front. */
+.variant-3d .hf-img-stage { transform: scale(0.94); animation: hf-tilt 10s ease-in-out infinite; }
+.variant-3d .hf-img-glow { transform: translateZ(calc(-60px * var(--depth))) scale(1.04); }
+.variant-3d .hf-img-art { transform: translateZ(0); }
+.variant-3d .hf-img-shine { transform: translateZ(1px); }
+@keyframes hf-tilt {
+  0%, 100% { transform: scale(0.94) rotateX(calc(4deg * var(--depth))) rotateY(calc(-6deg * var(--depth))); }
+  25% { transform: scale(0.94) rotateX(calc(-2deg * var(--depth))) rotateY(calc(3deg * var(--depth))) translateY(-4px); }
+  50% { transform: scale(0.94) rotateX(calc(-4deg * var(--depth))) rotateY(calc(6deg * var(--depth))); }
+  75% { transform: scale(0.94) rotateX(calc(2deg * var(--depth))) rotateY(calc(-3deg * var(--depth))) translateY(4px); }
+}
+.hf-deco-3d { --inset: 4%; animation: hf-float3d 4s ease-in-out var(--dl) infinite; }
+@keyframes hf-float3d {
+  0%, 100% { transform: translateZ(calc(80px * var(--depth))) translateY(0) rotate(-6deg); }
+  50% { transform: translateZ(calc(110px * var(--depth))) translateY(-8px) rotate(6deg); }
+}
+.hf-img .hf-label { bottom: 4%; }

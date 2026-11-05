@@ -1,6 +1,8 @@
 import type { CSSProperties } from 'react';
 import type { Params } from './schema';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
+import { isLang, translate } from '../i18n';
+import { FRAME_ART } from './backgrounds';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Corner = 'tl' | 'tr' | 'bl' | 'br';
@@ -138,10 +140,53 @@ const Web = () => (
   </svg>
 );
 
+/**
+ * "Realistyczna" and "3D" variants: a frame painted by Flux1-dev and cut out with RMBG-2.0
+ * (public/frames/<theme>-<real|3d>.webp), brought to life with glow, a light sweep and, for 3D,
+ * a slow perspective tilt with decorations floating on their own depth layer.
+ */
+const ImageFrame = ({ theme, params, variant, label }: { theme: Theme; params: Params; variant: 'real' | '3d'; label: string }) => {
+  const src = `/frames/${params.theme}-${variant}.webp`;
+  const style: Vars = {
+    '--art': `url("${src}")`,
+    '--depth': (params.depth as number) ?? 1,
+    '--c1': theme.colors[0],
+    '--c2': theme.colors[1],
+    '--deco': `${params.decoSize}px`,
+    '--grad': `linear-gradient(90deg, ${theme.colors.join(', ')})`,
+  };
+  return (
+    <div className={`ov-fill hf-img variant-${variant}`} style={style}>
+      {params.particles && theme.particles && (
+        <ParticleLayer
+          key={`${params.theme}-${variant}`}
+          kind={theme.particles.kind}
+          params={{ ...theme.particles.params, count: Math.round((theme.particles.params.count as number) * (params.amount as number)), _ref: 520 }}
+        />
+      )}
+      <div className="hf-img-stage">
+        <div className="hf-img-glow" />
+        <div className="hf-img-art" />
+        {params.shine && <div className="hf-img-shine" />}
+        {variant === '3d' && params.decorations &&
+          (Object.entries(theme.deco) as [Corner, string][]).map(([corner, emoji], i) => (
+            <span key={corner} className={`hf-deco hf-deco-3d ${corner}`} style={{ '--dl': `${i * -1.1}s` } as Vars}>{emoji}</span>
+          ))}
+      </div>
+      {label && <div className="hf-label"><span>{label}</span></div>}
+    </div>
+  );
+};
+
 export const HolidayFrame = ({ params }: { params: Params }) => {
   const theme = HOLIDAY_THEMES[params.theme as string] ?? HOLIDAY_THEMES.xmas;
+  const variant = params.variant as string;
+  if ((variant === 'real' || variant === '3d') && FRAME_ART.includes(params.theme as string)) {
+    const label = (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
+    return <ImageFrame theme={theme} params={params} variant={variant} label={label} />;
+  }
   const colors = theme.colors;
-  const label = (params.label as string) === 'auto' ? theme.label : (params.label as string);
+  const label = (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
   const speed = params.speed as number;
   const style: Vars = {
     '--inset': `${params.inset}px`,

@@ -72,10 +72,10 @@ type SceneDefaults = {
 
 const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   // ---- texts ----
-  { group: 'Teksty', key: 'title', label: 'Tytuł', type: 'text', default: d.title, maxLength: 40 },
-  { group: 'Teksty', key: 'subtitle', label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 90 },
+  { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: d.title, maxLength: 40 },
+  { group: 'Teksty', key: 'subtitle', i18n: true, label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 90 },
   { group: 'Teksty', key: 'kicker', label: 'Znaczek nad tytułem', type: 'text', default: 'skullboypl', maxLength: 40, hint: 'Nick albo nazwa kanału. Puste ukrywa.' },
-  ...(ending ? [{ group: 'Teksty', key: 'next', label: 'Następny stream', type: 'text', default: d.next ?? '', maxLength: 80, placeholder: 'np. Piątek, 20:00' } as Field] : []),
+  ...(ending ? [{ group: 'Teksty', key: 'next', i18n: true, label: 'Następny stream', type: 'text', default: d.next ?? '', maxLength: 80, placeholder: 'np. Piątek, 20:00' } as Field] : []),
 
   // ---- countdown ----
   { group: 'Odliczanie', key: 'timer', label: 'Licznik', type: 'select', default: d.timer, options: [
@@ -83,8 +83,8 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   ] },
   { group: 'Odliczanie', key: 'minutes', label: 'Ile minut', type: 'range', min: 1, max: 120, step: 1, default: 5, unit: ' min', when: { key: 'timer', is: ['countdown'] }, hint: 'Liczone od chwili, gdy OBS załaduje źródło' },
   { group: 'Odliczanie', key: 'at', label: 'Godzina startu', type: 'text', default: '20:00', maxLength: 5, placeholder: 'HH:MM', when: { key: 'timer', is: ['clock'] } },
-  { group: 'Odliczanie', key: 'timerLabel', label: 'Napis nad licznikiem', type: 'text', default: d.timerLabel, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
-  { group: 'Odliczanie', key: 'doneText', label: 'Napis po odliczeniu', type: 'text', default: d.doneText, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'timerLabel', i18n: true, label: 'Napis nad licznikiem', type: 'text', default: d.timerLabel, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'doneText', i18n: true, label: 'Napis po odliczeniu', type: 'text', default: d.doneText, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
   { group: 'Odliczanie', key: 'progress', label: 'Pasek postępu', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
 
   // ---- socials ----
@@ -99,7 +99,7 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   { group: 'Czat', key: 'chatStyle', label: 'Wygląd ramki', type: 'select', default: 'glass', when: { key: 'chat', is: [true] }, options: [
     { value: 'glass', label: 'Szkło' }, { value: 'outline', label: 'Obramowanie' }, { value: 'cutout', label: 'Przezroczysta dziura' },
   ] },
-  { group: 'Czat', key: 'chatTitle', label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: { key: 'chat', is: [true] }, hint: 'Puste ukrywa nagłówek' },
+  { group: 'Czat', key: 'chatTitle', i18n: true, label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: { key: 'chat', is: [true] }, hint: 'Puste ukrywa nagłówek' },
 
   // ---- look ----
   { group: 'Tło', key: 'bg', label: 'Wybierz tło', type: 'select', default: d.bg, options: BG_OPTIONS, swatches: BG_SWATCHES },
@@ -314,25 +314,30 @@ export const OVERLAYS: OverlayDef[] = [
     description: 'Boże Narodzenie, Sylwester, Walentynki, Wielkanoc, Halloween, 11.11 i urodziny.',
     fields: [
       { group: 'Okazja', key: 'theme', label: 'Święto', type: 'select', default: 'xmas', options: HOLIDAY_OPTIONS },
+      { group: 'Okazja', key: 'variant', label: 'Wersja ramki', type: 'select', default: 'anim', options: [
+        { value: 'anim', label: 'Animowana' }, { value: 'real', label: 'Realistyczna' }, { value: '3d', label: '3D' },
+      ], hint: 'Realistyczna i 3D to ramki wygenerowane AI z animacją światła; 3D dodatkowo pływa w perspektywie' },
       { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji, puste pole ukrywa napis' },
       { group: 'Dekoracje', key: 'decorations', label: 'Dekoracje w rogach', type: 'toggle', default: true },
       { key: 'decoSize', label: 'Wielkość dekoracji', type: 'range', min: 16, max: 90, step: 1, default: 44, unit: 'px', when: { key: 'decorations', is: [true] } },
-      { key: 'garland', label: 'Girlanda / lampki', type: 'toggle', default: true, hint: 'Lampki, chorągiewki albo czapa śniegu, zależnie od okazji' },
-      { key: 'particles', label: 'Efekt w środku', type: 'toggle', default: true },
+      { key: 'garland', label: 'Girlanda / lampki', type: 'toggle', default: true, when: { key: 'variant', is: ['anim'] }, hint: 'Lampki, chorągiewki albo czapa śniegu, zależnie od okazji' },
+      { key: 'shine', label: 'Błysk światła', type: 'toggle', default: true, when: { key: 'variant', is: ['real', '3d'] } },
+      { key: 'depth', label: 'Głębia ruchu 3D', type: 'range', min: 0, max: 2.5, step: 0.1, default: 1, unit: '×', when: { key: 'variant', is: ['3d'] }, hint: '0 zatrzymuje ruch' },
+      { key: 'particles', label: 'Efekt (śnieg, serca...)', type: 'toggle', default: true },
       { key: 'amount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'particles', is: [true] } },
-      { group: 'Ramka', key: 'thickness', label: 'Grubość ramki', type: 'range', min: 1, max: 24, step: 1, default: 6, unit: 'px' },
-      { key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 16, unit: 'px' },
-      { key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 40, step: 1, default: 12, unit: 'px' },
-      { key: 'speed', label: 'Obrót kolorów', type: 'range', min: 0, max: 3, step: 0.1, default: 0.6, unit: '×' },
-      { key: 'inset', label: 'Margines', type: 'range', min: 10, max: 70, step: 1, default: 30, unit: 'px', hint: 'Miejsce na dekoracje wystające poza ramkę' },
+      { group: 'Ramka', key: 'thickness', label: 'Grubość ramki', type: 'range', min: 1, max: 24, step: 1, default: 6, unit: 'px', when: { key: 'variant', is: ['anim'] } },
+      { key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 16, unit: 'px', when: { key: 'variant', is: ['anim'] } },
+      { key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 40, step: 1, default: 12, unit: 'px', when: { key: 'variant', is: ['anim'] } },
+      { key: 'speed', label: 'Obrót kolorów', type: 'range', min: 0, max: 3, step: 0.1, default: 0.6, unit: '×', when: { key: 'variant', is: ['anim'] } },
+      { key: 'inset', label: 'Margines', type: 'range', min: 10, max: 70, step: 1, default: 30, unit: 'px', when: { key: 'variant', is: ['anim'] }, hint: 'Miejsce na dekoracje wystające poza ramkę' },
     ],
   },
   {
     id: 'ticker', name: 'Przewijany pasek', icon: '📰', category: 'widget', size: { w: 1920, h: 64 },
     description: 'Pasek z przesuwającym się tekstem: harmonogram, info, zasady czatu.',
     fields: [
-      { group: 'Teksty', key: 'text', label: 'Komunikaty', type: 'text', list: 'lines', placeholder: 'Treść komunikatu', default: 'Streamy pon-pt od 20:00 | !discord po link do serwera | Dzięki za każdy follow ❤️', maxLength: 400, hint: 'Każdy wiersz to osobny komunikat, przewijane po kolei.' },
-      { group: 'Teksty', key: 'label', label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, hint: 'Puste ukrywa etykietę' },
+      { group: 'Teksty', key: 'text', i18n: true, label: 'Komunikaty', type: 'text', list: 'lines', placeholder: 'Treść komunikatu', default: 'Streamy pon-pt od 20:00 | !discord po link do serwera | Dzięki za każdy follow ❤️', maxLength: 400, hint: 'Każdy wiersz to osobny komunikat, przewijane po kolei.' },
+      { group: 'Teksty', key: 'label', i18n: true, label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, hint: 'Puste ukrywa etykietę' },
       { group: 'Teksty', key: 'separator', label: 'Separator', type: 'text', default: '◆', maxLength: 3 },
       { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'solid', options: [
         { value: 'solid', label: 'Pełny' }, { value: 'glass', label: 'Szkło' }, { value: 'none', label: 'Bez tła' },

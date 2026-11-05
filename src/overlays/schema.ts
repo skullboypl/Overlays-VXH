@@ -8,6 +8,8 @@ export type FieldBase = {
   when?: { key: string; is: (string | boolean)[] };
   /** Section heading in the settings panel; fields with the same group sit together. */
   group?: string;
+  /** The default text is a phrase (not a nick or URL): the studio offers it in the visitor's language. */
+  i18n?: boolean;
 };
 
 export type Field =
@@ -68,8 +70,9 @@ export const paramsToQuery = (def: OverlayDef, params: Params): string => {
   return q.toString();
 };
 
-export const queryToParams = (def: OverlayDef, search: URLSearchParams): Params => {
-  const out = defaultParams(def);
+/** `base` fills settings the query leaves out (defaults, or the studio's translated defaults). */
+export const queryToParams = (def: OverlayDef, search: URLSearchParams, base: Params = defaultParams(def)): Params => {
+  const out = { ...base };
   for (const f of def.fields) {
     const raw = search.get(f.key);
     if (raw === null) continue;

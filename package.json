@@ -39,7 +39,8 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build && pnpm run prerender",
     "preview": "vite preview",
-    "prerender": "vite build --ssr src/seo/prerender.tsx --outDir .ssr --emptyOutDir && node .ssr/prerender.js"
+    "prerender": "vite build --ssr src/seo/prerender.tsx --outDir .ssr --emptyOutDir && node .ssr/prerender.js",
+    "i18n:extract": "vite build --ssr src/i18n/extract.ts --outDir .ssr/extract --emptyOutDir && node .ssr/extract/extract.js"
   },
   "dependencies": {
     "react": "18.3.1",
