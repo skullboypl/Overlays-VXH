@@ -196,7 +196,7 @@ const COPY: Record<string, Copy> = {
       'Jedna ramka na kamerkę, osiem okazji. Każdy motyw ma swoje kolory, dekoracje w rogach i efekt w środku: lampki choinkowe i śnieg na Boże Narodzenie, pajęczynę, nietoperze i dynię na Halloween, serduszka na Walentynki, chorągiewki i konfetti na urodziny.',
       'Napis „auto” wstawia życzenia pasujące do okazji, ale możesz wpisać własny.',
     ],
-    features: ['Boże Narodzenie, zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, urodziny', 'Lampki, chorągiewki albo czapa śniegu', 'Efekt w środku: śnieg, serca, konfetti, świetliki', 'Dekoracje w rogach z animacją'],
+    features: ['Boże Narodzenie, zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, urodziny', '5 wersji każdej ramki: animowana, realistyczna, 3D, kreskówka i neon', 'Lampki, chorągiewki albo czapa śniegu', 'Efekt w środku: śnieg, serca, konfetti, świetliki', 'Dekoracje w rogach z animacją'],
     faq: [
       { q: 'Jak zrobić świąteczną ramkę na kamerkę?', a: 'Wybierz „Ramki świąteczne”, ustaw okazję „Boże Narodzenie”, skopiuj link i dodaj go w OBS jako Przeglądarkę o rozmiarze kamerki.' },
       { q: 'Czy mogę szybko zmieniać ramki na różne święta?', a: 'Tak. Zapisz każdy motyw w zakładce „Zapisane” albo zrób w OBS kilka źródeł z różnymi linkami i włączaj ten, który pasuje.' },
@@ -286,7 +286,7 @@ const HOME: Draft = {
   features: [
     'Ekrany: Zaraz startujemy, Przerwa / BRB, Koniec streama, z odliczaniem i miejscem na czat',
     'Efekty na cały ekran: śnieg, deszcz, konfetti, emoji, świetliki, płatki, fajerwerki, gwiazdy, ziarno filmowe',
-    'Ramki na kamerkę: neon, narożniki HUD, ramka z nickiem i 8 świątecznych motywów w wersji animowanej, realistycznej i 3D',
+    'Ramki na kamerkę: neon, narożniki HUD, ramka z nickiem i 8 świątecznych motywów, każdy w 5 wersjach: animowanej, realistycznej, 3D, kreskówkowej i neonowej',
     'Paski i napisy: przewijany ticker i rotator sociali',
     'Zapisywanie ustawień w przeglądarce i kody udostępniania do przenoszenia między komputerami',
     'Interfejs w 10 językach',

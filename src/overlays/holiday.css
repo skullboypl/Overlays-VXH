@@ -259,3 +259,32 @@
   50% { transform: translateZ(calc(110px * var(--depth))) translateY(-8px) rotate(6deg); }
 }
 .hf-img .hf-label { bottom: 4%; }
+
+/* Cartoon: a playful wobble, decorations bounce in front. */
+.variant-cartoon .hf-img-stage { animation: hf-wobble calc(6s / max(var(--depth), 0.01)) ease-in-out infinite; transform-origin: 50% 60%; }
+.variant-cartoon .hf-img-glow { opacity: 0.25; filter: blur(8px); }
+.variant-cartoon .hf-deco-3d { animation-name: hf-bounce; }
+@keyframes hf-wobble {
+  0%, 100% { transform: rotate(calc(-0.5deg * var(--depth))) scale(0.985); }
+  50% { transform: rotate(calc(0.5deg * var(--depth))) scale(1); }
+}
+@keyframes hf-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-10px) scale(1.06, 0.95); }
+  60% { transform: translateY(0) scale(0.97, 1.03); }
+}
+
+/* Neon: strong bloom and a sign-like flicker; the light sweep is replaced by the hum. */
+.variant-neon .hf-img-art { animation: hf-neon calc(5s / max(var(--depth), 0.01)) steps(1) infinite; filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.35)); }
+.variant-neon .hf-img-glow { opacity: 0.95; filter: blur(18px) saturate(2); animation: hf-neon-glow 2.4s ease-in-out infinite; }
+.variant-neon .hf-img-shine { display: none; }
+@keyframes hf-neon {
+  0%, 100% { opacity: 1; }
+  7% { opacity: 0.55; }
+  8% { opacity: 1; }
+  9% { opacity: 0.7; }
+  10% { opacity: 1; }
+  63% { opacity: 0.85; }
+  64% { opacity: 1; }
+}
+@keyframes hf-neon-glow { 50% { opacity: 0.6; } }

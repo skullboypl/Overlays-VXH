@@ -2,7 +2,7 @@ import type { CSSProperties } from 'react';
 import type { Params } from './schema';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { isLang, translate } from '../i18n';
-import { FRAME_ART } from './backgrounds';
+import { FRAME_URLS } from './backgrounds';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Corner = 'tl' | 'tr' | 'bl' | 'br';
@@ -145,8 +145,10 @@ const Web = () => (
  * (public/frames/<theme>-<real|3d>.webp), brought to life with glow, a light sweep and, for 3D,
  * a slow perspective tilt with decorations floating on their own depth layer.
  */
-const ImageFrame = ({ theme, params, variant, label }: { theme: Theme; params: Params; variant: 'real' | '3d'; label: string }) => {
-  const src = `/frames/${params.theme}-${variant}.webp`;
+export type ArtVariant = 'real' | '3d' | 'cartoon' | 'neon';
+export const ART_VARIANTS: ArtVariant[] = ['real', '3d', 'cartoon', 'neon'];
+
+const ImageFrame = ({ theme, params, variant, label, src }: { theme: Theme; params: Params; variant: ArtVariant; label: string; src: string }) => {
   const style: Vars = {
     '--art': `url("${src}")`,
     '--depth': (params.depth as number) ?? 1,
@@ -168,7 +170,7 @@ const ImageFrame = ({ theme, params, variant, label }: { theme: Theme; params: P
         <div className="hf-img-glow" />
         <div className="hf-img-art" />
         {params.shine && <div className="hf-img-shine" />}
-        {variant === '3d' && params.decorations &&
+        {(variant === '3d' || variant === 'cartoon') && params.decorations &&
           (Object.entries(theme.deco) as [Corner, string][]).map(([corner, emoji], i) => (
             <span key={corner} className={`hf-deco hf-deco-3d ${corner}`} style={{ '--dl': `${i * -1.1}s` } as Vars}>{emoji}</span>
           ))}
@@ -181,9 +183,11 @@ const ImageFrame = ({ theme, params, variant, label }: { theme: Theme; params: P
 export const HolidayFrame = ({ params }: { params: Params }) => {
   const theme = HOLIDAY_THEMES[params.theme as string] ?? HOLIDAY_THEMES.xmas;
   const variant = params.variant as string;
-  if ((variant === 'real' || variant === '3d') && FRAME_ART.includes(params.theme as string)) {
+  const art = FRAME_URLS[`${params.theme}-${variant}`];
+  // A variant whose picture is not generated yet falls back to the animated vector frame.
+  if (art && (ART_VARIANTS as string[]).includes(variant)) {
     const label = (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);
-    return <ImageFrame theme={theme} params={params} variant={variant} label={label} />;
+    return <ImageFrame theme={theme} params={params} variant={variant as ArtVariant} label={label} src={art} />;
   }
   const colors = theme.colors;
   const label = (params.label as string) === 'auto' ? translate(isLang(params._lang) ? params._lang : 'pl', theme.label) : (params.label as string);

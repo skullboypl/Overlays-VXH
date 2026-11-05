@@ -2,23 +2,23 @@ import { useEffect, useState } from 'react';
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import { findOverlay } from '../overlays/registry';
 import { Overlay } from '../overlays/Overlay';
-import { defaultParams } from '../overlays/schema';
 import { isLang, translate, useT, type LangId } from '../i18n';
 import { docsPage, docsPath, type SeoPage } from '../seo/content';
 import { DocsNav, SeoArticle } from '../seo/SeoArticle';
 import { LangSelect } from '../studio/LangSelect';
+import { localizedDefaults } from '../studio/Studio';
 import '../studio/studio.css';
 import './docs.css';
 
 /** Small live demo of the overlay on a docs page (defaults, fake webcam for frames). */
-const LivePreview = ({ id }: { id: string }) => {
+const LivePreview = ({ id, lang }: { id: string; lang: LangId }) => {
   const def = findOverlay(id)!;
   const [show, setShow] = useState(false);
   useEffect(() => setShow(true), []); // canvases need the browser; pre-rendered HTML keeps the box only
   return (
     <div className={`docs-preview cat-${def.category}`}>
       {def.category === 'camera' && <div className="st-cam" aria-hidden><span /></div>}
-      {show && <Overlay id={def.id} params={defaultParams(def)} />}
+      {show && <Overlay id={def.id} params={{ ...localizedDefaults(def, (s) => translate(lang, s)), _lang: lang }} />}
     </div>
   );
 };
@@ -49,7 +49,7 @@ export const DocsView = ({ page, onLang }: { page: SeoPage; onLang?: (l: LangId)
           <h1>{page.overlay ? `${findOverlay(page.overlay)!.icon} ${page.h1}` : page.h1}</h1>
           {page.overlay && (
             <>
-              <LivePreview id={page.overlay} />
+              <LivePreview id={page.overlay} lang={page.lang} />
               <a className="st-btn primary docs-open" href={studioHref}>{tr('Ustaw i skopiuj link w studio')}</a>
             </>
           )}
