@@ -214,7 +214,7 @@ export const CamScene = ({ params }: { params: Params }) => {
           </div>
         )}
         {params.showName !== false && params.name && (
-          <div className="cs-name" style={pct({ x: cam.x, y: Math.min(H - 80, cam.y + cam.h + 10), w: Math.max(cam.w, 360), h: 70 })}>
+          <div className={`cs-name at-${params.namePos ?? 'bl'}`} style={pct(round ? { x: cam.x + (cam.w - Math.min(cam.w, cam.h)) / 2, y: cam.y, w: Math.min(cam.w, cam.h), h: cam.h } : cam)}>
             <b>{String(params.name)}</b>
             {params.showSub !== false && params.sub && <small>{String(params.sub)}</small>}
           </div>

@@ -6,6 +6,8 @@ import { HolidayFrame } from './HolidayFrame';
 import { FaceitCam, ProFrame } from './ProFrame';
 import { CharacterOverlay } from './Character';
 import { CamScene } from './CamScene';
+import { VideoScene } from './VideoScene';
+import { FullCam } from './FullCam';
 import { SocialsWidget, TickerWidget } from './widgets';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
@@ -25,6 +27,8 @@ export const Overlay = ({ id, params }: { id: string; params: Params }) => {
     case 'faceitcam': return <FaceitCam params={params} />;
     case 'character': return <CharacterOverlay params={params} />;
     case 'camscene': return <CamScene params={params} />;
+    case 'videobg': return <VideoScene params={params} />;
+    case 'fullcam': return <FullCam params={params} />;
     case 'ticker': return <TickerWidget params={params} />;
     case 'socials': return <SocialsWidget params={params} />;
     default: return null;

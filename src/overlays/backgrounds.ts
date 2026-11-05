@@ -34,3 +34,11 @@ export const CHARACTER_LABELS: Record<string, string> = {
   'cupid-game': 'Amorek',
   'partygirl-game': 'Sylwestrowa impreza',
 };
+
+// Looping realistic video backgrounds (Wan 2.2 from the photo backgrounds), src/assets/videos/<photo id>.mp4.
+const videoFiles = import.meta.glob<string>('../assets/videos/*.mp4', { eager: true, query: '?url', import: 'default' });
+export const VIDEO_URLS: Record<string, string> = Object.fromEntries(
+  Object.entries(videoFiles).map(([path, url]) => [path.match(/([\w-]+)\.mp4$/)![1], url]),
+);
+/** Background ids of the videos: "v-cozy", "v-city"... */
+export const VIDEO_IDS = Object.keys(VIDEO_URLS).map((id) => `v-${id}`);

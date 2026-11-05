@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
-import { PHOTO_IDS } from './backgrounds';
+import { PHOTO_IDS, VIDEO_URLS } from './backgrounds';
 import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -66,6 +66,25 @@ const safeImage = (raw: string) => {
   return /^(https?:\/\/|\/)[^\s"'()\\]+$/i.test(v) ? v : '';
 };
 
+/** Looping video background: same dim/tint treatment as the photos, plus blur and speed. */
+export const VideoBg = ({ src, poster, params }: { src: string; poster: string; params: Params }) => (
+  <div className="sc-bg sc-photo sc-video">
+    <video
+      className="sc-video-el"
+      src={src}
+      poster={poster}
+      autoPlay
+      loop
+      muted
+      playsInline
+      ref={(v) => { if (v) v.playbackRate = Number(params.bgSpeed ?? 1); }}
+      style={{ filter: Number(params.bgBlur ?? 0) > 0 ? `blur(${params.bgBlur}px)` : undefined }}
+    />
+    {params.bgTint && <div className="sc-photo-tint" />}
+    <div className="sc-photo-dim" style={{ opacity: (params.bgDim as number) ?? 0.35 }} />
+  </div>
+);
+
 const Photo = ({ src, params }: { src: string; params: Params }) => (
   <div className={`sc-bg sc-photo motion-${params.bgMotion ?? 'zoom'}`}>
     {src && <div className="sc-photo-img" style={{ backgroundImage: `url("${src}")` }} />}
@@ -76,6 +95,7 @@ const Photo = ({ src, params }: { src: string; params: Params }) => (
 
 export const Background = ({ bg, colors, params }: { bg: string; colors: string[]; params: Params }) => {
   const [a, b = a, c = b] = colors;
+  if (bg.startsWith('v-') && VIDEO_URLS[bg.slice(2)]) return <VideoBg src={VIDEO_URLS[bg.slice(2)]} poster={`/bg/${bg.slice(2)}.webp`} params={params} />;
   if (PHOTO_IDS.includes(bg)) return <Photo src={`/bg/${bg}.webp`} params={params} />;
   switch (bg) {
     case 'custom':

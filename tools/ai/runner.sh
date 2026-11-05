@@ -39,4 +39,12 @@ done
 for c in santa-game santa-real elf-game snowman-game reindeer-game pumpkin-game witch-game bunny-game cupid-game partygirl-game; do
   run char "$c" "$ASSETS/characters/$c.webm"
 done
-echo "$(date +%T) DONE: $(ls "$ASSETS/frames" | wc -l) frames, $(ls "$ASSETS/characters"/*.webm 2>/dev/null | wc -l) characters"
+for v in cozy city winter xmas halloween nebula sunset abstract sakura beach; do
+  for attempt in 1 2 3; do
+    [ -f "$ASSETS/videos/$v.mp4" ] && break
+    ensure || break
+    timeout 1800 "$PY" -I "$DIR/gen_videos.py" "$DIR/../../public/bg" "$ASSETS/videos" "$v"
+    [ -f "$ASSETS/videos/$v.mp4" ] || { echo "$(date +%T) video $v: attempt $attempt failed"; sleep 10; }
+  done
+done
+echo "$(date +%T) DONE: $(ls "$ASSETS/frames" | wc -l) frames, $(ls "$ASSETS/characters"/*.webm 2>/dev/null | wc -l) characters, $(ls "$ASSETS/videos"/*.mp4 2>/dev/null | wc -l) videos"

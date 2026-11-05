@@ -1,5 +1,5 @@
 import type { Field, OverlayDef } from './schema';
-import { CHARACTERS, CHARACTER_LABELS, FRAME_URLS, PHOTO_IDS } from './backgrounds';
+import { CHARACTERS, CHARACTER_LABELS, FRAME_URLS, PHOTO_IDS, VIDEO_IDS } from './backgrounds';
 
 const FULL_HD = { w: 1920, h: 1080 };
 const CAM = { w: 640, h: 360 };
@@ -49,6 +49,7 @@ const BG_OPTIONS = [
   { value: 'space', label: 'Kosmos' }, { value: 'minimal', label: 'Minimal' }, { value: 'mesh', label: 'Gradient' },
   { value: 'rays', label: 'Promienie' }, { value: 'dots', label: 'Kropki' }, { value: 'lava', label: 'Lava' },
   ...PHOTO_IDS.map((id) => ({ value: id, label: PHOTO_LABELS[id] })),
+  ...VIDEO_IDS.map((id) => ({ value: id, label: `▶ ${PHOTO_LABELS[id.slice(2)] ?? id}` })),
   { value: 'custom', label: 'Własny obrazek' },
 ];
 const BG_SWATCHES: Record<string, string> = {
@@ -62,6 +63,8 @@ const BG_SWATCHES: Record<string, string> = {
   dots: 'radial-gradient(#ff8a3d 1px, transparent 1.6px) 0 0 / 8px 8px, #0a0a12',
   lava: 'radial-gradient(circle at 30% 70%, #ff5900, transparent 30%), radial-gradient(circle at 70% 30%, #ff2d6f, transparent 30%), #07070c',
   ...Object.fromEntries(PHOTO_IDS.map((id) => [id, `url(/bg/${id}-thumb.webp) center / cover`])),
+  // A play badge in the corner marks the moving ones.
+  ...Object.fromEntries(VIDEO_IDS.map((id) => [id, `radial-gradient(circle at 86% 22%, #ff5900 0 11%, transparent 12%), url(/bg/${id.slice(2)}-thumb.webp) center / cover`])),
   custom: 'repeating-linear-gradient(45deg, #222 0 6px, #2b2b2e 6px 12px)',
 };
 
@@ -92,6 +95,9 @@ const proFields = (d: { colors: string[]; shape?: string }): Field[] => [
   ] },
   { group: 'Akcenty', key: 'accentSize', label: 'Wielkość akcentów', type: 'range', min: 10, max: 70, step: 1, default: 28, unit: 'px', when: { key: 'accent', is: ['corners', 'dots', 'tape'] } },
 ];
+
+// Full-screen webcam frame: a little thicker and rounder than on a 640×360 source.
+const FULLCAM_DEFAULTS: Record<string, number> = { inset: 24, thickness: 8, radius: 28 };
 
 type SceneDefaults = {
   title: string; subtitle: string; timer: string; timerLabel: string; doneText: string;
@@ -142,8 +148,10 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   { group: 'Tło', key: 'bgMotion', label: 'Ruch obrazka', type: 'select', default: 'zoom', when: { key: 'bg', is: [...PHOTO_IDS, 'custom'] }, options: [
     { value: 'zoom', label: 'Powolny zoom' }, { value: 'pan', label: 'Przesuw' }, { value: 'still', label: 'Bez ruchu' },
   ] },
-  { group: 'Tło', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.35, when: { key: 'bg', is: [...PHOTO_IDS, 'custom'] }, hint: 'Ciemniejsze tło = czytelniejszy tytuł' },
-  { group: 'Tło', key: 'bgTint', label: 'Zabarw kolorami motywu', type: 'toggle', default: false, when: { key: 'bg', is: [...PHOTO_IDS, 'custom'] } },
+  { group: 'Tło', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.35, when: { key: 'bg', is: [...PHOTO_IDS, ...VIDEO_IDS, 'custom'] }, hint: 'Ciemniejsze tło = czytelniejszy tytuł' },
+  { group: 'Tło', key: 'bgBlur', label: 'Rozmycie wideo', type: 'range', min: 0, max: 20, step: 1, default: 0, unit: 'px', when: { key: 'bg', is: VIDEO_IDS } },
+  { group: 'Tło', key: 'bgSpeed', label: 'Prędkość wideo', type: 'range', min: 0.25, max: 2, step: 0.05, default: 1, unit: '×', when: { key: 'bg', is: VIDEO_IDS } },
+  { group: 'Tło', key: 'bgTint', label: 'Zabarw kolorami motywu', type: 'toggle', default: false, when: { key: 'bg', is: [...PHOTO_IDS, ...VIDEO_IDS, 'custom'] } },
   { group: 'Wygląd', key: 'colors', label: 'Kolory motywu', type: 'colors', max: 3, default: d.colors },
   { group: 'Wygląd', key: 'base', label: 'Kolor bazowy tła', type: 'color', default: '#07070c' },
   { group: 'Wygląd', key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
@@ -264,6 +272,68 @@ const ALL_OVERLAYS: OverlayDef[] = [
     ],
   },
   {
+    id: 'videobg', name: 'Tło wideo', icon: '🎬', category: 'scene', size: FULL_HD,
+    description: 'Realistyczne zapętlone wideo na całą scenę: pokój nocą z deszczem, miasto neon, zimowy las, kominek i inne.',
+    fields: [
+      { group: 'Wideo', key: 'bg', label: 'Wybierz wideo', type: 'select', default: VIDEO_IDS[0] ?? 'v-cozy',
+        options: BG_OPTIONS.filter((o) => o.value.startsWith('v-')), swatches: BG_SWATCHES },
+      { group: 'Wideo', key: 'bgSpeed', label: 'Prędkość wideo', type: 'range', min: 0.25, max: 2, step: 0.05, default: 1, unit: '×' },
+      { group: 'Wideo', key: 'bgBlur', label: 'Rozmycie wideo', type: 'range', min: 0, max: 20, step: 1, default: 0, unit: 'px' },
+      { group: 'Wideo', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.15 },
+      { group: 'Wideo', key: 'bgTint', label: 'Zabarw kolorami motywu', type: 'toggle', default: false },
+      { group: 'Wideo', key: 'colors', label: 'Kolory motywu', type: 'colors', max: 3, default: ['#ff5900', '#ff2d6f', '#7a5cff'], when: { key: 'bgTint', is: [true] } },
+      { group: 'Dodatki', key: 'effect', label: 'Efekt na wierzchu', type: 'select', default: 'none', options: [
+        { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
+        { value: 'petals', label: 'Płatki' }, { value: 'confetti', label: 'Konfetti' },
+      ] },
+      { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
+      { group: 'Dodatki', key: 'grain', label: 'Ziarno filmowe', type: 'toggle', default: false },
+    ],
+  },
+  {
+    id: 'fullcam', name: 'Pełnoekranowa kamera', icon: '📹', category: 'camscene', size: FULL_HD,
+    description: 'Kamera na cały ekran, a nad nią tylko warstwa: ramka, tytuł z zegarem, nick, sociale, staty FACEIT i efekty.',
+    fields: [
+      ...proFields({ colors: ['#ff5900', '#ff2d6f', '#7a5cff'] }).map((f) => ({ ...f, ...(FULLCAM_DEFAULTS[f.key] !== undefined ? { default: FULLCAM_DEFAULTS[f.key] } : {}) }) as Field),
+      { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: 'NA ŻYWO', maxLength: 50, when: { key: 'showTitle', is: [true] } },
+      { group: 'Teksty', key: 'live', label: 'Kropka LIVE', type: 'toggle', default: true, when: { key: 'showTitle', is: [true] } },
+      { group: 'Teksty', key: 'showClock', label: 'Pokaż zegar', type: 'toggle', default: true, when: { key: 'showTitle', is: [true] } },
+      { group: 'Teksty', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [
+        { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'dm', label: 'DM Sans' },
+      ] },
+      { group: 'Teksty', key: 'showName', label: 'Pokaż podpis na kamerce', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'name', label: 'Nick', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'showName', is: [true] } },
+      { group: 'Teksty', key: 'namePos', label: 'Róg podpisu na kamerce', type: 'select', default: 'bl', when: { key: 'showName', is: [true] }, options: [
+        { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' }, { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' },
+      ] },
+      { group: 'Teksty', key: 'showSub', label: 'Pokaż podpis', type: 'toggle', default: true, when: { key: 'showName', is: [true] } },
+      { group: 'Teksty', key: 'sub', label: 'Podpis pod spodem', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 60, when: [{ key: 'showName', is: [true] }, { key: 'showSub', is: [true] }] },
+      { group: 'Teksty', key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
+      { group: 'Sociale', key: 'showSocials', label: 'Pokaż sociale', type: 'toggle', default: true },
+      { group: 'Sociale', when: { key: 'showSocials', is: [true] }, key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.gg/skullmedia', maxLength: 300 },
+      { group: 'Sociale', key: 'socialsAlign', label: 'Wyrównanie', type: 'select', default: 'right', when: { key: 'showSocials', is: [true] }, optionFilter: (p) => (v) => p.showName === false || !(v === 'left' && (p.namePos ?? 'bl') === 'bl') && !(v === 'right' && p.namePos === 'br'), options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
+      { group: 'FACEIT', key: 'showFaceit', label: 'Pokaż staty FACEIT na kamerce', type: 'toggle', default: false },
+      { group: 'FACEIT', key: 'player', label: 'Nick albo player_id', type: 'text', default: '', maxLength: 300, placeholder: 'np. donk666', when: { key: 'showFaceit', is: [true] } },
+      { group: 'FACEIT', key: 'look', label: 'Wygląd', type: 'select', default: 'card', when: { key: 'showFaceit', is: [true] }, options: [
+        { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
+        { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },
+      ] },
+      { group: 'FACEIT', key: 'statsPos', label: 'Pozycja', type: 'select', default: 'tr', when: { key: 'showFaceit', is: [true] }, optionFilter: (p) => (v) => (p.showName === false || v !== (p.namePos ?? 'bl')) && (p.showTitle === false || v !== 'tl'), options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' },
+      ] },
+      { group: 'FACEIT', key: 'statsScale', label: 'Wielkość', type: 'range', min: 0.6, max: 3, step: 0.05, default: 1.6, unit: '×', when: { key: 'showFaceit', is: [true] } },
+      { group: 'Efekty', key: 'effect', label: 'Efekt nad kamerą', type: 'select', default: 'none', options: [
+        { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
+        { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' }, { value: 'fireworks', label: 'Fajerwerki' },
+      ] },
+      { group: 'Efekty', key: 'vignette', label: 'Winieta przy krawędziach', type: 'toggle', default: false },
+      { group: 'Efekty', key: 'vignetteStrength', label: 'Siła winiety', type: 'range', min: 0.1, max: 1, step: 0.05, default: 0.6, when: { key: 'vignette', is: [true] } },
+    ],
+  },
+  {
     id: 'camscene', name: 'Kamerka fullscreen', icon: '🎥', category: 'camscene', size: FULL_HD,
     description: 'Cała scena 1920×1080 z miejscem na kamerkę, grę i czat: różne układy, tła, ramki, napisy i staty FACEIT.',
     fields: [
@@ -299,7 +369,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Ramki slotów', key: 'chatTitle', i18n: true, label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: [{ key: 'chat', is: [true] }, { key: 'showChatTitle', is: [true] }] },
       { group: 'Tło', key: 'bg', label: 'Wybierz tło', type: 'select', default: 'aurora', options: BG_OPTIONS, swatches: BG_SWATCHES, when: { key: 'layout', is: ['screen-cam', 'cam-full', 'cam-screen', 'cam-center', 'split', 'duo', 'squad', 'game-duo', 'vertical', 'theater', 'screen-top'] } },
       { group: 'Tło', key: 'bgImage', label: 'Adres obrazka', type: 'text', default: '', maxLength: 300, placeholder: 'https://...jpg', when: { key: 'bg', is: ['custom'] } },
-      { group: 'Tło', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.35, when: { key: 'bg', is: [...PHOTO_IDS, 'custom'] } },
+      { group: 'Tło', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.35, when: { key: 'bg', is: [...PHOTO_IDS, ...VIDEO_IDS, 'custom'] } },
       { group: 'Tło', key: 'colors', label: 'Kolory motywu', type: 'colors', max: 3, default: ['#ff5900', '#ff2d6f', '#7a5cff'] },
       { group: 'Tło', key: 'base', label: 'Kolor bazowy tła', type: 'color', default: '#07070c' },
       { group: 'Tło', key: 'effect', label: 'Efekt na tle', type: 'select', default: 'none', options: [
@@ -314,8 +384,11 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [
         { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'dm', label: 'DM Sans' },
       ] },
-      { group: 'Teksty', key: 'showName', label: 'Pokaż podpis pod kamerką', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'showName', label: 'Pokaż podpis na kamerce', type: 'toggle', default: true },
       { group: 'Teksty', key: 'name', label: 'Nick', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'showName', is: [true] } },
+      { group: 'Teksty', key: 'namePos', label: 'Róg podpisu na kamerce', type: 'select', default: 'bl', when: { key: 'showName', is: [true] }, options: [
+        { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' }, { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' },
+      ] },
       { group: 'Teksty', key: 'showSub', label: 'Pokaż podpis', type: 'toggle', default: true, when: { key: 'showName', is: [true] } },
       { group: 'Teksty', key: 'sub', label: 'Podpis pod spodem', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 60, when: [{ key: 'showName', is: [true] }, { key: 'showSub', is: [true] }] },
       { group: 'Teksty', key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
@@ -327,7 +400,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'card', label: 'Karta' }, { value: 'pill', label: 'Pigułka' }, { value: 'bar', label: 'Pasek' },
         { value: 'minimal', label: 'Minimal' }, { value: 'neon', label: 'Neon' }, { value: 'hud', label: 'HUD' },
       ] },
-      { group: 'FACEIT', key: 'statsPos', label: 'Pozycja', type: 'select', default: 'tr', when: { key: 'showFaceit', is: [true] }, options: [
+      { group: 'FACEIT', key: 'statsPos', label: 'Pozycja', type: 'select', default: 'tr', when: { key: 'showFaceit', is: [true] }, optionFilter: (p) => (v) => p.showName === false || v !== (p.namePos ?? 'bl'), options: [
         { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' },
       ] },
       { group: 'FACEIT', key: 'statsScale', label: 'Wielkość', type: 'range', min: 0.6, max: 3, step: 0.05, default: 1.4, unit: '×', when: { key: 'showFaceit', is: [true] } },
@@ -373,7 +446,11 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'character', name: 'Animowane postacie', icon: '🎅', category: 'character', size: FULL_HD,
     description: 'Mikołaj, elf, bałwan, dynia i inne postacie animowane w pętli, z przezroczystym tłem.',
     fields: [
+      { group: 'Postać', key: 'charStyle', label: 'Styl postaci', type: 'select', default: 'all', options: [
+        { value: 'all', label: 'Wszystkie' }, { value: 'game', label: 'Gra 3D' }, { value: 'real', label: 'Realistyczne' },
+      ].filter((o) => o.value === 'all' || Object.keys(CHARACTERS).some((id) => id.endsWith(`-${o.value}`))) },
       { group: 'Postać', key: 'char', label: 'Postać', type: 'select', default: Object.keys(CHARACTERS)[0] ?? 'santa-game',
+        optionFilter: (p) => (v) => !p.charStyle || p.charStyle === 'all' || v.endsWith(`-${p.charStyle}`),
         options: Object.keys(CHARACTERS).map((id) => ({ value: id, label: CHARACTER_LABELS[id] ?? id })),
         swatches: Object.fromEntries(Object.entries(CHARACTERS).map(([id, c]) => [id, `url(${c.poster}) center / contain no-repeat, #1a1a1c`])) },
       { group: 'Postać', key: 'mirror', label: 'Odbicie lustrzane', type: 'toggle', default: false },
@@ -566,6 +643,6 @@ const ALL_OVERLAYS: OverlayDef[] = [
 ];
 
 // "Animowane postacie" appears once at least one character clip has been generated.
-export const OVERLAYS = ALL_OVERLAYS.filter((o) => o.id !== 'character' || Object.keys(CHARACTERS).length > 0);
+export const OVERLAYS = ALL_OVERLAYS.filter((o) => (o.id !== 'character' || Object.keys(CHARACTERS).length > 0) && (o.id !== 'videobg' || VIDEO_IDS.length > 0));
 
 export const findOverlay = (id: string | undefined) => OVERLAYS.find((o) => o.id === id);
