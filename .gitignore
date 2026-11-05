@@ -17,3 +17,6 @@ deploy-key*
 
 # working files of the /brag video
 brag-output/
+
+# AI asset generation scratch
+tools/ai/.work/
