@@ -61,8 +61,9 @@ const Title = ({ text, anim }: { text: string; anim: string }) => {
       const parent = el.parentElement!;
       const ps = getComputedStyle(parent);
       const room = ps.display === 'grid' ? el.clientWidth : parent.clientWidth - parseFloat(ps.paddingLeft) - parseFloat(ps.paddingRight);
-      const next = Math.min(1, room / Math.max(1, natural));
-      setFit((f) => (Math.abs(f - next) > 0.01 ? next : f));
+      // A little headroom for glyph overhang and the glow.
+      const next = Math.min(1, (room / Math.max(1, natural)) * 0.985);
+      setFit((f) => (Math.abs(f - next) > 0.002 ? next : f));
     };
     measure();
     // Web fonts change the text width after the first paint; measure again once they are in.
