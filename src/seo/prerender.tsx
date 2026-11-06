@@ -8,6 +8,7 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { OVERLAYS, findOverlay } from '../overlays/registry';
 import type { Field } from '../overlays/schema';
 import { LANGS, translate, type LangId } from '../i18n';
+import { AI_NOTICE_TEXT, AI_NOTICE_TITLE } from './AiNotice';
 import { DOC_SLUGS, SITE, docsPage, docsPath, faqPage, guidePage, homePage, seoFor, type SeoPage } from './content';
 import { DocsView } from '../docs/DocsPage';
 
@@ -106,7 +107,8 @@ for (const { id: lang } of LANGS) {
 // ---------- studio routes: meta + a pointer to the docs, no article under the configurator ----------
 const studioBody = (title: string, description: string, docs: string) =>
   `<main class="seo-static" style="max-width:720px;margin:60px auto;padding:0 20px;font-family:sans-serif;color:#ddd">` +
-  `<h1>${esc(title)}</h1><p>${esc(description)}</p><p><a href="${docs}" style="color:#ff5900">${esc(translate('pl', 'Dokumentacja'))}</a></p></main>`;
+  `<h1>${esc(title)}</h1><p>${esc(description)}</p><p><a href="${docs}" style="color:#ff5900">${esc(translate('pl', 'Dokumentacja'))}</a></p>` +
+  `<p style="font-size:13px;opacity:.8">🤖 <b>${esc(translate('pl', AI_NOTICE_TITLE))}.</b> ${esc(translate('pl', AI_NOTICE_TEXT))}</p></main>`;
 
 const home = homePage('pl');
 write('/', fill(head({ title: home.title, description: home.description, keywords: home.keywords, canonical: `${SITE.url}/`, lang: 'pl', ld: jsonLd(home) }), studioBody(home.h1, home.description, '/docs'), 'pl'));
@@ -152,6 +154,8 @@ const llms = `# ${SITE.name}
 > ${en.description}
 
 Free animated overlays for OBS Studio and Streamlabs (Browser Source) with an in-browser configurator. No account, transparent background, every setting lives in the link. UI in ${LANGS.length} languages: ${LANGS.map((l) => l.name).join(', ')}.
+
+AI disclosure (EU AI Act, Regulation 2024/1689, art. 50): ${translate('en', AI_NOTICE_TEXT)}
 
 ## How it works
 - Studio: ${SITE.url}/<id> (e.g. ${SITE.url}/starting). Change settings on the live preview.

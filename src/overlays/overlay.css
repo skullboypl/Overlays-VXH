@@ -193,3 +193,20 @@
 @media (prefers-reduced-motion: reduce) {
   .ov-tag { animation: none; }
 }
+
+/* Optional "made with AI" label (EU AI Act), off by default. */
+.ov-ai-label {
+  position: absolute;
+  z-index: 50;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: rgba(10, 10, 14, 0.6);
+  color: rgba(255, 255, 255, 0.85);
+  font: 600 11px/1.3 'DM Sans', sans-serif;
+  pointer-events: none;
+  white-space: nowrap;
+}
+.ov-ai-label.at-br { right: 8px; bottom: 8px; }
+.ov-ai-label.at-bl { left: 8px; bottom: 8px; }
+.ov-ai-label.at-tr { right: 8px; top: 8px; }
+.ov-ai-label.at-tl { left: 8px; top: 8px; }

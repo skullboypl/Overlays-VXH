@@ -1,6 +1,7 @@
 import { OVERLAYS } from '../overlays/registry';
 import { translate } from '../i18n';
 import { docsPath, type SeoPage } from './content';
+import { AiNotice } from './AiNotice';
 
 export const CATEGORY_LABEL: Record<string, string> = {
   scene: 'Ekrany startu, przerwy i końca',
@@ -58,6 +59,7 @@ export const SeoArticle = ({ page }: { page: SeoPage }) => {
           ))}
         </div>
       </section>
+      <AiNotice lang={page.lang} />
     </article>
   );
 };

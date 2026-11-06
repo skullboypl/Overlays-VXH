@@ -12,7 +12,17 @@ import { SocialsWidget, TickerWidget } from './widgets';
 import { ClockWidget, GoalWidget, QrWidget, ReminderWidget, TimerWidget } from './tools';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
-export const Overlay = ({ id, params }: { id: string; params: Params }) => {
+/** Overlay plus the optional "made with AI" label (EU AI Act), drawn only when the streamer turns it on. */
+export const Overlay = ({ id, params }: { id: string; params: Params }) => (
+  <>
+    <OverlayBody id={id} params={params} />
+    {params.aiLabel === true && (
+      <div className={`ov-ai-label at-${params.aiLabelPos ?? 'br'}`}>🤖 {String(params.aiLabelText ?? '')}</div>
+    )}
+  </>
+);
+
+const OverlayBody = ({ id, params }: { id: string; params: Params }) => {
   if ((EFFECT_KINDS as string[]).includes(id)) return <ParticleLayer kind={id as EffectKind} params={params} />;
   switch (id) {
     case 'starting':

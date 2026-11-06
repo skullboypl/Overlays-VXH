@@ -10,6 +10,7 @@ import { translate, tx, useT } from '../i18n';
 import { LangSelect } from './LangSelect';
 import { OverlayMenu } from './OverlayMenu';
 import { LivePill } from './LivePill';
+import { AiNotice } from '../seo/AiNotice';
 import './studio.css';
 
 const STORAGE = 'vxh-overlays:';
@@ -226,6 +227,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
           <Preview def={def} params={params} backdrop={backdrop} camera={camera} size={size} />
 
           <OutputPanel def={def} query={query} size={size} setSize={setSize} onApply={apply} />
+          <AiNotice lang={lang} compact />
         </main>
 
         <aside className="st-settings" aria-label={t('Ustawienia')}>

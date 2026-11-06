@@ -991,6 +991,16 @@ const ALL_OVERLAYS: OverlayDef[] = [
 ];
 
 // "Animowane postacie" appears once at least one character clip has been generated.
+// EU AI Act: every overlay can show a small "made with AI" label. Off by default; the site itself always says it.
+const AI_FIELDS: Field[] = [
+  { group: 'Oznaczenie AI', key: 'aiLabel', label: 'Pokaż oznaczenie AI', type: 'toggle', default: false, hint: 'Mała etykieta „wygenerowano z pomocą AI” na overlayu. Strona zawsze informuje o tym sama, na streamie decydujesz Ty.' },
+  { group: 'Oznaczenie AI', key: 'aiLabelText', i18n: true, label: 'Tekst oznaczenia', type: 'text', default: 'Grafika wygenerowana z pomocą AI', maxLength: 50, when: { key: 'aiLabel', is: [true] } },
+  { group: 'Oznaczenie AI', key: 'aiLabelPos', label: 'Miejsce oznaczenia', type: 'select', default: 'br', when: { key: 'aiLabel', is: [true] }, options: [
+    { value: 'br', label: 'Prawy dolny róg' }, { value: 'bl', label: 'Lewy dolny róg' }, { value: 'tr', label: 'Prawy górny róg' }, { value: 'tl', label: 'Lewy górny róg' },
+  ] },
+];
+for (const o of ALL_OVERLAYS) o.fields.push(...AI_FIELDS);
+
 export const OVERLAYS = ALL_OVERLAYS.filter((o) => (o.id !== 'character' || Object.keys(CHARACTERS).length > 0) && (o.id !== 'videobg' || VIDEO_IDS.length > 0));
 
 export const findOverlay = (id: string | undefined) => OVERLAYS.find((o) => o.id === id);

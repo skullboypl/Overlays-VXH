@@ -1,0 +1,17 @@
+/* AI Act transparency note: always visible on the site, never on the OBS overlays. */
+.ai-notice {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 24px 0 8px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(120, 160, 255, 0.35);
+  background: rgba(90, 130, 255, 0.08);
+  color: #c9d3ea;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.ai-notice > span { font-size: 18px; line-height: 1.2; }
+.ai-notice b { color: #e7ecff; }
+.ai-notice.is-compact { margin: 0; padding: 8px 12px; font-size: 12px; }
