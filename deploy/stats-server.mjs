@@ -2,11 +2,13 @@
 //
 // POST /api/presence  {"id": "<random per page load>", "o": "<overlay id>"}  heartbeat, every minute from /o/<id>
 // GET  /api/presence  {"live": n, "byType": {"snow": 3, ...}, "peakToday": n, "updated": <ms>}
+// GET  /api/followers?platform=twitch|youtube&channel=...  follower count for the goal bar (followers.mjs)
 //
 // Nothing personal is kept: a random id the page makes up on load, the overlay type and the time of the last ping.
 // The client address only lives in memory, to stop one address from inflating the counter.
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
+import { followers } from './followers.mjs';
 
 const PORT = Number(process.env.STATS_PORT ?? 3001);
 const HOST = process.env.STATS_HOST ?? '127.0.0.1';
@@ -84,6 +86,13 @@ const send = (res, status, body) => {
 
 export const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://x');
+  if (url.pathname === '/api/followers' && req.method === 'GET') {
+    if (limited(clientIp(req), Date.now())) return send(res, 429);
+    followers(url.searchParams.get('platform'), url.searchParams.get('channel'))
+      .then(({ status, body }) => send(res, status, body))
+      .catch(() => send(res, 500, { error: 'internal' }));
+    return;
+  }
   if (url.pathname !== '/api/presence') return send(res, 404, { error: 'not_found' });
   if (req.method === 'GET') return send(res, 200, summary());
   if (req.method !== 'POST') return send(res, 405, { error: 'method' });

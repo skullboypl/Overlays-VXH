@@ -1,0 +1,242 @@
+/* Streamer tools (tools.tsx). Sizes use the source's own size (cqmin / cqh), so a bigger OBS source means a bigger widget. */
+.tl-root {
+  container-type: size;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4cqmin;
+  font-family: var(--font);
+  color: var(--fg);
+}
+.tl-root.align-left { justify-content: flex-start; }
+.tl-root.align-right { justify-content: flex-end; }
+
+/* ---------- card looks ---------- */
+.tl-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25em;
+  max-width: 100%;
+  max-height: 100%;
+  padding: 0.5em 0.9em;
+  border-radius: var(--radius);
+  font-size: calc(var(--s) * var(--base, 30cqh));
+  line-height: 1.05;
+  text-align: center;
+}
+.tl-card.style-solid { background: var(--bg); box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.45); border-top: 0.08em solid var(--accent); }
+.tl-card.style-glass {
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.35);
+}
+.tl-card.style-neon {
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  border: 0.06em solid var(--accent);
+  box-shadow: 0 0 0.45em var(--accent), inset 0 0 0.3em color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.tl-card.style-neon .tl-big { text-shadow: 0 0 0.25em var(--accent); }
+.tl-card.style-gradient { background: linear-gradient(135deg, var(--accent), var(--accent2)); box-shadow: 0 0.3em 1em rgba(0, 0, 0, 0.4); }
+.tl-card.style-outline { border: 0.06em solid var(--accent); text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85); }
+.tl-card.style-none { padding: 0.2em 0.3em; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85); }
+.tl-card.no-shadow { box-shadow: none !important; }
+
+.tl-label { font-size: 0.42em; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; white-space: nowrap; }
+.tl-big { font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; white-space: nowrap; }
+.tl-sub { font-size: 0.36em; font-weight: 500; opacity: 0.85; white-space: nowrap; }
+
+/* ---------- clock ---------- */
+.tl-clock { --base: 42cqh; }
+.tl-clock .tl-card { --base: min(38cqh, 17cqw); }
+.tl-clock-body { display: flex; flex-direction: column; align-items: center; gap: 0.12em; }
+.tl-clock.layout-inline .tl-clock-body { flex-direction: row-reverse; align-items: baseline; gap: 0.5em; }
+.tl-clock.layout-inline .tl-sub { font-size: 0.42em; }
+.tl-colon { animation: ov-blink 1s steps(1) infinite; }
+.tl-ampm { font-size: 0.4em; margin-left: 0.2em; font-weight: 700; }
+.tl-clock .tl-sub::first-letter { text-transform: uppercase; }
+
+/* ---------- countdown / stopwatch ---------- */
+.tl-timer .tl-card { --base: min(34cqh, 15cqw); min-width: 3.6em; }
+.tl-progress { width: 100%; height: 0.1em; min-height: 3px; border-radius: 1em; background: rgba(255, 255, 255, 0.15); overflow: hidden; margin-top: 0.12em; }
+.tl-progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--accent), var(--accent2)); transition: width 0.25s linear; }
+.tl-timer.is-urgent .tl-big { color: var(--accent); animation: tl-pulse 1s ease-in-out infinite; }
+.tl-timer.is-done .tl-digits { font-size: 0.7em; animation: tl-pop 0.5s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+@keyframes tl-pulse { 50% { transform: scale(1.06); } }
+@keyframes tl-pop { from { transform: scale(0.6); opacity: 0; } }
+
+/* ---------- goal ---------- */
+.tl-goal .tl-card { --base: min(26cqh, 7cqw); width: 100%; align-items: stretch; padding: 0.45em 0.7em; }
+.tl-goal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 0.8em; }
+.tl-goal-head .tl-label { font-size: 0.62em; text-transform: none; letter-spacing: 0; overflow: hidden; text-overflow: ellipsis; }
+.tl-goal-head .tl-sub { font-size: 0.5em; }
+.tl-goal-head .tl-sub b { color: var(--accent); margin-left: 0.3em; }
+.tl-goal-bar {
+  position: relative;
+  height: 0.55em;
+  border-radius: 1em;
+  background: rgba(255, 255, 255, 0.12);
+  overflow: hidden;
+  box-shadow: inset 0 0.04em 0.12em rgba(0, 0, 0, 0.5);
+}
+.tl-goal-bar > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent2));
+  box-shadow: 0 0 0.4em color-mix(in srgb, var(--accent) 60%, transparent);
+  transition: width 1.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.tl-goal-bar.has-shimmer > i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.45) 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: tl-shimmer 2.6s linear infinite;
+}
+@keyframes tl-shimmer { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+.tl-goal.look-thin .tl-goal-bar { height: 0.22em; }
+.tl-goal.look-bar .tl-goal-bar { height: 1.5em; }
+.tl-goal-inbar {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6em;
+  padding: 0 0.6em;
+  font-size: 0.6em;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+}
+.tl-goal-inbar b { overflow: hidden; text-overflow: ellipsis; }
+.tl-goal.look-ring .tl-card { --base: min(30cqh, 9cqw); width: auto; padding: 0.35em 0.8em 0.35em 0.4em; }
+.tl-goal-ring { position: relative; display: flex; align-items: center; gap: 0.5em; }
+.tl-goal-ring svg { width: 2.4em; height: 2.4em; transform: rotate(-90deg); flex: none; }
+.tl-ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.14); stroke-width: 10; }
+.tl-ring-fg { fill: none; stroke: var(--accent); stroke-width: 10; stroke-linecap: round; stroke-dasharray: 264; transition: stroke-dashoffset 1.6s cubic-bezier(0.2, 0.8, 0.2, 1); filter: drop-shadow(0 0 3px var(--accent)); }
+.tl-ring-pct { position: absolute; left: 1.2em; top: 50%; translate: -50% -50%; font-size: 0.55em; font-variant-numeric: tabular-nums; }
+.tl-goal-text { display: flex; flex-direction: column; align-items: flex-start; gap: 0.15em; }
+.tl-goal-text .tl-label { font-size: 0.6em; text-transform: none; letter-spacing: 0; }
+.tl-goal.is-reached .tl-card { animation: tl-glow 1.8s ease-in-out infinite; }
+@keyframes tl-glow { 50% { box-shadow: 0 0 0.8em var(--accent); } }
+.tl-confetti { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+.tl-confetti i {
+  position: absolute;
+  left: calc(6% + var(--i) * 6.5%);
+  top: 50%;
+  width: 0.18em;
+  height: 0.3em;
+  border-radius: 0.04em;
+  background: hsl(calc(var(--i) * 47deg) 90% 60%);
+  animation: tl-burst 2.4s cubic-bezier(0.2, 0.7, 0.3, 1) calc(var(--i) * -0.17s) infinite;
+}
+@keyframes tl-burst {
+  0% { transform: translateY(0) rotate(0); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateY(-1.6em) rotate(320deg); opacity: 0; }
+}
+
+/* ---------- reminder ---------- */
+.tl-reminder .tl-card {
+  --base: min(26cqh, 6.5cqw);
+  flex-direction: row;
+  gap: 0.6em;
+  padding: 0.45em 1em 0.45em 0.5em;
+  text-align: left;
+  overflow: hidden;
+  border-left: 0.16em solid var(--accent);
+}
+.tl-reminder .tl-card.style-none { border-left: 0; }
+.tl-rem-icon { flex: none; display: grid; place-items: center; width: 1.9em; height: 1.9em; border-radius: 0.5em; background: var(--accent); color: var(--ink, #fff); font-size: 1em; }
+.tl-rem-text { display: flex; flex-direction: column; gap: 0.12em; min-width: 0; }
+.tl-rem-text b { font-size: 0.55em; text-transform: uppercase; letter-spacing: 0.08em; color: var(--accent); }
+.tl-rem-text span { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tl-rem-bar { position: absolute; left: 0; bottom: 0; height: 0.08em; min-height: 2px; width: 100%; background: var(--accent); transform-origin: left; animation: tl-shrink var(--show) linear forwards; }
+@keyframes tl-shrink { to { transform: scaleX(0); } }
+.tl-reminder .tl-card.is-out { opacity: 0; visibility: hidden; transition: opacity 0.5s, visibility 0s 0.5s; }
+.tl-reminder .tl-card.is-in.anim-slide { animation: tl-in-slide 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+.tl-reminder.align-right .tl-card.is-in.anim-slide { animation-name: tl-in-slide-r; }
+.tl-reminder .tl-card.is-in.anim-up { animation: tl-in-up 0.7s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+.tl-reminder .tl-card.is-in.anim-pop { animation: tl-in-pop 0.6s cubic-bezier(0.3, 1.5, 0.5, 1) both; }
+.tl-reminder .tl-card.is-in.anim-flip { animation: tl-in-flip 0.8s cubic-bezier(0.2, 0.9, 0.2, 1) both; }
+@keyframes tl-in-slide { from { transform: translateX(-120%); opacity: 0; } }
+@keyframes tl-in-slide-r { from { transform: translateX(120%); opacity: 0; } }
+@keyframes tl-in-up { from { transform: translateY(120%); opacity: 0; } }
+@keyframes tl-in-pop { from { transform: scale(0.4); opacity: 0; } }
+@keyframes tl-in-flip { from { transform: perspective(600px) rotateX(-90deg); opacity: 0; } }
+
+/* ---------- QR code ---------- */
+.tl-qr .tl-card { --base: min(10cqh, 13cqw); gap: 0.4em; padding: 0.6em; }
+.tl-qr .tl-label { font-size: 0.85em; text-transform: none; letter-spacing: 0; }
+.tl-qr .tl-sub { font-size: 0.6em; }
+.tl-qr-box { position: relative; width: min(var(--s) * 70cqmin, 100%); aspect-ratio: 1; border-radius: 0.4em; overflow: hidden; background: var(--qr-bg); }
+.tl-qr-box svg { display: block; width: 100%; height: 100%; }
+.tl-qr-logo { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: 20%; aspect-ratio: 1; display: grid; place-items: center; border-radius: 22%; box-shadow: 0 0 0 0.25em var(--qr-bg); }
+.tl-qr-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 18%;
+  background: linear-gradient(transparent, color-mix(in srgb, var(--accent) 45%, transparent), transparent);
+  animation: tl-scan 2.6s ease-in-out infinite;
+}
+@keyframes tl-scan { 0%, 100% { top: -18%; } 50% { top: 100%; } }
+.tl-qr.anim-pulse .tl-card { animation: tl-pulse 2.4s ease-in-out infinite; }
+.tl-qr.anim-float .tl-card { animation: tl-float 4s ease-in-out infinite; }
+@keyframes tl-float { 50% { transform: translateY(-3%); } }
+
+/* Long reminder texts wrap to two lines instead of being cut. */
+.tl-reminder .tl-card { --base: min(22cqh, 4.6cqw); }
+.tl-rem-text span { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; font-size: 0.82em; line-height: 1.15; }
+/* On the gradient card the bar and the accent text switch to white. */
+.tl-card.style-gradient .tl-goal-bar { background: rgba(0, 0, 0, 0.25); }
+.tl-card.style-gradient .tl-goal-bar > i { background: #fff; box-shadow: none; }
+.tl-card.style-gradient .tl-goal-head .tl-sub b, .tl-card.style-gradient .tl-ring-fg { color: inherit; stroke: #fff; }
+.tl-card.style-gradient .tl-progress i { background: #fff; }
+.tl-card.style-gradient .tl-rem-icon { background: rgba(0, 0, 0, 0.25); }
+.tl-card.style-gradient .tl-rem-text b { color: #fff; }
+
+/* Goal from the Twitch / YouTube API: channel badge, "+1" on a new follow, notes, "coming soon" card. */
+.tl-goal .tl-card { overflow: visible; }
+.tl-goal-who { display: flex; align-items: center; gap: 0.3em; font-size: 0.45em; font-weight: 700; opacity: 0.9; align-self: flex-start; }
+.tl-goal-who img { width: 1.6em; height: 1.6em; border-radius: 50%; object-fit: cover; box-shadow: 0 0 0 0.12em var(--accent); }
+.tl-goal.look-ring .tl-goal-who { position: absolute; top: -0.9em; left: 0.4em; }
+.tl-goal-bump {
+  position: absolute;
+  right: 0.4em;
+  top: -0.3em;
+  padding: 0.1em 0.45em;
+  border-radius: 1em;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.6em;
+  box-shadow: 0 0 0.6em var(--accent);
+  animation: tl-bump 4.5s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+@keyframes tl-bump {
+  0% { transform: translateY(0.6em) scale(0.4); opacity: 0; }
+  12% { transform: translateY(-0.2em) scale(1.15); opacity: 1; }
+  20%, 80% { transform: none; opacity: 1; }
+  100% { transform: translateY(-0.8em); opacity: 0; }
+}
+.tl-goal-error { font-size: 0.36em; opacity: 0.75; text-align: left; }
+.tl-soon {
+  font-size: 0.42em;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0.25em 0.7em;
+  border-radius: 1em;
+  background: color-mix(in srgb, var(--accent) 25%, transparent);
+  border: 1px solid var(--accent);
+  color: var(--fg);
+  animation: tl-soon 2.4s ease-in-out infinite;
+}
+@keyframes tl-soon { 50% { opacity: 0.55; } }
+.tl-goal.is-soon .tl-goal-bar { background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 0.25em, rgba(255, 255, 255, 0.14) 0.25em 0.5em); }

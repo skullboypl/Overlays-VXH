@@ -11,6 +11,7 @@ const GROUPS: { id: string; title: string; note: string; items?: string[]; sub?:
   { id: 'scenes', title: tx('Sceny z kamerką'), note: tx('Gotowy układ sceny'), items: ['camscene', 'fullcam'] },
   { id: 'frames', title: tx('Ramki na kamerkę'), note: tx('Na źródło kamerki'), items: ['proframe', 'faceitcam', 'holiday', 'neon', 'nametag', 'corners'] },
   { id: 'bars', title: tx('Paski i sociale'), note: tx('Info dla widzów'), items: ['socials', 'ticker'] },
+  { id: 'tools', title: tx('Narzędzia streamera'), note: tx('Licznik, zegar, cel, QR'), items: ['timer', 'clock', 'goal', 'reminder', 'qr'] },
   {
     id: 'effects', title: tx('Efekty'), note: tx('Na całą scenę'), compact: true, sub: [
       { title: tx('Pogoda i natura'), items: ['snow', 'rain', 'petals', 'fireflies', 'bubbles'] },

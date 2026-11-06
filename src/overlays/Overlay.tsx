@@ -9,6 +9,7 @@ import { CamScene } from './CamScene';
 import { VideoScene } from './VideoScene';
 import { FullCam } from './FullCam';
 import { SocialsWidget, TickerWidget } from './widgets';
+import { ClockWidget, GoalWidget, QrWidget, ReminderWidget, TimerWidget } from './tools';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
 export const Overlay = ({ id, params }: { id: string; params: Params }) => {
@@ -31,6 +32,11 @@ export const Overlay = ({ id, params }: { id: string; params: Params }) => {
     case 'fullcam': return <FullCam params={params} />;
     case 'ticker': return <TickerWidget params={params} />;
     case 'socials': return <SocialsWidget params={params} />;
+    case 'timer': return <TimerWidget params={params} />;
+    case 'clock': return <ClockWidget params={params} />;
+    case 'goal': return <GoalWidget params={params} />;
+    case 'reminder': return <ReminderWidget params={params} />;
+    case 'qr': return <QrWidget params={params} />;
     default: return null;
   }
 };

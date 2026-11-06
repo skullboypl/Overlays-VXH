@@ -213,7 +213,16 @@ docker run --rm -p 8080:80 vxh-overlays   # http://localhost:8080
 
 CapRover: [`captain-definition`](captain-definition) wskazuje na `Dockerfile`, więc wystarczy wdrożyć repozytorium jako aplikację. Produkcja działa pod `overlays.vxh.pl`. Jeśli hostujesz własną kopię pod inną domeną, zmień `SITE.url` w `src/seo/content.ts` i adresy w `index.html`.
 
-Deploy z GitHuba przez SSH: w CapRover w zakładce **Deployment → Method 3: Deploy from Github/Bitbucket/Gitlab** podaj repo `git@github.com:skullboypl/Overlays-VXH.git`, gałąź `main` i klucz prywatny. Ten sam klucz publiczny dodaj w GitHubie w **Settings → Deploy keys** (tylko do odczytu). Pliki kluczy (`deploy-key*`, `*.pem`, `*.key`) są w `.gitignore` i `.dockerignore`: nie commituj ich i nie wklejaj nigdzie publicznie. Aplikacja nie potrzebuje żadnych zmiennych środowiskowych.
+Deploy z GitHuba przez SSH: w CapRover w zakładce **Deployment → Method 3: Deploy from Github/Bitbucket/Gitlab** podaj repo `git@github.com:skullboypl/Overlays-VXH.git`, gałąź `main` i klucz prywatny. Ten sam klucz publiczny dodaj w GitHubie w **Settings → Deploy keys** (tylko do odczytu). Pliki kluczy (`deploy-key*`, `*.pem`, `*.key`) są w `.gitignore` i `.dockerignore`: nie commituj ich i nie wklejaj nigdzie publicznie. Strona działa bez zmiennych środowiskowych.
+
+Opcjonalne zmienne (CapRover → aplikacja → **App Configs → Environmental Variables**), potrzebne tylko do paska celu z liczbą z API:
+
+| Zmienna | Do czego |
+|---|---|
+| `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` | Followy z Twitcha (aplikacja z [dev.twitch.tv](https://dev.twitch.tv/console/apps), token aplikacji, bez logowania streamera) |
+| `YOUTUBE_API_KEY` | Subskrypcje z YouTube (klucz YouTube Data API v3) |
+
+Bez nich pasek celu przy Twitchu i YouTube pokazuje „Wkrótce”, a tryb „Wpisuję sam” działa normalnie. W tym samym kontenerze co nginx działa mały serwer [`deploy/stats-server.mjs`](deploy/stats-server.mjs): licznik overlayów otwartych w OBS (`/api/presence`) i liczba followów (`/api/followers`).
 
 ## Współpraca
 
