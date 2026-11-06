@@ -1,4 +1,5 @@
 import type { Field, OverlayDef } from './schema';
+import { AUTO_THEMES } from './holidayCalendar';
 import { CHARACTERS, CHARACTER_LABELS, FRAME_URLS, PHOTO_IDS, VIDEO_IDS } from './backgrounds';
 
 const FULL_HD = { w: 1920, h: 1080 };
@@ -30,6 +31,7 @@ const area: Field = {
 };
 
 const HOLIDAY_OPTIONS = [
+  { value: 'auto', label: '📅 Automatycznie wg daty' },
   { value: 'xmas', label: '🎄 Boże Narodzenie' },
   { value: 'winter', label: '❄️ Zima' },
   { value: 'newyear', label: '🥂 Sylwester' },
@@ -125,14 +127,18 @@ const FRAME_VARIANTS = [
   { value: 'neon4', label: 'Neon: girlanda' },
   { value: 'neon5', label: 'Neon: pastelowe ikony' },
 ];
+/** A frame version is offered when its picture exists for the occasion; for "auto", for every occasion the calendar can pick. */
+const hasFrame = (theme: unknown, v: string) =>
+  v === 'anim' || (theme === 'auto' ? AUTO_THEMES.every((t) => FRAME_URLS[`${t}-${v}`]) : Boolean(FRAME_URLS[`${theme}-${v}`]));
+const AUTO_HINT = 'Sama wybiera okazję po dacie: grudzień święta, koniec roku Sylwester, zima, Walentynki, Wielkanoc, Halloween, 11 Listopada. Poza tymi okresami ramka się chowa.';
 const NEON_VARIANTS = ['neon', 'neon2', 'neon3', 'neon4', 'neon5'];
 const PHOTO_VARIANTS = ['real', 'real2', 'real3', 'real4', 'real5'];
 
 // Holiday layer for the camera scenes (HolidayLayer): same art as "Ramki świąteczne".
 const holidayFields = (): Field[] => [
-  { group: 'Święta', key: 'holiday', label: 'Świąteczna oprawa', type: 'select', default: 'none', options: [{ value: 'none', label: 'Brak' }, ...HOLIDAY_OPTIONS] },
+  { group: 'Święta', key: 'holiday', label: 'Świąteczna oprawa', type: 'select', default: 'none', options: [{ value: 'none', label: 'Brak' }, ...HOLIDAY_OPTIONS], hint: AUTO_HINT },
   { group: 'Święta', key: 'holidayVariant', label: 'Wersja ramki', type: 'select', default: 'real', when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) },
-    optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.holiday}-${v}`]), options: [
+    optionFilter: (p) => (v) => hasFrame(p.holiday, v), options: [
     ...FRAME_VARIANTS,
   ] },
   { group: 'Święta', key: 'holidayLabelOn', label: 'Pokaż napis', type: 'toggle', default: true, when: { key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) } },
@@ -148,8 +154,25 @@ const holidayFields = (): Field[] => [
   { group: 'Święta', key: 'holidayAmount', label: 'Ilość efektu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1.4, unit: '×', when: [{ key: 'holiday', is: HOLIDAY_OPTIONS.map((o) => o.value) }, { key: 'holidayParticles', is: [true] }] },
 ];
 
+// One list of fonts and one of effects for every overlay, so a new entry shows up everywhere at once.
+const FONT_OPTIONS = [
+  { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' },
+  { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' }, { value: 'dm', label: 'DM Sans' },
+  { value: 'montserrat', label: 'Montserrat' }, { value: 'rajdhani', label: 'Rajdhani' },
+  { value: 'marker', label: 'Marker' }, { value: 'pixel', label: 'Pixel' },
+];
+const fontField = (group: string, label: string, def: string): Field => ({ group, key: 'font', label, type: 'select', default: def, options: FONT_OPTIONS });
+
+const EFFECT_OPTIONS = [
+  { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'warp', label: 'Warp' },
+  { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' }, { value: 'confetti', label: 'Konfetti' },
+  { value: 'petals', label: 'Płatki' }, { value: 'emoji', label: 'Emoji' }, { value: 'fireworks', label: 'Fajerwerki' },
+  { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
+];
+const effectField = (group: string, label: string, def: string): Field => ({ group, key: 'effect', label, type: 'select', default: def, options: EFFECT_OPTIONS });
+
 type SceneDefaults = {
-  title: string; subtitle: string; timer: string; timerLabel: string; doneText: string;
+  title: string; subtitle: string; subtitles: string; timer: string; timerLabel: string; doneText: string;
   bg: string; colors: string[]; effect: string; titleAnim: string; next?: string;
 };
 
@@ -179,7 +202,10 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
   { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: d.title, maxLength: 40, when: { key: 'showTitle', is: [true] } },
   { group: 'Teksty', key: 'showSubtitle', label: 'Pokaż podtytuł', type: 'toggle', default: true },
-  { group: 'Teksty', key: 'subtitle', i18n: true, label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 90, when: { key: 'showSubtitle', is: [true] } },
+  { group: 'Teksty', key: 'subRotate', label: 'Zmieniaj podtytuły', type: 'toggle', default: false, when: { key: 'showSubtitle', is: [true] }, hint: 'Kilka tekstów pokazywanych po kolei: ciekawostki, zasady, zapowiedzi' },
+  { group: 'Teksty', key: 'subtitle', i18n: true, label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 90, when: [{ key: 'showSubtitle', is: [true] }, { key: 'subRotate', is: [false] }] },
+  { group: 'Teksty', key: 'subtitles', i18n: true, label: 'Podtytuły', type: 'text', list: 'lines', default: d.subtitles, maxLength: 600, when: [{ key: 'showSubtitle', is: [true] }, { key: 'subRotate', is: [true] }] },
+  { group: 'Teksty', key: 'subEvery', label: 'Zmiana co', type: 'range', min: 3, max: 30, step: 1, default: 7, unit: 's', when: [{ key: 'showSubtitle', is: [true] }, { key: 'subRotate', is: [true] }] },
   { group: 'Teksty', key: 'showKicker', label: 'Pokaż znaczek nad tytułem', type: 'toggle', default: true },
   { group: 'Teksty', key: 'kicker', label: 'Znaczek nad tytułem', type: 'text', default: 'skullboypl', maxLength: 40, hint: 'Nick albo nazwa kanału', when: { key: 'showKicker', is: [true] } },
   ...(ending ? [{ group: 'Teksty', key: 'showNext', label: 'Pokaż następny stream', type: 'toggle', default: true } as Field] : []),
@@ -232,19 +258,11 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
     { value: 'rise', label: 'Wjazd' }, { value: 'wave', label: 'Fala' }, { value: 'pop', label: 'Pop' },
     { value: 'neon', label: 'Neon' }, { value: 'glitch', label: 'Glitch' },
   ] },
-  { group: 'Wygląd', key: 'font', label: 'Czcionka tytułu', type: 'select', default: 'poppins', options: [
-    { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' },
-    { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' }, { value: 'dm', label: 'DM Sans' },
-  ] },
+  fontField('Wygląd', 'Czcionka tytułu', 'poppins'),
   { group: 'Wygląd', key: 'titleSize', label: 'Wielkość tytułu', type: 'range', min: 0.5, max: 1.6, step: 0.05, default: 1, unit: '×' },
 
   // ---- extras ----
-  { group: 'Dodatki', key: 'effect', label: 'Efekt na wierzchu', type: 'select', default: d.effect, options: [
-    { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'warp', label: 'Warp' },
-    { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' }, { value: 'confetti', label: 'Konfetti' },
-    { value: 'petals', label: 'Płatki' }, { value: 'emoji', label: 'Emoji' }, { value: 'fireworks', label: 'Fajerwerki' },
-    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
-  ] },
+  effectField('Dodatki', 'Efekt na wierzchu', d.effect),
   { group: 'Dodatki', key: 'bars', label: 'Animowany equalizer', type: 'toggle', default: !ending },
   { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
 ];
@@ -255,6 +273,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     description: 'Ekran przed streamem z odliczaniem, socialami i animowanym tłem.',
     fields: sceneFields({
       title: 'ZARAZ STARTUJEMY', subtitle: 'Rozgość się, nalej coś do picia i daj znać na czacie, że jesteś',
+      subtitles: 'Rozgość się i nalej coś do picia | Daj znać na czacie, że jesteś | Rzuć follow, jeśli jeszcze go nie ma',
       timer: 'countdown', timerLabel: 'Start za', doneText: 'Już startujemy!', bg: 'aurora',
       colors: ['#ff5900', '#ff2d6f', '#7a5cff'], effect: 'stars', titleAnim: 'rise',
     }),
@@ -264,6 +283,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     description: 'Ekran przerwy z licznikiem powrotu i neonowym tytułem.',
     fields: sceneFields({
       title: 'ZARAZ WRACAM', subtitle: 'Krótka przerwa, nie uciekaj',
+      subtitles: 'Krótka przerwa, nie uciekaj | Zostań na czacie, zaraz wracam | Wpadnij na Discorda',
       timer: 'countdown', timerLabel: 'Wracam za', doneText: 'Już jestem!', bg: 'synth',
       colors: ['#ff2d95', '#ffb347', '#3a1c71'], effect: 'none', titleAnim: 'neon',
     }),
@@ -273,6 +293,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     description: 'Ekran końcowy z podziękowaniem, terminem następnego streama i socialami.',
     fields: sceneFields({
       title: 'DZIĘKI ZA DZIŚ!', subtitle: 'Do zobaczenia na następnym streamie',
+      subtitles: 'Do zobaczenia na następnym streamie | Dzięki, że byliście ze mną | Rzuć follow, żeby nie przegapić kolejnego',
       timer: 'off', timerLabel: 'Koniec za', doneText: 'Pa pa!', bg: 'waves',
       colors: ['#3bceac', '#7aa2ff', '#ff5900'], effect: 'fireflies', titleAnim: 'wave', next: 'Następny stream: piątek, 20:00',
     }, true),
@@ -310,6 +331,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'rain', label: 'Ciągły deszcz' }, { value: 'burst', label: 'Wybuch z dołu' },
       ] },
       { key: 'every', label: 'Wybuch co', type: 'range', min: 2, max: 60, step: 1, default: 8, unit: 's', when: { key: 'mode', is: ['burst'] } },
+      { ...area, when: { key: 'mode', is: ['rain'] } },
     ],
   },
   {
@@ -343,6 +365,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { key: 'shape', label: 'Kształt', type: 'select', default: 'petal', options: [
         { value: 'petal', label: 'Płatek' }, { value: 'leaf', label: 'Liść' },
       ] },
+      area,
     ],
   },
   {
@@ -408,6 +431,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     fields: [
       density(60, 240), speed(1), size(1), opacity(0.8),
       { key: 'colors', label: 'Kolory', type: 'colors', max: 4, default: ['#3bff7a'] },
+      area,
     ],
   },
   {
@@ -421,11 +445,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Wideo', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.15 },
       { group: 'Wideo', key: 'bgTint', label: 'Zabarw kolorami motywu', type: 'toggle', default: false },
       { group: 'Wideo', key: 'colors', label: 'Kolory motywu', type: 'colors', max: 3, default: ['#ff5900', '#ff2d6f', '#7a5cff'], when: { key: 'bgTint', is: [true] } },
-      { group: 'Dodatki', key: 'effect', label: 'Efekt na wierzchu', type: 'select', default: 'none', options: [
-        { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
-        { value: 'petals', label: 'Płatki' }, { value: 'confetti', label: 'Konfetti' },
-    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
-      ] },
+      effectField('Dodatki', 'Efekt na wierzchu', 'none'),
       { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
       { group: 'Dodatki', key: 'grain', label: 'Ziarno filmowe', type: 'toggle', default: false },
     ],
@@ -439,9 +459,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: 'NA ŻYWO', maxLength: 50, when: { key: 'showTitle', is: [true] } },
       { group: 'Teksty', key: 'live', label: 'Kropka LIVE', type: 'toggle', default: true, when: { key: 'showTitle', is: [true] } },
       { group: 'Teksty', key: 'showClock', label: 'Pokaż zegar', type: 'toggle', default: true, when: { key: 'showTitle', is: [true] } },
-      { group: 'Teksty', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [
-        { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'dm', label: 'DM Sans' },
-      ] },
+      fontField('Teksty', 'Czcionka', 'poppins'),
       { group: 'Teksty', key: 'showName', label: 'Pokaż podpis na kamerce', type: 'toggle', default: true },
       { group: 'Teksty', key: 'name', label: 'Nick', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'showName', is: [true] } },
       { group: 'Teksty', key: 'namePos', label: 'Róg podpisu na kamerce', type: 'select', default: 'bl', when: { key: 'showName', is: [true] }, options: [
@@ -466,11 +484,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' },
       ] },
       { group: 'FACEIT', key: 'statsScale', label: 'Wielkość', type: 'range', min: 0.6, max: 3, step: 0.05, default: 1.6, unit: '×', when: { key: 'showFaceit', is: [true] } },
-      { group: 'Efekty', key: 'effect', label: 'Efekt nad kamerą', type: 'select', default: 'none', options: [
-        { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
-        { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' }, { value: 'fireworks', label: 'Fajerwerki' },
-    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
-      ] },
+      effectField('Efekty', 'Efekt nad kamerą', 'none'),
       { group: 'Efekty', key: 'vignette', label: 'Winieta przy krawędziach', type: 'toggle', default: false },
       { group: 'Efekty', key: 'vignetteStrength', label: 'Siła winiety', type: 'range', min: 0.1, max: 1, step: 0.05, default: 0.6, when: { key: 'vignette', is: [true] } },
     ],
@@ -502,10 +516,13 @@ const ALL_OVERLAYS: OverlayDef[] = [
       ] },
       { group: 'Ramki slotów', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 20, step: 1, default: 4, unit: 'px', when: { key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] } },
       { group: 'Ramki slotów', key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 40, step: 1, default: 14, unit: 'px', when: { key: 'border', is: ['gradient', 'solid', 'glow'] } },
-      { group: 'Ramki slotów', key: 'anim', label: 'Obrót gradientu', type: 'select', default: 'spin', when: { key: 'border', is: ['gradient'] }, options: [
-        { value: 'spin', label: 'Tak' }, { value: 'none', label: 'Nie' },
+      { group: 'Ramki slotów', key: 'anim', label: 'Animacja ramek', type: 'select', default: 'spin', when: { key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] },
+        // Spinning moves the gradient, so the other border styles have nothing to spin.
+        optionFilter: (p) => (v) => v !== 'spin' || (p.border ?? 'gradient') === 'gradient', options: [
+        { value: 'none', label: 'Brak' }, { value: 'spin', label: 'Obrót gradientu' }, { value: 'pulse', label: 'Pulsowanie' },
+        { value: 'breathe', label: 'Oddech' }, { value: 'hue', label: 'Tęcza' },
       ] },
-      { group: 'Ramki slotów', key: 'speed', label: 'Prędkość obrotu', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: [{ key: 'border', is: ['gradient'] }, { key: 'anim', is: ['spin'] }] },
+      { group: 'Ramki slotów', key: 'speed', label: 'Prędkość animacji', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: [{ key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] }, { key: 'anim', is: ['spin', 'pulse', 'breathe', 'hue'] }] },
       { group: 'Ramki slotów', key: 'frameChat', label: 'Ramka wokół czatu', type: 'toggle', default: true, when: [{ key: 'chat', is: [true] }, { key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] }] },
       { group: 'Ramki slotów', key: 'frameScreen', label: 'Ramka wokół ekranu gry', type: 'toggle', default: true, when: { key: 'border', is: ['gradient', 'solid', 'glow', 'glass'] } },
       { group: 'Ramki slotów', key: 'camCorners', label: 'Narożniki na kamerce', type: 'toggle', default: false, hint: 'Akcenty w rogach kamerki w pierwszym kolorze' },
@@ -517,11 +534,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Tło', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.35, when: { key: 'bg', is: [...PHOTO_IDS, ...VIDEO_IDS, 'custom'] } },
       { group: 'Tło', key: 'colors', label: 'Kolory motywu', type: 'colors', max: 3, default: ['#ff5900', '#ff2d6f', '#7a5cff'] },
       { group: 'Tło', key: 'base', label: 'Kolor bazowy tła', type: 'color', default: '#07070c' },
-      { group: 'Tło', key: 'effect', label: 'Efekt na tle', type: 'select', default: 'none', options: [
-        { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' },
-        { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' },
-    { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
-      ] },
+      effectField('Tło', 'Efekt na tle', 'none'),
       { group: 'Tło', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
       { group: 'Tło', key: 'bgMotion', label: 'Powolny ruch tła', type: 'toggle', default: false, hint: 'Delikatne przybliżanie i przesuwanie tła' },
       { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
@@ -532,9 +545,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'titlePos', label: 'Położenie tytułu', type: 'select', default: 'left', when: { key: 'showTitle', is: [true] }, options: [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
       ] },
-      { group: 'Teksty', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [
-        { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'dm', label: 'DM Sans' },
-      ] },
+      fontField('Teksty', 'Czcionka', 'poppins'),
       { group: 'Teksty', key: 'showName', label: 'Pokaż podpis na kamerce', type: 'toggle', default: true },
       { group: 'Teksty', key: 'name', label: 'Nick', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'showName', is: [true] } },
       { group: 'Teksty', key: 'namePos', label: 'Róg podpisu na kamerce', type: 'select', default: 'bl', when: { key: 'showName', is: [true] }, options: [
@@ -679,10 +690,10 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'holiday', name: 'Ramki świąteczne', icon: '🎄', category: 'camera', size: CAM,
     description: 'Boże Narodzenie, Sylwester, Walentynki, Wielkanoc, Halloween, 11.11 i urodziny.',
     fields: [
-      { group: 'Okazja', key: 'theme', label: 'Święto', type: 'select', default: 'xmas', options: HOLIDAY_OPTIONS },
+      { group: 'Okazja', key: 'theme', label: 'Święto', type: 'select', default: 'xmas', options: HOLIDAY_OPTIONS, hint: AUTO_HINT },
       { group: 'Okazja', key: 'variant', label: 'Wersja ramki', type: 'select', default: 'anim', options: [
         ...FRAME_VARIANTS,
-      ], optionFilter: (p) => (v) => v === 'anim' || Boolean(FRAME_URLS[`${p.theme}-${v}`]), hint: 'Realistyczne (5 wersji), 3D, Kreskówka i Neony (kilka wersji) to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
+      ], optionFilter: (p) => (v) => hasFrame(p.theme, v), hint: 'Realistyczne (5 wersji), 3D, Kreskówka i Neony (kilka wersji) to ramki wygenerowane AI z animacją; 3D pływa w perspektywie, Neon migocze' },
       { group: 'Okazja', key: 'showLabel', label: 'Pokaż napis', type: 'toggle', default: true },
       { group: 'Okazja', key: 'label', label: 'Napis', type: 'text', default: 'auto', maxLength: 40, hint: '"auto" wstawia napis pasujący do okazji', when: { key: 'showLabel', is: [true] } },
       { group: 'Okazja', key: 'labelSize', label: 'Wielkość napisu', type: 'range', min: 10, max: 56, step: 1, default: 15, unit: 'px', when: { key: 'showLabel', is: [true] } },
@@ -790,9 +801,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 40, step: 1, default: 14, unit: 'px', when: { key: 'style', is: ['glass', 'neon', 'outline', 'lower'] } },
       { group: 'Wygląd', key: 'fadeEdges', label: 'Wygaszanie krawędzi tekstu', type: 'toggle', default: true },
       { group: 'Wygląd', key: 'fontSize', label: 'Wielkość tekstu', type: 'range', min: 14, max: 60, step: 1, default: 28, unit: 'px' },
-      { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
-        { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
-      ] },
+      fontField('Wygląd', 'Czcionka', 'dm'),
       { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
       { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114', when: { key: 'style', is: ['solid', 'glass', 'gradient', 'neon', 'lower'] } },
       { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
@@ -832,9 +841,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Wygląd', key: 'gap', label: 'Odstęp', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px', when: { key: 'layout', is: ['row', 'column', 'grid', 'icons', 'marquee'] } },
       { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 40, unit: 'px', when: { key: 'style', is: ['pill', 'glass', 'neon', 'gradient', 'outline', 'brand', 'light', 'button3d', 'glow', 'shine'] } },
       { group: 'Wygląd', key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 48, step: 1, default: 26, unit: 'px' },
-      { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
-        { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
-      ] },
+      fontField('Wygląd', 'Czcionka', 'dm'),
       { group: 'Wygląd', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
       { group: 'Wygląd', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
       { group: 'Ikona', key: 'showIcon', label: 'Pokaż ikonę serwisu', type: 'toggle', default: true },

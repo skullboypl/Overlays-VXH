@@ -1,9 +1,9 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
-import { Background, EFFECT_DEFAULTS, SCENE_FONTS } from './SceneScreen';
-import { ParticleLayer, type EffectKind } from './ParticleLayer';
+import { Background, effectLayer, SocialsBar, SCENE_FONTS } from './SceneScreen';
+import { ParticleLayer } from './ParticleLayer';
 import { FaceitStats } from './FaceitStats';
-import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { parseSocials } from './icons';
 import { isLang, translate, tx } from '../i18n';
 import { HolidayLayer } from './HolidayLayer';
 
@@ -191,6 +191,7 @@ export const CamScene = ({ params }: { params: Params }) => {
   const fullScreen = slots.screen && slots.screen.w === W && slots.screen.h === H;
   const mask = holesMask(fullScreen ? holes.filter((r) => r !== slots.screen) : holes, radius, round ? slots.cam! : null);
   const effect = String(params.effect ?? 'none');
+  const fx = effectLayer(effect, colors);
   const socials = parseSocials(String(params.socials ?? ''));
   const preview = Boolean(params._preview);
   const style: Vars = {
@@ -200,12 +201,13 @@ export const CamScene = ({ params }: { params: Params }) => {
     '--thick': `${params.thickness ?? 4}px`, '--radius': `${radius}px`, '--glow': `${params.glow ?? 14}px`,
     '--grad': `conic-gradient(from var(--neon-angle), ${[...colors, colors[0]].join(', ')})`,
     '--spin': `${4 / Math.max(0.1, Number(params.speed ?? 1))}s`,
+    '--speed': `${4 / Math.max(0.1, Number(params.speed ?? 1))}s`,
   };
   const cam = slots.cam!;
   const border = String(params.border ?? 'gradient');
 
   return (
-    <div className={`sc-root cs-root ov-neon ${params.anim === 'spin' ? 'is-spinning' : ''} ${params.bgMotion ? 'bg-motion' : ''}`} style={style}>
+    <div className={`sc-root cs-root ov-neon ${params.anim === 'spin' ? 'is-spinning' : ''} cs-anim-${String(params.anim ?? 'spin')} ${params.bgMotion ? 'bg-motion' : ''}`} style={style}>
       {/* Preview only: stand-ins for the OBS sources that will sit under the holes. */}
       {preview && (Object.entries(slots) as [Slot, Rect][]).map(([k, r]) => (
         <div key={k} className={`cs-ph ph-${k} ${round && k === 'cam' ? 'is-round' : ''}`} style={pct(r)}>
@@ -217,9 +219,7 @@ export const CamScene = ({ params }: { params: Params }) => {
       {!fullScreen && (
         <div className="sc-layers" style={{ WebkitMaskImage: mask, maskImage: mask, WebkitMaskSize: '100% 100%', maskSize: '100% 100%' }}>
           <Background bg={String(params.bg ?? 'aurora')} colors={colors} params={params} />
-          {effect !== 'none' && EFFECT_DEFAULTS[effect] && (
-            <ParticleLayer key={effect} kind={(effect === 'warp' ? 'stars' : effect) as EffectKind} params={{ ...EFFECT_DEFAULTS[effect], ...(effect === 'confetti' ? { colors } : {}) }} />
-          )}
+          {fx && <ParticleLayer key={effect} kind={fx.kind} params={fx.params} />}
           {params.vignette && <div className="sc-vignette" />}
         </div>
       )}
@@ -259,13 +259,7 @@ export const CamScene = ({ params }: { params: Params }) => {
           </div>
         )}
         {params.showSocials !== false && socials.length > 0 && (
-          <div className={`sc-socials cs-socials align-${params.socialsAlign ?? 'center'}`}>
-            {socials.map((s, i) => (
-              <span key={i} className="sc-social" style={{ '--brand': BRAND_COLORS[s.brand], '--i': i } as Vars}>
-                <BrandIcon brand={s.brand} />{s.label}
-              </span>
-            ))}
-          </div>
+          <SocialsBar socials={socials} className={`cs-socials align-${params.socialsAlign ?? 'center'}`} />
         )}
       </div>
 

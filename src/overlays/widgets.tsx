@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperti
 import type { Params } from './schema';
 import { BRAND_COLORS, BRAND_INK, BrandIcon, parseSocials } from './icons';
 import { SCENE_FONTS } from './SceneScreen';
+import { useRotation } from './useRotation';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -11,17 +12,6 @@ const Clock = ({ h12 }: { h12: boolean }) => {
   return <>{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: h12 })}</>;
 };
 
-/** Index that moves to the next item every `ms` (stays at 0 when there is only one item). */
-const useRotation = (count: number, ms: number) => {
-  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    if (count < 2) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % count), ms);
-    return () => clearInterval(id);
-  }, [count, ms]);
-  return count ? index % count : 0;
-};
-
 export const TickerWidget = ({ params }: { params: Params }) => {
   const items = String(params.text ?? '').split('|').map((s) => s.trim()).filter(Boolean);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -29,6 +19,29 @@ export const TickerWidget = ({ params }: { params: Params }) => {
   const speed = Number(params.speed ?? 110);
   const mode = String(params.mode ?? 'scroll');
   const index = useRotation(mode === 'rotate' ? items.length : 0, Number(params.every ?? 6) * 1000);
+  const viewRef = useRef<HTMLDivElement>(null);
+  const oneRef = useRef<HTMLDivElement>(null);
+  const [oneFit, setOneFit] = useState(1);
+  const [over, setOver] = useState(0);
+
+  // Rotate mode shows one message at a time: a long one shrinks to the bar's width instead of being cut off.
+  useLayoutEffect(() => {
+    const view = viewRef.current, one = oneRef.current;
+    if (mode !== 'rotate' || !view || !one) return;
+    const measure = () => {
+      const current = parseFloat(getComputedStyle(one).getPropertyValue('--tfit')) || 1;
+      const natural = one.scrollWidth / current;
+      const next = Math.max(0.5, Math.min(1, (view.clientWidth / Math.max(1, natural)) * 0.98));
+      setOneFit((f) => (Math.abs(f - next) > 0.002 ? next : f));
+      // Still too long at half size: the message slides along so its end is read too.
+      setOver(Math.max(0, Math.round(natural * next - view.clientWidth + 4)));
+    };
+    measure();
+    document.fonts?.ready.then(measure);
+    const ro = new ResizeObserver(measure);
+    ro.observe(view);
+    return () => ro.disconnect();
+  }, [mode, index, params.text, params.fontSize, params.font, params.uppercase, params.showClock, params.showLabel, params.label]);
 
   // One copy of the text scrolls by at a fixed px/s, whatever its length.
   useLayoutEffect(() => {
@@ -56,9 +69,11 @@ export const TickerWidget = ({ params }: { params: Params }) => {
       {params.showLabel !== false && params.label && (
         <div className="wd-tick-label">{params.liveDot && <i className="wd-live" />}{String(params.label)}</div>
       )}
-      <div className="wd-tick-viewport">
+      <div className="wd-tick-viewport" ref={viewRef}>
         {mode === 'rotate' ? (
-          <div key={index} className={`wd-tick-one anim-${params.rotateAnim ?? 'up'}`}>{items[index]}</div>
+          <div key={index} ref={oneRef} className={`wd-tick-one anim-${params.rotateAnim ?? 'up'}`} style={{ '--tfit': oneFit, '--over': `${over}px`, '--every': `${Number(params.every ?? 6)}s` } as Vars}>
+            <span className={over > 0 ? 'wd-tick-pan' : undefined}>{items[index]}</span>
+          </div>
         ) : (
           <div className="wd-tick-track" ref={trackRef}>{run}{run}</div>
         )}

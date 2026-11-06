@@ -56,10 +56,18 @@ Part of the [VXH](https://vxh.pl/) toolset for streamers (next to [FACEIT Banner
 | `starting` | Zaraz startujemy | Starting soon screen with countdown, socials and animated background |
 | `brb` | Przerwa / BRB | Break screen with a "back in" timer and a neon title |
 | `ending` | Koniec streama | Thank-you screen with the next stream date and socials |
+| `videobg` | Tło wideo (video background) | A looping realistic video over the whole scene (neon city, night room, winter forest, Christmas) with blur, dimming, an effect and grain |
 
-Shared screen options: title, subtitle and a kicker above the title; timer (off, minutes counted from when OBS loads the source, or until a given HH:MM) with a "done" text and a progress bar; socials bar with icons; chat slot (left/right, width, style: glass, outline or transparent cutout); background: 9 animated CSS ones (aurora, synthwave, waves, space, minimal, gradient, rays, dots, lava), 10 images (night room, neon city, winter forest, Christmas, Halloween, nebula, anime sunset, 3D abstract, sakura, beach) with slow zoom/pan, dimming and tint, or your own image URL, up to 3 colors, base and text color; title animation (rise, wave, pop, neon, glitch) and 6 fonts; an effect on top (stars, warp, snow, fireflies, confetti, petals, emoji, fireworks), animated equalizer and vignette.
+Shared screen options: 10 layouts (center, left, right, lower bar, top, title and timer side by side, card, banner, big timer, corner); title, subtitle (one, or several rotating every N seconds) and a kicker above the title; timer (off, minutes counted from when OBS loads the source, or until a given HH:MM) with a "done" text and a progress bar; socials bar with icons; chat slot (7 places, width, style: glass, outline or transparent cutout); background: 9 animated CSS ones (aurora, synthwave, waves, space, minimal, gradient, rays, dots, lava), 10 images (night room, neon city, winter forest, Christmas, Halloween, nebula, anime sunset, 3D abstract, sakura, beach) with slow zoom/pan, 4 videos or your own image URL, dimming and tint, up to 3 colors, base and text color; title animation (rise, wave, pop, neon, glitch) and 10 fonts; one of 15 effects on top, animated equalizer and vignette.
 
 > The background images in `public/bg/` were generated locally with FLUX.1-dev in ComfyUI for this project.
+
+### 🎥 Camera scenes (1920x1080)
+
+| ID | Name (PL) | Main options |
+|---|---|---|
+| `camscene` | Kamerka fullscreen (camera scene) | 12 layouts with slots for the camera, game and chat (duo, squad, vertical, theater and more), slot frames (gradient, solid, glow, glass) with 4 animations, background and effect, title with LIVE dot, clock and uptime, camera name tag in 4 styles, socials, holiday dressing, FACEIT stats |
+| `fullcam` | Pełnoekranowa kamera (full-screen camera) | a layer over a full-screen camera: every Ramka Pro option, title with clock, nick, socials, holiday dressing, FACEIT stats, effect and vignette |
 
 ### ✨ Effects (full screen, 1920x1080)
 
@@ -67,10 +75,17 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 |---|---|---|
 | `snow` | Śnieg (snow) | amount, speed, size, wind, color, depth blur, dots / crystals / mixed, area |
 | `rain` | Deszcz (rain) | amount, speed, wind, color, splashes at the bottom, area |
-| `confetti` | Konfetti | up to 6 colors, continuous rain or a burst from the bottom every N seconds |
+| `confetti` | Konfetti | up to 6 colors, continuous rain or a burst from the bottom every N seconds, area |
 | `emoji` | Unoszące się emoji (floating emoji) | your own emoji (picked at random), up or down, area |
 | `fireflies` | Świetliki (fireflies) | color, glow strength, area |
-| `petals` | Płatki / liście (petals / leaves) | up to 5 colors, petal or leaf shape |
+| `petals` | Płatki / liście (petals / leaves) | up to 5 colors, petal or leaf shape, area |
+| `embers` | Iskry z ogniska (embers) | colors, glow, wind, area |
+| `bubbles` | Bańki mydlane (bubbles) | colors, wind, area |
+| `bokeh` | Bokeh | soft light circles in your colors |
+| `sparkles` | Błyski brokatu (glitter) | colors, area (edges only too) |
+| `balloons` | Balony (balloons) | colors, wind, area |
+| `meteors` | Spadające gwiazdy (meteors) | interval, direction, colors |
+| `digital` | Cyfrowy deszcz (digital rain) | colors, area |
 | `fireworks` | Fajerwerki (fireworks) | rockets per volley, volley interval, colors, burst shape (mixed, ring, heart), twinkle |
 | `stars` | Gwiazdy / warp | twinkling sky with shooting stars, or a hyperspace warp |
 | `grain` | Ziarno + winieta (grain + vignette) | film grain, vignette, VHS scanlines, flicker |
@@ -84,14 +99,24 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 | `neon` | Neonowa ramka (neon frame) | rotating gradient of up to 5 colors, thickness, radius, glow, speed |
 | `corners` | Narożniki HUD (HUD corners) | crosshair corners, scan line, REC dot, breathing |
 | `nametag` | Ramka z podpisem (name tag) | frame with a bar for a nick and caption, 5 bar positions, periodic shine |
-| `holiday` | Ramki świąteczne (holiday frames) | 8 themes: Christmas, Winter, New Year's Eve, Valentine's, Easter, Halloween, Polish Independence Day (Nov 11), Birthday; corner decorations, garland, inner effect; each in 5 versions: animated, realistic (AI), 3D, cartoon, neon; label with size and position |
+| `holiday` | Ramki świąteczne (holiday frames) | 8 occasions: Christmas, Winter, New Year's Eve, Valentine's, Easter, Halloween, Polish Independence Day (Nov 11), Birthday, or "automatic by date"; up to 13 versions each (animated, 5 realistic, 3D, cartoon, up to 5 neon); corner decorations, garland, inner effect, label with size and position |
+| `proframe` | Ramka Pro (pro frame) | 4 shapes, 6 border types, 4 animations, corner accents, mask outside the camera |
+| `faceitcam` | Kamerka + FACEIT | Ramka Pro with FACEIT stats (level, ELO, K/D, form, ELO change this stream; 6 looks) or a FACEIT Banner image |
+
+### 🎅 Characters (1920x1080)
+
+| ID | Name (PL) | Main options |
+|---|---|---|
+| `character` | Animowane postacie (animated characters) | Santa, elf, reindeer, snowman, pumpkin, witch, bunny, cupid and more, looping with a transparent background; position, size, mirror, shadow, loop or pop in every N seconds |
 
 ### 📰 Bars and text
 
 | ID | Name (PL) | Size | Main options |
 |---|---|---|---|
-| `ticker` | Przewijany pasek (ticker) | 1920x64 | list of messages, label, separator, style, speed in px/s, font |
-| `socials` | Rotator sociali (socials rotator) | 560x100 | Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Facebook or custom text; switch every N seconds, 3 animations, brand colors, timer bar |
+| `ticker` | Przewijany pasek (ticker) | 1920x64 | list of messages, scrolling or rotating (4 animations), label, LIVE dot, clock, 7 styles, font |
+| `socials` | Rotator sociali (socials rotator) | 560x100 | 20 services (Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Bluesky, Threads, Spotify, Steam, Patreon, Ko-fi, Tipply, Patronite and more) or your own text; 6 layouts, 18 looks, 7 animations, brand colors, progress bar |
+
+Fonts (shared by every overlay): Poppins, Bebas, Russo, Orbitron, Pacifico, DM Sans, Montserrat, Rajdhani, Marker and Pixel.
 
 The full parameter list of every overlay (keys, ranges, defaults) is generated at build time into [`/llms.txt`](https://overlays.vxh.pl/llms.txt).
 

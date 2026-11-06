@@ -327,7 +327,7 @@ export const startParticles = (canvas: HTMLCanvasElement, kind: ParticleKind, ge
       case 'digital': {
         const fs = 20 * size * s;
         p.r = fs;
-        p.x = Math.floor(rand(0, w) / fs) * fs;
+        p.x = Math.floor(Math.min(w, Math.max(0, spawnX())) / fs) * fs;
         p.vy = rand(220, 620) * speed * s;
         p.y = initial ? rand(-h, h) : -rand(0, h * 0.5);
         p.chars = Array.from({ length: Math.floor(rand(8, 26)) }, () => pick([...DIGITS]));
