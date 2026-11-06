@@ -1,9 +1,9 @@
 import { useEffect, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
-import { Background, effectLayer, SCENE_FONTS } from './SceneScreen';
+import { Background, effectLayer, SocialsBar, SCENE_FONTS } from './SceneScreen';
 import { ParticleLayer } from './ParticleLayer';
 import { FaceitStats } from './FaceitStats';
-import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { parseSocials } from './icons';
 import { isLang, translate, tx } from '../i18n';
 import { HolidayLayer } from './HolidayLayer';
 
@@ -259,13 +259,7 @@ export const CamScene = ({ params }: { params: Params }) => {
           </div>
         )}
         {params.showSocials !== false && socials.length > 0 && (
-          <div className={`sc-socials cs-socials align-${params.socialsAlign ?? 'center'}`}>
-            {socials.map((s, i) => (
-              <span key={i} className="sc-social" style={{ '--brand': BRAND_COLORS[s.brand], '--i': i } as Vars}>
-                <BrandIcon brand={s.brand} />{s.label}
-              </span>
-            ))}
-          </div>
+          <SocialsBar socials={socials} className={`cs-socials align-${params.socialsAlign ?? 'center'}`} />
         )}
       </div>
 

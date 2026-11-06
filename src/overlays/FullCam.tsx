@@ -3,8 +3,8 @@ import type { Params } from './schema';
 import { ProFrame } from './ProFrame';
 import { FaceitStats } from './FaceitStats';
 import { ParticleLayer } from './ParticleLayer';
-import { effectLayer, SCENE_FONTS } from './SceneScreen';
-import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { effectLayer, SocialsBar, SCENE_FONTS } from './SceneScreen';
+import { parseSocials } from './icons';
 import { HolidayLayer } from './HolidayLayer';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -51,13 +51,7 @@ export const FullCam = ({ params }: { params: Params }) => {
           </div>
         )}
         {params.showSocials !== false && socials.length > 0 && (
-          <div className={`sc-socials cs-socials fc-socials align-${params.socialsAlign ?? 'right'}`}>
-            {socials.map((s, i) => (
-              <span key={i} className="sc-social" style={{ '--brand': BRAND_COLORS[s.brand], '--i': i } as Vars}>
-                <BrandIcon brand={s.brand} />{s.label}
-              </span>
-            ))}
-          </div>
+          <SocialsBar socials={socials} className={`cs-socials fc-socials align-${params.socialsAlign ?? 'right'}`} />
         )}
       </div>
     </div>
