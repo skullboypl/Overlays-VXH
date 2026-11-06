@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
-import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { BRAND_COLORS, BRAND_INK, BrandIcon, parseSocials } from './icons';
 import { SCENE_FONTS } from './SceneScreen';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -116,6 +116,8 @@ export const SocialsWidget = ({ params }: { params: Params }) => {
   if (!list.length) return null;
 
   const colorOf = (brand: keyof typeof BRAND_COLORS) => (params.brandColors !== false ? BRAND_COLORS[brand] : String(params.accent ?? '#ff5900'));
+  // Without brand colours the accent is the user's own pick, which is assumed dark enough for white.
+  const inkOf = (brand: keyof typeof BRAND_INK) => (params.brandColors !== false ? BRAND_INK[brand] : '#fff');
   const textOf = (label: string) => (params.textMode === 'handle' ? handleOf(label) : label);
   const style: Vars = {
     '--bg': String(params.bg ?? '#111114'),
@@ -133,8 +135,8 @@ export const SocialsWidget = ({ params }: { params: Params }) => {
   ].join(' ');
   const styleName = String(params.style ?? 'pill');
   const chip = (item: (typeof list)[number], active: boolean, key: string | number, animated = true) => (
-    <div key={key} className={`wd-soc style-${styleName} ${layout === 'one' && animated ? `anim-${params.anim ?? 'slide'}` : ''} ${active ? 'is-active' : ''}`}
-      style={{ '--accent': colorOf(item.brand) } as Vars}>
+    <div key={key} className={`wd-soc style-${styleName} ${layout === 'one' && animated ? `anim-${params.anim ?? 'slide'}` : ''} ${active ? 'is-active' : ''} ${inkOf(item.brand) !== '#fff' ? 'on-light' : ''}`}
+      style={{ '--accent': colorOf(item.brand), '--ink': inkOf(item.brand) } as Vars}>
       {params.showIcon !== false && <span className="wd-soc-icon"><BrandIcon brand={item.brand} size="1.3em" /></span>}
       <span className="wd-soc-text"><span>{textOf(item.label)}</span></span>
       {animated && params.progress !== false && active && list.length > 1 && layout !== 'marquee' && <span className="wd-soc-bar" style={{ animationDuration: `${every}ms` }} />}
