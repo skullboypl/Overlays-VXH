@@ -202,7 +202,7 @@ export const GoalWidget = ({ params: p }: { params: Params }) => {
     </div>
   );
   // The server has no Twitch / YouTube keys yet: an honest "coming soon" card instead of made-up numbers.
-  if (platform !== 'manual' && live.error === 'not_configured') {
+  if (platform !== 'manual' && (live.error === 'not_configured' || live.error === 'unavailable')) {
     return (
       <Shell p={p} kind="goal" className="is-soon">
         <div className="tl-goal-head">
@@ -210,7 +210,7 @@ export const GoalWidget = ({ params: p }: { params: Params }) => {
           <span className="tl-soon">{translate(lang, 'Wkrótce')}</span>
         </div>
         <div className="tl-goal-bar"><i style={{ width: '0%' }} /></div>
-        <div className="tl-goal-error">{translate(lang, platform === 'twitch' ? 'Licznik followów z Twitcha pojawi się wkrótce' : 'Licznik subskrypcji z YouTube pojawi się wkrótce')}</div>
+        <div className="tl-goal-error">{translate(lang, platform === 'twitch' ? 'Licznik followów z Twitcha pojawi się wkrótce' : platform === 'kick' ? 'Licznik followów z Kicka pojawi się wkrótce' : 'Licznik subskrypcji z YouTube pojawi się wkrótce')}</div>
       </Shell>
     );
   }

@@ -924,11 +924,11 @@ const ALL_OVERLAYS: OverlayDef[] = [
     description: 'Cel subów, followów albo donejtów z animowanym paskiem postępu.',
     fields: [
       { group: 'Cel', key: 'source', label: 'Skąd liczba', type: 'select', default: 'manual', options: [
-        { value: 'manual', label: 'Wpisuję sam' }, { value: 'twitch', label: 'Followy na Twitchu' }, { value: 'youtube', label: 'Subskrypcje na YouTube' },
-      ], hint: 'Twitch i YouTube: liczba odświeża się sama co minutę. Wpisuję sam: np. zbiórka albo cel donejtów.' },
-      { group: 'Cel', key: 'channel', label: 'Kanał', type: 'text', default: 'skullboypl', maxLength: 32, placeholder: 'nick albo @handle', when: { key: 'source', is: ['twitch', 'youtube'] } },
-      { group: 'Cel', key: 'showChannel', label: 'Pokaż avatar i nazwę kanału', type: 'toggle', default: true, when: { key: 'source', is: ['twitch', 'youtube'] } },
-      { group: 'Cel', key: 'bump', label: 'Animacja „+1” przy nowym followie', type: 'toggle', default: true, when: { key: 'source', is: ['twitch', 'youtube'] } },
+        { value: 'manual', label: 'Wpisuję sam' }, { value: 'twitch', label: 'Followy na Twitchu' }, { value: 'kick', label: 'Followy na Kicku' }, { value: 'youtube', label: 'Subskrypcje na YouTube' },
+      ], hint: 'Twitch, Kick i YouTube: liczba odświeża się sama co minutę. Wpisuję sam: np. zbiórka albo cel donejtów.' },
+      { group: 'Cel', key: 'channel', label: 'Kanał', type: 'text', default: 'skullboypl', maxLength: 32, placeholder: 'nick albo @handle', when: { key: 'source', is: ['twitch', 'kick', 'youtube'] } },
+      { group: 'Cel', key: 'showChannel', label: 'Pokaż avatar i nazwę kanału', type: 'toggle', default: true, when: { key: 'source', is: ['twitch', 'kick', 'youtube'] } },
+      { group: 'Cel', key: 'bump', label: 'Animacja „+1” przy nowym followie', type: 'toggle', default: true, when: { key: 'source', is: ['twitch', 'kick', 'youtube'] } },
       { group: 'Cel', key: 'title', i18n: true, label: 'Nazwa celu', type: 'text', default: 'Cel followów', maxLength: 40 },
       { group: 'Cel', key: 'current', label: 'Teraz', type: 'text', default: '68', maxLength: 10, placeholder: '68', when: { key: 'source', is: ['manual'] }, hint: 'Zmień liczbę tutaj i odśwież źródło w OBS' },
       { group: 'Cel', key: 'target', label: 'Cel', type: 'text', default: '100', maxLength: 10, placeholder: '100' },

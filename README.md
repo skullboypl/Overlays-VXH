@@ -222,6 +222,8 @@ Opcjonalne zmienne (CapRover → aplikacja → **App Configs → Environmental V
 | `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` | Followy z Twitcha (aplikacja z [dev.twitch.tv](https://dev.twitch.tv/console/apps), token aplikacji, bez logowania streamera) |
 | `YOUTUBE_API_KEY` | Subskrypcje z YouTube (klucz YouTube Data API v3) |
 
+Kick nie potrzebuje klucza: liczbę followów bierzemy z publicznego endpointu kick.com (oficjalne API Kicka jej nie podaje). Jeśli Cloudflare zablokuje adres serwera, pasek pokaże „Wkrótce”.
+
 Bez nich pasek celu przy Twitchu i YouTube pokazuje „Wkrótce”, a tryb „Wpisuję sam” działa normalnie. W tym samym kontenerze co nginx działa mały serwer [`deploy/stats-server.mjs`](deploy/stats-server.mjs): licznik overlayów otwartych w OBS (`/api/presence`) i liczba followów (`/api/followers`).
 
 ## Współpraca
