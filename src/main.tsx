@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes, useParams, useSearchParams } from 'react-router-dom';
 import { Studio } from './studio/Studio';
@@ -6,6 +7,7 @@ import { Overlay } from './overlays/Overlay';
 import { findOverlay } from './overlays/registry';
 import { queryToParams } from './overlays/schema';
 import { LangProvider, isLang } from './i18n';
+import { startPresence } from './stats';
 import './overlays/overlay.css';
 import './overlays/scene.css';
 import './overlays/holiday.css';
@@ -17,6 +19,8 @@ const OverlayRoute = () => {
   const { id } = useParams();
   const [search] = useSearchParams();
   const def = findOverlay(id);
+  // Anonymous heartbeat for the live counter in the studio header.
+  useEffect(() => (def ? startPresence(def.id) : undefined), [def]);
   if (!def) return null;
   // No ?lang means Polish: OBS's own browser language must never change what viewers see.
   const lang = search.get('lang');

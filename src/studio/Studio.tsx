@@ -8,6 +8,8 @@ import { OutputPanel } from './OutputPanel';
 import { docsPath, seoFor } from '../seo/content';
 import { translate, tx, useT } from '../i18n';
 import { LangSelect } from './LangSelect';
+import { OverlayMenu } from './OverlayMenu';
+import { LivePill } from './LivePill';
 import './studio.css';
 
 const STORAGE = 'vxh-overlays:';
@@ -19,14 +21,6 @@ const BACKDROPS = [
 ] as const;
 type Backdrop = (typeof BACKDROPS)[number]['id'];
 
-const SECTIONS = [
-  { id: 'scene', title: tx('Ekrany'), note: tx('Start, przerwa, koniec') },
-  { id: 'camscene', title: tx('Kamerka fullscreen'), note: tx('Układy sceny z kamerką') },
-  { id: 'screen', title: tx('Efekty'), note: tx('Na całą scenę') },
-  { id: 'character', title: tx('Postacie'), note: tx('Animowane w pętli') },
-  { id: 'camera', title: tx('Kamerka'), note: tx('Ramki i święta') },
-  { id: 'widget', title: tx('Paski i napisy'), note: tx('Info dla widzów') },
-] as const;
 
 // Settings survive a refresh in this browser; the link itself carries everything OBS needs.
 type T = (pl: string) => string;
@@ -185,6 +179,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
           <img src="/favicon.svg" alt="" width={30} height={30} />
           <span><b>Overlays</b><small>studio · vxh</small></span>
         </Link>
+        <LivePill />
         <nav className="st-nav">
           <a href={docsPath(lang, def.id)}>{t('Poradnik i opis')}</a>
           <a href="https://vxh.pl/" target="_blank" rel="noreferrer">{t('Inne narzędzia VXH')}</a>
@@ -205,20 +200,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
             <b>{t('Wszystkie overlaye')}</b>
             <button type="button" className="st-icon-btn" onClick={() => setMenuOpen(false)} aria-label={t('Zamknij menu')}>✕</button>
           </div>
-          {SECTIONS.map((sec) => (
-            <section key={sec.id}>
-              <h2>{t(sec.title)}<small>{t(sec.note)}</small></h2>
-              {OVERLAYS.filter((o) => o.category === sec.id).map((o) => (
-                <Link key={o.id} to={`/${o.id}`} onClick={() => setMenuOpen(false)} className={`st-item ${o.id === def.id ? 'is-active' : ''}`}>
-                  <span className="st-item-icon" aria-hidden>{o.icon}</span>
-                  <span className="st-item-text">
-                    <b>{t(o.name)}</b>
-                    <small>{t(o.description)}</small>
-                  </span>
-                </Link>
-              ))}
-            </section>
-          ))}
+          <OverlayMenu active={def.id} onPick={() => setMenuOpen(false)} />
         </aside>
 
         <main className="st-stage">
