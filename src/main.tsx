@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Navigate, Route, Routes, useParams, useSearchParams } from 'react-router-dom';
 import { Studio } from './studio/Studio';
@@ -8,6 +8,8 @@ import { findOverlay } from './overlays/registry';
 import { queryToParams } from './overlays/schema';
 import { LangProvider, isLang } from './i18n';
 import { startPresence } from './stats';
+import { PanelContext, useRoom } from './panel/panel';
+import { PanelDock, PanelSetup } from './panel/PanelPages';
 import './overlays/overlay.css';
 import './overlays/scene.css';
 import './overlays/holiday.css';
@@ -26,9 +28,21 @@ const OverlayRoute = () => {
   // No ?lang means Polish: OBS's own browser language must never change what viewers see.
   const lang = search.get('lang');
   return (
-    <div className="ov-root">
+    <PanelBridge room={search.get('panel')} overlay={def.id}>
       <Overlay id={def.id} params={{ ...queryToParams(def, search), _lang: isLang(lang) ? lang : 'pl' }} />
-    </div>
+    </PanelBridge>
+  );
+};
+
+/** ?panel=<room>: the overlay listens to the OBS panel (read-only) and fades out when the dock hides it. */
+const PanelBridge = ({ room, overlay, children }: { room: string | null; overlay: string; children: React.ReactNode }) => {
+  const { snap, offset } = useRoom(room);
+  const link = useMemo(() => (snap ? { state: snap.state, serverNow: () => Date.now() + offset.current } : null), [snap, offset]);
+  const hidden = snap?.state.hidden?.[overlay] === true;
+  return (
+    <PanelContext.Provider value={link}>
+      <div className={`ov-root ${hidden ? 'is-panel-hidden' : ''}`}>{children}</div>
+    </PanelContext.Provider>
   );
 };
 
@@ -48,6 +62,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/jak-dodac-overlay-do-obs" element={<Navigate to="/docs/obs" replace />} />
         <Route path="/faq" element={<Navigate to="/docs/faq" replace />} />
         <Route path="/o/:id" element={<OverlayRoute />} />
+        <Route path="/panel" element={<PanelSetup />} />
+        <Route path="/panel/dock" element={<PanelDock />} />
         <Route path="/:id" element={<Studio />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

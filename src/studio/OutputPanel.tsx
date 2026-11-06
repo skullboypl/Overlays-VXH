@@ -1,4 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { roomOf, savedKey } from '../panel/panel';
+import '../panel/panel.css';
 import { findOverlay } from '../overlays/registry';
 import type { OverlayDef } from '../overlays/schema';
 import { useT } from '../i18n';
@@ -70,8 +73,13 @@ export const OutputPanel = ({ def, query, size, setSize, onApply }: Props) => {
   const canStore = storageWorks();
 
   const origin = window.location.origin;
+  // OBS panel: the link gets only the read-only room id, never the key.
+  const [room, setRoom] = useState<string | null>(null);
+  const [usePanelLink, setUsePanelLink] = useState(() => { try { return localStorage.getItem('vxh-overlays:panel-link') !== '0'; } catch { return true; } });
+  useEffect(() => { const k = savedKey(); if (k) void roomOf(k).then(setRoom); }, []);
+  const togglePanel = (on: boolean) => { setUsePanelLink(on); try { localStorage.setItem('vxh-overlays:panel-link', on ? '1' : '0'); } catch { /* ignore */ } };
   // Non-Polish links carry ?lang so texts drawn by the overlay itself (holiday greetings) match the studio.
-  const obsQuery = [query, lang !== 'pl' ? `lang=${lang}` : ''].filter(Boolean).join('&');
+  const obsQuery = [query, lang !== 'pl' ? `lang=${lang}` : '', room && usePanelLink ? `panel=${room}` : ''].filter(Boolean).join('&');
   const obsUrl = `${origin}/o/${def.id}${obsQuery ? `?${obsQuery}` : ''}`;
   const studioUrl = `${origin}/${def.id}${query ? `?${query}` : ''}`;
   const code = encodeShare(def.id, query);
@@ -115,6 +123,16 @@ export const OutputPanel = ({ def, query, size, setSize, onApply }: Props) => {
       {tab === 'obs' && (
         <div className="st-tabpane">
           <CopyRow label={t('Link do Browser Source (OBS / Streamlabs)')} value={obsUrl} primary openable />
+          <div className="st-panel-row">
+            {room ? (
+              <label className="st-panel-row">
+                <input type="checkbox" className="st-toggle" checked={usePanelLink} onChange={(e) => togglePanel(e.currentTarget.checked)} />
+                {t('Steruj z Panelu OBS')}
+              </label>
+            ) : (
+              <span>🎛️ {t('Chcesz sterować na żywo z docka w OBS?')} <Link to="/panel">{t('Utwórz Panel OBS')}</Link></span>
+            )}
+          </div>
           <div className="st-out-meta">
             <div className="st-size">
               <span>{t('Rozmiar źródła')}</span>

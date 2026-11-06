@@ -6,7 +6,7 @@ import { tx, useT } from '../i18n';
 import { useLiveStats } from '../stats';
 
 /** Order of the left menu: what people set up first comes first; the 16 effects get their own sub-groups. */
-const GROUPS: { id: string; title: string; note: string; items?: string[]; sub?: { title: string; items: string[] }[]; compact?: boolean }[] = [
+export const MENU_GROUPS: { id: string; title: string; note: string; items?: string[]; sub?: { title: string; items: string[] }[]; compact?: boolean }[] = [
   { id: 'screens', title: tx('Ekrany na stream'), note: tx('Start, przerwa, koniec'), items: ['starting', 'brb', 'ending', 'videobg'] },
   { id: 'scenes', title: tx('Sceny z kamerką'), note: tx('Gotowy układ sceny'), items: ['camscene', 'fullcam'] },
   { id: 'frames', title: tx('Ramki na kamerkę'), note: tx('Na źródło kamerki'), items: ['proframe', 'faceitcam', 'holiday', 'neon', 'nametag', 'corners'] },
@@ -25,7 +25,7 @@ const GROUPS: { id: string; title: string; note: string; items?: string[]; sub?:
 
 const BY_ID = new Map(OVERLAYS.map((o) => [o.id, o]));
 const pick = (ids: string[]) => ids.map((id) => BY_ID.get(id)).filter((o): o is OverlayDef => Boolean(o));
-const LISTED = new Set(GROUPS.flatMap((g) => [...(g.items ?? []), ...(g.sub ?? []).flatMap((s) => s.items)]));
+const LISTED = new Set(MENU_GROUPS.flatMap((g) => [...(g.items ?? []), ...(g.sub ?? []).flatMap((s) => s.items)]));
 
 const STORE = 'vxh-overlays:menu-closed';
 const loadClosed = (): string[] => {
@@ -77,6 +77,12 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
         {query && <button type="button" onClick={() => setQuery('')} aria-label={t('Wyczyść')}>✕</button>}
       </div>
 
+      {!q && (
+        <Link to="/panel" className="st-panel-entry" onClick={onPick}>
+          <span aria-hidden>🎛️</span>
+          <span><b>{t('Panel OBS')}</b><small>{t('Steruj overlayami z docka w OBS')}</small></span>
+        </Link>
+      )}
       {matches ? (
         <section className="st-mgroup">
           <h2 className="st-mhead is-static"><span>{t('Wyniki')}</span><small>{matches.length}</small></h2>
@@ -84,7 +90,7 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
         </section>
       ) : (
         <>
-          {GROUPS.map((g) => {
+          {MENU_GROUPS.map((g) => {
             const all = pick([...(g.items ?? []), ...(g.sub ?? []).flatMap((s) => s.items)]);
             const isOpen = !closed.includes(g.id) || all.some((o) => o.id === active);
             const sum = all.reduce((n, o) => n + live(o.id), 0);

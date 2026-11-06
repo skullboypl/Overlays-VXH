@@ -10,7 +10,7 @@ RUN pnpm build
 FROM nginx:1.27-alpine
 RUN apk add --no-cache nodejs
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY deploy/stats-server.mjs deploy/followers.mjs /srv/
+COPY deploy/stats-server.mjs deploy/followers.mjs deploy/panel.mjs /srv/
 COPY deploy/start.sh /srv/start.sh
 RUN tr -d '\r' < /srv/start.sh > /srv/start && mv /srv/start /srv/start.sh && chmod +x /srv/start.sh
 COPY --from=build /app/dist /usr/share/nginx/html

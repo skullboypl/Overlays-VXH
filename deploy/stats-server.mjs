@@ -2,13 +2,15 @@
 //
 // POST /api/presence  {"id": "<random per page load>", "o": "<overlay id>"}  heartbeat, every minute from /o/<id>
 // GET  /api/presence  {"live": n, "byType": {"snow": 3, ...}, "peakToday": n, "updated": <ms>}
-// GET  /api/followers?platform=twitch|youtube&channel=...  follower count for the goal bar (followers.mjs)
+// GET  /api/followers?platform=twitch|kick|youtube&channel=...  follower count for the goal bar (followers.mjs)
+// /api/panel/...  the OBS panel (panel.mjs)
 //
 // Nothing personal is kept: a random id the page makes up on load, the overlay type and the time of the last ping.
 // The client address only lives in memory, to stop one address from inflating the counter.
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { followers } from './followers.mjs';
+import { loadRooms, panelGet, panelMaintenance, panelPost } from './panel.mjs';
 
 const PORT = Number(process.env.STATS_PORT ?? 3001);
 const HOST = process.env.STATS_HOST ?? '127.0.0.1';
@@ -93,6 +95,23 @@ export const server = http.createServer((req, res) => {
       .catch(() => send(res, 500, { error: 'internal' }));
     return;
   }
+  if (url.pathname.startsWith('/api/panel/')) {
+    if (req.method === 'GET') return panelGet(url.pathname, req, res, url.searchParams.get('watch') === '1') || send(res, 404, { error: 'not_found' });
+    if (req.method !== 'POST') return send(res, 405, { error: 'method' });
+    if (limited(clientIp(req), Date.now())) return send(res, 429);
+    const action = url.pathname.slice('/api/panel/'.length);
+    let raw = '';
+    req.setEncoding('utf8');
+    req.on('data', (chunk) => { raw += chunk; if (raw.length > 8192) req.destroy(); });
+    req.on('end', () => {
+      let body;
+      try { body = JSON.parse(raw); } catch { return send(res, 400, { error: 'bad_json' }); }
+      const { status, body: out } = panelPost(action, body);
+      res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+      res.end(JSON.stringify(out));
+    });
+    return;
+  }
   if (url.pathname !== '/api/presence') return send(res, 404, { error: 'not_found' });
   if (req.method === 'GET') return send(res, 200, summary());
   if (req.method !== 'POST') return send(res, 405, { error: 'method' });
@@ -113,6 +132,7 @@ export const server = http.createServer((req, res) => {
 });
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  loadRooms();
   server.listen(PORT, HOST, () => console.log(`stats on ${HOST}:${PORT}`));
-  setInterval(() => prune(Date.now()), 60_000).unref();
+  setInterval(() => { prune(Date.now()); panelMaintenance(); }, 30_000).unref();
 }

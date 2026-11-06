@@ -1,0 +1,106 @@
+/* OBS panel: setup page (/panel) and the dock (/panel/dock). Same dark look as the studio. */
+.pn-page { min-height: 100vh; }
+.pn-main { max-width: 760px; margin: 0 auto; padding: 28px 20px 60px; display: grid; gap: 16px; }
+.pn-main h1 { font-size: 28px; letter-spacing: -0.01em; }
+.pn-lead { color: var(--muted); font-size: 15px; line-height: 1.5; }
+.pn-card { display: grid; gap: 12px; padding: 18px; border-radius: 16px; border: 1px solid var(--line); background: var(--panel); }
+.pn-card h2 { display: flex; align-items: center; gap: 10px; font-size: 17px; }
+.pn-card p, .pn-card li { color: var(--muted); line-height: 1.5; font-size: 14px; }
+.pn-card ol { padding-left: 20px; display: grid; gap: 4px; }
+.pn-step { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--orange); color: #fff; font-size: 13px; }
+.pn-warn { padding: 10px 12px; border-radius: 10px; background: rgba(255, 89, 0, 0.1); border: 1px solid rgba(255, 89, 0, 0.35); color: #ffb48a !important; }
+.pn-danger { border-color: rgba(255, 70, 70, 0.3); }
+.pn-error { color: #ff8a8a; font-size: 13px; }
+.pn-copy { display: flex; gap: 6px; }
+.pn-copy input, .pn-dock input {
+  flex: 1;
+  min-width: 0;
+  height: 36px;
+  padding: 0 10px;
+  border-radius: 10px;
+  border: 1px solid var(--line);
+  background: var(--input);
+  color: var(--text);
+  font: 13px ui-monospace, Consolas, monospace;
+}
+.pn-dock input { font-family: inherit; }
+.pn-primary, .pn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.pn-primary { border: 0; background: var(--orange); color: #fff; }
+.pn-primary:hover { filter: brightness(1.1); }
+.pn-ghost { border: 1px solid var(--line); background: var(--input); color: var(--text); }
+.pn-ghost:hover { border-color: #444; }
+.pn-ghost.is-on { border-color: var(--orange); color: var(--orange); }
+.pn-primary:disabled, .pn-ghost:disabled { opacity: 0.5; cursor: default; }
+.pn-big { height: 44px; font-size: 15px; justify-self: start; padding: 0 22px; }
+.pn-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.pn-row > * { flex: 1 1 auto; }
+.pn-import summary { cursor: pointer; color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+.pn-status { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+.pn-dot { width: 9px; height: 9px; border-radius: 50%; background: #6b6b73; flex: none; }
+.pn-dot.is-on { background: #2ed573; box-shadow: 0 0 0 3px rgba(46, 213, 115, 0.2); }
+.pn-link { border: 0; background: none; color: var(--muted); font-size: 12px; text-decoration: underline; padding: 2px 0; justify-self: start; text-align: left; }
+.pn-note { font-size: 12px; color: var(--muted); }
+
+/* ---------- dock: narrow column inside OBS ---------- */
+html.is-dock body { background: #101012; }
+.pn-dock { display: grid; gap: 10px; padding: 10px; max-width: 520px; margin: 0 auto; font-size: 13px; }
+.pn-dock-head { display: flex; align-items: center; gap: 8px; padding: 2px 2px 4px; }
+.pn-dock-head b { flex: 1; font-size: 14px; }
+.pn-dock-head small { color: var(--muted); }
+.pn-box { display: grid; gap: 8px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); }
+.pn-box h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.pn-timer { font: 800 40px/1 'DM Sans', sans-serif; font-variant-numeric: tabular-nums; text-align: center; padding: 6px 0; }
+.pn-timer.is-running { color: #2ed573; }
+.pn-seg { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.pn-seg button { border: 0; height: 32px; background: var(--input); color: var(--muted); font-weight: 700; }
+.pn-seg button.is-on { background: var(--orange); color: #fff; }
+.pn-goal { display: flex; align-items: baseline; justify-content: center; gap: 6px; }
+.pn-goal b { font-size: 32px; font-variant-numeric: tabular-nums; }
+.pn-goal span { color: var(--muted); }
+.pn-vis-toggle { display: flex; justify-content: space-between; align-items: center; border: 0; background: none; color: var(--muted); padding: 0; }
+.pn-vis-group h4 { font-size: 11px; color: var(--muted); font-weight: 500; margin: 6px 0 4px; }
+.pn-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.pn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: var(--input);
+  color: var(--text);
+  font-size: 12px;
+}
+.pn-chip i { font-style: normal; font-size: 11px; }
+.pn-chip.is-hidden { opacity: 0.45; border-style: dashed; }
+.pn-foot { text-align: center; padding-bottom: 6px; }
+
+/* ---------- studio: "control from the OBS panel" row and the menu entry ---------- */
+.st-panel-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.st-panel-row a { color: var(--orange); }
+.st-panel-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 10px;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 89, 0, 0.4);
+  background: linear-gradient(90deg, rgba(255, 89, 0, 0.14), var(--panel) 80%);
+}
+.st-panel-entry > span:first-child { font-size: 20px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 9px; background: rgba(255, 89, 0, 0.18); flex: none; }
+.st-panel-entry b { display: block; font-size: 14px; font-weight: 600; }
+.st-panel-entry small { color: var(--muted); font-size: 12px; }
+.st-panel-entry:hover { border-color: var(--orange); }

@@ -6,6 +6,7 @@ import type { Params } from './schema';
 import { BRAND_COLORS, BRAND_INK, BrandIcon, detectBrand } from './icons';
 import { SCENE_FONTS } from './SceneScreen';
 import { isLang, translate } from '../i18n';
+import { timerValue, usePanel } from '../panel/panel';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -98,11 +99,18 @@ const lastAt = (hhmm: string, from: number) => {
 export const TimerWidget = ({ params: p }: { params: Params }) => {
   const now = useNow(250);
   const start = useRef(Date.now()).current;
-  const mode = String(p.mode ?? 'countdown');
+  const panel = usePanel();
+  const pt = panel?.state.timer ?? null;
+  const mode = pt ? pt.mode : String(p.mode ?? 'countdown');
   const total = (num(p.minutes, 5) * 60 + num(p.secs, 0)) * 1000;
 
   let left = 0, up = 0, frac = 0, counting = true;
-  if (mode === 'countdown') {
+  if (pt) {
+    // Driven from the OBS panel: start / pause / reset / +1 min come from the dock.
+    const v = timerValue(pt, panel!.serverNow());
+    if (pt.mode === 'countdown') { left = v; frac = pt.total ? Math.min(1, 1 - v / pt.total) : 1; }
+    else { counting = false; up = v; }
+  } else if (mode === 'countdown') {
     const passed = now - start;
     const cycle = p.loop && total > 0 ? passed % total : passed;
     left = total - cycle;
@@ -169,8 +177,10 @@ export const GoalWidget = ({ params: p }: { params: Params }) => {
   const lang = langOf(p);
   const platform = String(p.source ?? 'manual');
   const live = useChannel(platform, String(p.channel ?? ''));
-  // Without a working API answer the bar falls back to the number typed in the studio.
-  const current = live.data ? live.data.count : num(p.current, 0);
+  const panel = usePanel();
+  // Without a working API answer the bar falls back to the number typed in the studio (or set in the OBS panel).
+  const panelCurrent = panel?.state.goal.current;
+  const current = live.data ? live.data.count : panelCurrent ?? num(p.current, 0);
   const prev = useRef<number | null>(null);
   const [bump, setBump] = useState<{ n: number; key: number } | null>(null);
   useEffect(() => {
@@ -182,7 +192,7 @@ export const GoalWidget = ({ params: p }: { params: Params }) => {
     const id = window.setTimeout(() => setBump(null), 4500);
     return () => window.clearTimeout(id);
   }, [live.data?.count]); // eslint-disable-line react-hooks/exhaustive-deps
-  const target = Math.max(1e-9, num(p.target, 100));
+  const target = Math.max(1e-9, panel?.state.goal.target ?? num(p.target, 100));
   const pct = Math.max(0, Math.min(1, current / target));
   const reached = current >= target;
   const unit = String(p.unit ?? '');
@@ -260,24 +270,36 @@ export const ReminderWidget = ({ params: p }: { params: Params }) => {
   const everyMs = preview ? showMs + 2000 : Math.max(showMs + 1000, num(p.every, 5) * 60_000);
   const delayMs = preview ? 400 : num(p.delay, 20) * 1000;
   const [state, setState] = useState<{ index: number; shown: boolean; n: number }>({ index: 0, shown: false, n: 0 });
+  const panel = usePanel();
+  const paused = panel?.state.reminder.paused === true;
+  const fired = panel?.state.reminder.fire ?? 0;
+  const firstFire = useRef(fired);
+  const countRef = useRef(0);
+  const hideRef = useRef<number | undefined>(undefined);
+  /** One appearance of the next (or a random) message. */
+  const showNext = () => {
+    if (!lines.length) return;
+    const index = p.order === 'random' ? Math.floor(Math.random() * lines.length) : countRef.current % lines.length;
+    countRef.current += 1;
+    setState({ index, shown: true, n: countRef.current });
+    window.clearTimeout(hideRef.current);
+    hideRef.current = window.setTimeout(() => setState((s) => ({ ...s, shown: false })), showMs);
+  };
+  // "Show now" in the dock (ignores the value that was there before this source loaded).
+  useEffect(() => {
+    if (fired && fired !== firstFire.current) showNext();
+  }, [fired]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (!lines.length) return;
-    let hide: number | undefined;
-    let count = 0;
-    const show = () => {
-      const index = p.order === 'random' ? Math.floor(Math.random() * lines.length) : count % lines.length;
-      count += 1;
-      setState({ index, shown: true, n: count });
-      hide = window.setTimeout(() => setState((s) => ({ ...s, shown: false })), showMs);
-    };
+    if (!lines.length || paused) return undefined;
     let loop: number | undefined;
     const first = window.setTimeout(() => {
-      show();
-      loop = window.setInterval(show, everyMs);
+      showNext();
+      loop = window.setInterval(showNext, everyMs);
     }, delayMs);
-    return () => { window.clearTimeout(first); window.clearInterval(loop); window.clearTimeout(hide); };
-  }, [lines.length, everyMs, delayMs, showMs, p.order]); // eslint-disable-line react-hooks/exhaustive-deps
+    return () => { window.clearTimeout(first); window.clearInterval(loop); };
+  }, [lines.length, everyMs, delayMs, showMs, p.order, paused]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => () => window.clearTimeout(hideRef.current), []);
 
   if (!lines.length) return null;
   const text = lines[state.index % lines.length];
