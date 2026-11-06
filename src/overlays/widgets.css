@@ -204,9 +204,10 @@
 .wd-soc.style-glass {
   padding: 0.45em 1.1em 0.45em 0.5em;
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.16);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 .wd-soc.style-neon {
   padding: 0.45em 1.1em 0.45em 0.5em;
@@ -217,6 +218,8 @@
   overflow: visible;
 }
 .wd-soc.style-neon .wd-soc-text { text-shadow: 0 0 0.35em var(--accent); }
+/* A white or pale glow only blurs white letters. */
+.wd-soc.style-neon.on-light .wd-soc-text { text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9); }
 .wd-soc.style-gradient {
   padding: 0.45em 1.2em 0.45em 0.5em;
   border-radius: var(--radius);
@@ -224,12 +227,18 @@
 }
 .wd-soc.style-gradient .wd-soc-icon { background: rgba(0, 0, 0, 0.28); }
 /* Light service colour (X): dark text and a light icon disc, or both vanish into the white end of the gradient. */
-.wd-soc.style-gradient.on-light { color: var(--ink); }
+.wd-soc.style-gradient.on-light { color: var(--ink); background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 70%, var(--bg))); }
 .wd-soc.style-gradient.on-light .wd-soc-icon { background: rgba(255, 255, 255, 0.6); }
-.wd-soc.style-outline { padding: 0.4em 1.1em 0.4em 0.5em; border-radius: var(--radius); border: 2px solid var(--accent); text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85); }
-.wd-soc.style-underline { padding: 0.2em 0.2em 0.35em; border-bottom: 0.12em solid var(--accent); text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85); }
+.wd-soc.style-outline { padding: 0.4em 1.1em 0.4em 0.5em; border-radius: var(--radius); border: 2px solid var(--accent); background: color-mix(in srgb, var(--bg) 55%, transparent); }
+.wd-soc.style-underline { padding: 0.2em 0.2em 0.35em; border-bottom: 0.12em solid var(--accent); }
 .wd-soc.style-underline .wd-soc-icon, .wd-soc.style-clean .wd-soc-icon { background: none; color: var(--accent); }
-.wd-soc.style-clean { text-shadow: 0 2px 6px rgba(0, 0, 0, 0.85); }
+/* No backing of their own, so a tight dark halo keeps the text and icon readable over a bright game or snow. */
+.wd-soc.style-outline, .wd-soc.style-underline, .wd-soc.style-clean {
+  text-shadow: 0 0 2px #000, 0 0 4px rgba(0, 0, 0, 0.85), 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+.wd-soc.style-underline .wd-soc-icon svg, .wd-soc.style-clean .wd-soc-icon svg {
+  filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.85));
+}
 
 /* Service colour fills the whole chip. */
 .wd-soc.style-brand {
@@ -240,6 +249,7 @@
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
   box-shadow: 0 0.3em 0.9em color-mix(in srgb, var(--accent) 45%, rgba(0, 0, 0, 0.5));
 }
+.wd-soc.style-brand.on-light { text-shadow: none; }
 .wd-soc.style-brand .wd-soc-icon { background: rgba(255, 255, 255, 0.2); }
 .wd-soc.style-brand .wd-soc-bar { background: color-mix(in srgb, var(--ink, #fff) 85%, transparent); }
 

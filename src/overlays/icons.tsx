@@ -7,9 +7,9 @@ export const BRAND_COLORS: Record<Brand, string> = {
   instagram: '#e1306c', x: '#ffffff', facebook: '#1877f2', link: '#ff5900',
 };
 
-/** Colour for a glyph or text drawn on top of the brand colour. X is white, so it needs a dark one. */
+/** Colour for a glyph or text drawn on top of the brand colour. X, TikTok cyan and Kick green are too light for white. */
 export const BRAND_INK: Record<Brand, string> = {
-  twitch: '#fff', youtube: '#fff', discord: '#fff', tiktok: '#fff', kick: '#fff',
+  twitch: '#fff', youtube: '#fff', discord: '#fff', tiktok: '#0f1419', kick: '#0f1419',
   instagram: '#fff', x: '#0f1419', facebook: '#fff', link: '#fff',
 };
 
