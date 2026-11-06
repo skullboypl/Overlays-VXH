@@ -4,7 +4,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 4cqmin;
+  /* Fixed px: container units on the container itself would be measured against the whole page (huge in the studio). */
+  padding: 8px;
   font-family: var(--font);
   color: var(--fg);
 }
@@ -172,7 +173,7 @@
 
 /* ---------- QR code ---------- */
 .tl-qr .tl-card { --base: min(10cqh, 13cqw); gap: 0.4em; padding: 0.6em; }
-.tl-qr .tl-label { font-size: 0.85em; text-transform: none; letter-spacing: 0; }
+.tl-qr .tl-label { font-size: 0.72em; text-transform: none; letter-spacing: 0; white-space: normal; }
 .tl-qr .tl-sub { font-size: 0.6em; }
 .tl-qr-box { position: relative; width: min(var(--s) * 70cqmin, 100%); aspect-ratio: 1; border-radius: 0.4em; overflow: hidden; background: var(--qr-bg); }
 .tl-qr-box svg { display: block; width: 100%; height: 100%; }
