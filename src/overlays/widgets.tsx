@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperti
 import type { Params } from './schema';
 import { BRAND_COLORS, BRAND_INK, BrandIcon, parseSocials } from './icons';
 import { SCENE_FONTS } from './SceneScreen';
+import { useRotation } from './useRotation';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -9,17 +10,6 @@ const Clock = ({ h12 }: { h12: boolean }) => {
   const [now, setNow] = useState(new Date());
   useEffect(() => { const id = setInterval(() => setNow(new Date()), 10_000); return () => clearInterval(id); }, []);
   return <>{now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: h12 })}</>;
-};
-
-/** Index that moves to the next item every `ms` (stays at 0 when there is only one item). */
-const useRotation = (count: number, ms: number) => {
-  const [index, setIndex] = useState(0);
-  useEffect(() => {
-    if (count < 2) return;
-    const id = setInterval(() => setIndex((i) => (i + 1) % count), ms);
-    return () => clearInterval(id);
-  }, [count, ms]);
-  return count ? index % count : 0;
 };
 
 export const TickerWidget = ({ params }: { params: Params }) => {

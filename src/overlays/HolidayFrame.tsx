@@ -1,8 +1,9 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { isLang, translate } from '../i18n';
 import { FRAME_URLS } from './backgrounds';
+import { resolveHolidayTheme } from './holidayCalendar';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Corner = 'tl' | 'tr' | 'bl' | 'br';
@@ -180,7 +181,7 @@ const ImageFrame = ({ theme, params, variant, label, src }: { theme: Theme; para
   );
 };
 
-export const HolidayFrame = ({ params }: { params: Params }) => {
+const ThemedFrame = ({ params }: { params: Params }) => {
   const theme = HOLIDAY_THEMES[params.theme as string] ?? HOLIDAY_THEMES.xmas;
   const variant = params.variant as string;
   const art = FRAME_URLS[`${params.theme}-${variant}`];
@@ -237,4 +238,21 @@ export const HolidayFrame = ({ params }: { params: Params }) => {
       {label && <div className={`hf-label at-${params.labelPos ?? 'bottom'}`} style={{ '--label-size': `${params.labelSize ?? 15}px` } as Vars}><span>{label}</span></div>}
     </div>
   );
+};
+
+/** Today's date, refreshed every 10 minutes so an "auto" frame left running in OBS changes with the season. */
+const useToday = (enabled: boolean) => {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    if (!enabled) return;
+    const id = setInterval(() => setNow(new Date()), 600_000);
+    return () => clearInterval(id);
+  }, [enabled]);
+  return now;
+};
+
+export const HolidayFrame = ({ params }: { params: Params }) => {
+  const now = useToday(params.theme === 'auto');
+  const theme = resolveHolidayTheme(params.theme, now);
+  return theme ? <ThemedFrame params={{ ...params, theme }} /> : null;
 };

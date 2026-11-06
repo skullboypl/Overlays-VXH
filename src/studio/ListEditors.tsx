@@ -15,6 +15,18 @@ const SERVICES: { brand: Brand; label: string; prefix: string; placeholder: stri
   { brand: 'instagram', label: 'Instagram', prefix: 'instagram.com/', placeholder: tx('nick') },
   { brand: 'x', label: 'X / Twitter', prefix: 'x.com/', placeholder: tx('nick') },
   { brand: 'facebook', label: 'Facebook', prefix: 'facebook.com/', placeholder: tx('strona') },
+  { brand: 'bluesky', label: 'Bluesky', prefix: 'bsky.app/profile/', placeholder: tx('nick') },
+  { brand: 'threads', label: 'Threads', prefix: 'threads.net/@', placeholder: tx('nick') },
+  { brand: 'spotify', label: 'Spotify', prefix: 'open.spotify.com/', placeholder: 'playlist/…' },
+  { brand: 'steam', label: 'Steam', prefix: 'steamcommunity.com/id/', placeholder: tx('nick') },
+  { brand: 'reddit', label: 'Reddit', prefix: 'reddit.com/r/', placeholder: 'subreddit' },
+  { brand: 'github', label: 'GitHub', prefix: 'github.com/', placeholder: tx('nick') },
+  { brand: 'patreon', label: 'Patreon', prefix: 'patreon.com/', placeholder: tx('nick') },
+  { brand: 'kofi', label: 'Ko-fi', prefix: 'ko-fi.com/', placeholder: tx('nick') },
+  { brand: 'paypal', label: 'PayPal', prefix: 'paypal.me/', placeholder: tx('nick') },
+  { brand: 'tipply', label: 'Tipply', prefix: 'tipply.pl/@', placeholder: tx('nick') },
+  { brand: 'patronite', label: 'Patronite', prefix: 'patronite.pl/', placeholder: tx('nick') },
+  { brand: 'email', label: 'E-mail', prefix: '', placeholder: 'kontakt@…' },
   { brand: 'link', label: tx('Inny link / tekst'), prefix: '', placeholder: tx('np. sklep.pl albo !discord') },
 ];
 

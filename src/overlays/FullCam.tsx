@@ -2,8 +2,8 @@ import { useEffect, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
 import { ProFrame } from './ProFrame';
 import { FaceitStats } from './FaceitStats';
-import { ParticleLayer, type EffectKind } from './ParticleLayer';
-import { EFFECT_DEFAULTS, SCENE_FONTS } from './SceneScreen';
+import { ParticleLayer } from './ParticleLayer';
+import { effectLayer, SCENE_FONTS } from './SceneScreen';
 import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
 import { HolidayLayer } from './HolidayLayer';
 
@@ -19,6 +19,7 @@ const Clock = () => {
 export const FullCam = ({ params }: { params: Params }) => {
   const colors = (params.colors as string[]) ?? ['#ff5900', '#ff2d6f', '#7a5cff'];
   const effect = String(params.effect ?? 'none');
+  const fx = effectLayer(effect, colors);
   const socials = parseSocials(String(params.socials ?? ''));
   const style: Vars = {
     '--c1': colors[0], '--c2': colors[1] ?? colors[0], '--c3': colors[2] ?? colors[0],
@@ -29,9 +30,7 @@ export const FullCam = ({ params }: { params: Params }) => {
   return (
     <div className="sc-root cs-root fc-root" style={style}>
       {params._preview && <div className="st-cam fc-preview-cam" aria-hidden><span /></div>}
-      {effect !== 'none' && EFFECT_DEFAULTS[effect] && (
-        <ParticleLayer key={effect} kind={(effect === 'warp' ? 'stars' : effect) as EffectKind} params={{ ...EFFECT_DEFAULTS[effect], ...(effect === 'confetti' ? { colors } : {}) }} />
-      )}
+      {fx && <ParticleLayer key={effect} kind={fx.kind} params={fx.params} />}
       {params.vignette && <div className="sc-vignette" style={{ opacity: Number(params.vignetteStrength ?? 0.6) }} />}
       <HolidayLayer params={params} />
       <ProFrame params={{ ...params, mask: false }}>

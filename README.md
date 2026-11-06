@@ -56,10 +56,18 @@ Część zestawu narzędzi [VXH](https://vxh.pl/) dla streamerów (obok [FACEIT 
 | `starting` | Zaraz startujemy | Ekran przed streamem z odliczaniem, socialami i animowanym tłem |
 | `brb` | Przerwa / BRB | Ekran przerwy z licznikiem powrotu i neonowym tytułem |
 | `ending` | Koniec streama | Podziękowanie, termin następnego streama i sociale |
+| `videobg` | Tło wideo | Zapętlone realistyczne wideo na całą scenę (miasto neon, pokój nocą, zimowy las, święta) z rozmyciem, przyciemnieniem, efektem i ziarnem |
 
-Wspólne opcje ekranów: tytuł, podtytuł i znaczek nad tytułem; licznik (brak, minuty od załadowania źródła w OBS albo do podanej godziny HH:MM) z napisem po odliczeniu i paskiem postępu; pasek sociali z ikonami; miejsce na czat (lewa/prawa strona, szerokość, wygląd: szkło, obramowanie albo przezroczysta dziura); tło: 9 animowanych w CSS (zorza, synthwave, fale, kosmos, minimal, gradient, promienie, kropki, lava), 10 obrazków (pokój nocą, miasto neon, zimowy las, święta, Halloween, mgławica, zachód anime, abstrakcja 3D, sakura, plaża) z powolnym zoomem/przesuwem, przyciemnieniem i zabarwieniem albo własny obrazek z linku, do 3 kolorów, kolor bazowy i tekstu; animacja tytułu (wjazd, fala, pop, neon, glitch) i 6 czcionek; efekt na wierzchu (gwiazdy, warp, śnieg, świetliki, konfetti, płatki, emoji, fajerwerki), animowany equalizer i winieta.
+Wspólne opcje ekranów: 10 układów (środek, lewo, prawo, pasek dolny, góra, tytuł i licznik obok, karta, baner, wielki licznik, róg); tytuł, podtytuł (jeden albo kilka zmienianych co N sekund) i znaczek nad tytułem; licznik (brak, minuty od załadowania źródła w OBS albo do podanej godziny HH:MM) z napisem po odliczeniu i paskiem postępu; pasek sociali z ikonami; miejsce na czat (7 miejsc, szerokość, wygląd: szkło, obramowanie albo przezroczysta dziura); tło: 9 animowanych w CSS (zorza, synthwave, fale, kosmos, minimal, gradient, promienie, kropki, lava), 10 obrazków (pokój nocą, miasto neon, zimowy las, święta, Halloween, mgławica, zachód anime, abstrakcja 3D, sakura, plaża) z powolnym zoomem/przesuwem, 4 wideo albo własny obrazek z linku, przyciemnienie i zabarwienie, do 3 kolorów, kolor bazowy i tekstu; animacja tytułu (wjazd, fala, pop, neon, glitch) i 10 czcionek; jeden z 15 efektów na wierzchu, animowany equalizer i winieta.
 
 > Obrazki teł w `public/bg/` zostały wygenerowane lokalnie modelem FLUX.1-dev w ComfyUI na potrzeby tego projektu.
+
+### 🎥 Sceny z kamerką (1920×1080)
+
+| ID | Nazwa | Najważniejsze opcje |
+|---|---|---|
+| `camscene` | Kamerka fullscreen | 12 układów z miejscem na kamerkę, grę i czat (m.in. duo, squad, pionowy, kinowy), ramki slotów (gradient, pełne, świecące, szkło) z 4 animacjami, tło i efekt, tytuł z kropką LIVE, zegarem i czasem streamu, podpis na kamerce w 4 stylach, sociale, oprawa świąteczna, staty FACEIT |
+| `fullcam` | Pełnoekranowa kamera | warstwa nad kamerą na cały ekran: wszystkie opcje Ramki Pro, tytuł z zegarem, nick, sociale, oprawa świąteczna, staty FACEIT, efekt i winieta |
 
 ### ✨ Efekty (cały ekran 1920×1080)
 
@@ -67,10 +75,17 @@ Wspólne opcje ekranów: tytuł, podtytuł i znaczek nad tytułem; licznik (brak
 |---|---|---|
 | `snow` | Śnieg | ilość, prędkość, rozmiar, wiatr, kolor, rozmycie głębi, kropki / kryształki / mieszane, obszar |
 | `rain` | Deszcz | ilość, prędkość, wiatr, kolor, rozbryzgi na dole, obszar |
-| `confetti` | Konfetti | do 6 kolorów, ciągły deszcz albo wybuch z dołu co N sekund |
+| `confetti` | Konfetti | do 6 kolorów, ciągły deszcz albo wybuch z dołu co N sekund, obszar |
 | `emoji` | Unoszące się emoji | własne emoji (losowane), kierunek w górę lub w dół, obszar |
 | `fireflies` | Świetliki | kolor, siła poświaty, obszar |
-| `petals` | Płatki / liście | do 5 kolorów, kształt płatek lub liść |
+| `petals` | Płatki / liście | do 5 kolorów, kształt płatek lub liść, obszar |
+| `embers` | Iskry z ogniska | kolory, poświata, wiatr, obszar |
+| `bubbles` | Bańki mydlane | kolory, wiatr, obszar |
+| `bokeh` | Bokeh | rozmyte świetlne kręgi w wybranych kolorach |
+| `sparkles` | Błyski brokatu | kolory, obszar (też tylko brzegi) |
+| `balloons` | Balony | kolory, wiatr, obszar |
+| `meteors` | Spadające gwiazdy | co ile sekund, kierunek, kolory |
+| `digital` | Cyfrowy deszcz | kolory, obszar |
 | `fireworks` | Fajerwerki | rakiet na salwę, odstęp salw, kolory, kształt wybuchu (mieszany, pierścień, serce), migotanie |
 | `stars` | Gwiazdy / warp | migotanie ze spadającymi gwiazdami albo lot w hiperprzestrzeń |
 | `grain` | Ziarno + winieta | ziarno filmowe, winieta, linie VHS, migotanie |
@@ -84,14 +99,24 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `neon` | Neonowa ramka | obracający się gradient z do 5 kolorów, grubość, zaokrąglenie, poświata, prędkość |
 | `corners` | Narożniki HUD | narożniki celownika, linia skanu, kropka REC, oddychanie |
 | `nametag` | Ramka z podpisem | ramka z paskiem na nick i podpis, 5 pozycji paska, błysk co kilka sekund |
-| `holiday` | Ramki świąteczne | 8 motywów: Boże Narodzenie, Zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, Urodziny; dekoracje w rogach, girlanda, efekt w środku; każde w 5 wersjach: animowana, realistyczna (AI), 3D, kreskówka, neon; napis z wyborem wielkości i pozycji |
+| `holiday` | Ramki świąteczne | 8 okazji: Boże Narodzenie, Zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, Urodziny, albo „automatycznie wg daty”; do 13 wersji każdej (animowana, 5 realistycznych, 3D, kreskówka, do 5 neonów); dekoracje w rogach, girlanda, efekt w środku, napis z wyborem wielkości i pozycji |
+| `proframe` | Ramka Pro | 4 kształty, 6 rodzajów obramowania, 4 animacje, akcenty w rogach, maska poza kamerką |
+| `faceitcam` | Kamerka + FACEIT | Ramka Pro ze statami FACEIT (level, ELO, K/D, forma, zmiana ELO na streamie; 6 wyglądów) albo banerem z FACEIT Banner |
+
+### 🎅 Postacie (1920×1080)
+
+| ID | Nazwa | Najważniejsze opcje |
+|---|---|---|
+| `character` | Animowane postacie | Mikołaj, elf, renifer, bałwan, dynia, wiedźma, zajączek, amorek i inne w pętli z przezroczystym tłem; pozycja, rozmiar, odbicie, cień, pętla albo pojawianie się co N sekund |
 
 ### 📰 Paski i napisy
 
 | ID | Nazwa | Rozmiar | Najważniejsze opcje |
 |---|---|---|---|
-| `ticker` | Przewijany pasek | 1920×64 | lista komunikatów, etykieta, separator, styl, prędkość w px/s, czcionka |
-| `socials` | Rotator sociali | 560×100 | Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Facebook albo własny tekst; zmiana co N sekund, 3 animacje, kolory serwisów, pasek czasu |
+| `ticker` | Przewijany pasek | 1920×64 | lista komunikatów przewijana albo zmieniana (4 animacje), etykieta, kropka LIVE, zegar, 7 stylów, czcionka |
+| `socials` | Rotator sociali | 560×100 | 20 serwisów (m.in. Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Bluesky, Threads, Spotify, Steam, Patreon, Ko-fi, Tipply, Patronite) albo własny tekst; 6 układów, 18 stylów, 7 animacji, kolory serwisów, pasek czasu |
+
+Czcionki (wspólne dla wszystkich overlayów): Poppins, Bebas, Russo, Orbitron, Pacifico, DM Sans, Montserrat, Rajdhani, Marker i Pixel.
 
 Pełna lista parametrów każdego overlaya (klucze, zakresy, wartości domyślne) jest generowana przy buildzie do [`/llms.txt`](https://overlays.vxh.pl/llms.txt).
 

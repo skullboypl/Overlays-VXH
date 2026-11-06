@@ -3,6 +3,7 @@ import type { Params } from './schema';
 import { ParticleLayer, type EffectKind } from './ParticleLayer';
 import { PHOTO_IDS, VIDEO_URLS } from './backgrounds';
 import { BRAND_COLORS, BrandIcon, parseSocials } from './icons';
+import { useRotation } from './useRotation';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 
@@ -13,6 +14,10 @@ export const SCENE_FONTS: Record<string, string> = {
   russo: "'Russo One', sans-serif",
   orbitron: "'Orbitron', sans-serif",
   pacifico: "'Pacifico', cursive",
+  montserrat: "'Montserrat', sans-serif",
+  rajdhani: "'Rajdhani', sans-serif",
+  marker: "'Permanent Marker', cursive",
+  pixel: "'Press Start 2P', monospace",
 };
 
 const pad = (n: number) => String(n).padStart(2, '0');
@@ -211,6 +216,24 @@ export const EFFECT_DEFAULTS: Record<string, Params> = {
   digital: { count: 60, speed: 1, size: 1, opacity: 0.8, colors: ['#3bff7a'] },
 };
 
+/** One subtitle, or a list of them shown one after another ("Zmieniaj podtytuły"). */
+const Subtitle = ({ params }: { params: Params }) => {
+  const lines = params.subRotate ? String(params.subtitles ?? '').split('|').map((l) => l.trim()).filter(Boolean) : [];
+  const index = useRotation(lines.length, Math.max(1, Number(params.subEvery ?? 7)) * 1000);
+  // The first line waits for the title like a plain subtitle; later ones (also after the loop wraps) fade in at once.
+  const [moved, setMoved] = useState(false);
+  useEffect(() => { if (index > 0) setMoved(true); }, [index]);
+  if (!lines.length) return params.subtitle ? <p className="sc-sub">{String(params.subtitle)}</p> : null;
+  return <p key={index} className={`sc-sub ${moved ? 'is-next' : ''}`}>{lines[index]}</p>;
+};
+
+/** Particle kind and settings for an effect picked from the shared effect list, tinted with the theme colours. */
+export const effectLayer = (effect: string, colors: string[]): { kind: EffectKind; params: Params } | null => {
+  if (!effect || effect === 'none' || !EFFECT_DEFAULTS[effect]) return null;
+  const tint: Params = effect === 'confetti' || effect === 'fireworks' ? { colors } : effect === 'fireflies' ? { color: colors[1] ?? colors[0] } : {};
+  return { kind: (effect === 'warp' ? 'stars' : effect) as EffectKind, params: { ...EFFECT_DEFAULTS[effect], ...tint } };
+};
+
 export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'ending'; params: Params }) => {
   const colors = params.colors as string[];
   const timer = (params.timer as string) ?? 'off';
@@ -238,16 +261,13 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
   const chatV = side.endsWith('-top') ? 'v-top' : side.endsWith('-bottom') ? 'v-bottom' : 'v-full';
   const chatClass = chat ? `has-chat chat-${chatBase} chat-${chatV} chat-${params.chatStyle ?? 'glass'}` : '';
 
-  const effectParams: Params | null = effect && effect !== 'none'
-    ? { ...EFFECT_DEFAULTS[effect], ...(effect === 'confetti' || effect === 'fireworks' ? { colors } : {}), ...(effect === 'fireflies' ? { color: colors[1] ?? colors[0] } : {}) }
-    : null;
-  const effectKind: EffectKind | null = effect === 'warp' ? 'stars' : (effect as EffectKind);
+  const fx = effectLayer(effect, colors);
 
   return (
     <div className={`sc-root sc-${kind} ${chatClass} lay-${params.layout ?? 'center'}`} style={style}>
       <div className="sc-layers">
         <Background bg={params.bg as string} colors={colors} params={params} />
-        {effectParams && <ParticleLayer key={effect} kind={effectKind!} params={effectParams} />}
+        {fx && <ParticleLayer key={effect} kind={fx.kind} params={fx.params} />}
         {params.vignette && <div className="sc-vignette" />}
       </div>
 
@@ -273,7 +293,7 @@ export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'endi
             </div>
           )}
           {params.showTitle !== false && <Title key={`${params.title}-${params.titleAnim}`} text={(params.title as string) || ' '} anim={params.titleAnim as string} />}
-          {params.showSubtitle !== false && params.subtitle && <p className="sc-sub">{params.subtitle as string}</p>}
+          {params.showSubtitle !== false && <Subtitle params={params} />}
 
           {timer !== 'off' && (
             <div className="sc-timer">
