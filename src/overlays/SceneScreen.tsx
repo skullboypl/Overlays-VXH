@@ -56,7 +56,12 @@ const Title = ({ text, anim }: { text: string; anim: string }) => {
     if (!el) return;
     const measure = () => {
       const current = parseFloat(getComputedStyle(el).getPropertyValue('--fit')) || 1;
-      const natural = el.scrollWidth / current;
+      // Width of the text itself. scrollWidth is no good here: in the split / banner grid the title box is 100 % wide,
+      // so a short text reports the box width and a once-shrunk title could never grow back.
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const textWidth = Math.max(range.getBoundingClientRect().width, el.scrollWidth > el.clientWidth ? el.scrollWidth : 0);
+      const natural = textWidth / current;
       // Room the layout gives the title: its grid column, or the content box of the text block.
       const parent = el.parentElement!;
       const ps = getComputedStyle(parent);
