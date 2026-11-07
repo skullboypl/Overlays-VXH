@@ -56,11 +56,13 @@ const Title = ({ text, anim }: { text: string; anim: string }) => {
     if (!el) return;
     const measure = () => {
       const current = parseFloat(getComputedStyle(el).getPropertyValue('--fit')) || 1;
-      // Width of the text itself. scrollWidth is no good here: in the split / banner grid the title box is 100 % wide,
-      // so a short text reports the box width and a once-shrunk title could never grow back.
-      const range = document.createRange();
-      range.selectNodeContents(el);
-      const textWidth = Math.max(range.getBoundingClientRect().width, el.scrollWidth > el.clientWidth ? el.scrollWidth : 0);
+      // Width of the text itself, from the letters' layout boxes (offsetLeft/offsetWidth). Those ignore CSS transforms,
+      // so neither the scaled-down studio preview nor the letter animations change the number. (scrollWidth reports the
+      // box when the text is shorter; bounding rects are scaled in the studio: both made the title flip between sizes.)
+      const letters = el.children;
+      const first = letters[0] as HTMLElement | undefined;
+      const last = letters[letters.length - 1] as HTMLElement | undefined;
+      const textWidth = first && last ? last.offsetLeft + last.offsetWidth - first.offsetLeft : el.scrollWidth;
       const natural = textWidth / current;
       // Room the layout gives the title: its grid column, or the content box of the text block.
       const parent = el.parentElement!;
