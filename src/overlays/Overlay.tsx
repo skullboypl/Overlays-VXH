@@ -11,7 +11,8 @@ import { FullCam } from './FullCam';
 import { SocialsWidget, TickerWidget } from './widgets';
 import { ClockWidget, GoalWidget, QrWidget, ReminderWidget, TimerWidget } from './tools';
 import { LowerThirdWidget, QrRotatorWidget, ScheduleWidget, SingleSocialWidget } from './bars';
-import { GlitchFrame, PixelFrame, PolaroidFrame, RetroFrame } from './frames2';
+import { ComicFrame, DoodleFrame, GlitchFrame, HudFrame, OrnateFrame, PixelFrame, PolaroidFrame, RetroFrame } from './frames2';
+import { ProScene } from './ProScene';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
 /** Overlay plus the optional "made with AI" label (EU AI Act), drawn only when the streamer turns it on. */
@@ -57,6 +58,13 @@ const OverlayBody = ({ id, params }: { id: string; params: Params }) => {
     case 'retroframe': return <RetroFrame params={params} />;
     case 'polaroid': return <PolaroidFrame params={params} />;
     case 'pixelframe': return <PixelFrame params={params} />;
+    case 'hudframe': return <HudFrame params={params} />;
+    case 'comicframe': return <ComicFrame params={params} />;
+    case 'doodleframe': return <DoodleFrame params={params} />;
+    case 'ornateframe': return <OrnateFrame params={params} />;
+    case 'startpro': return <ProScene kind="starting" params={params} />;
+    case 'brbpro': return <ProScene kind="brb" params={params} />;
+    case 'endpro': return <ProScene kind="ending" params={params} />;
     default: return null;
   }
 };

@@ -53,6 +53,9 @@ Part of the [VXH](https://vxh.pl/) toolset for streamers (next to [FACEIT Banner
 
 | ID | Name (PL) | What it does |
 |---|---|---|
+| `startpro` | Zaraz startujemy Pro (starting soon Pro) | nick intro, countdown with flipping digits, a panel carousel (socials with QR and a per-service call to action, info, rewards / goals, next stream), 5 themes, 4 layouts, 8 panel entrances, light sweep, chat slot, ticker |
+| `brbpro` | Przerwa / BRB Pro | as above, with a return timer |
+| `endpro` | Koniec streama Pro (ending Pro) | as above, with thanks and a next-stream panel |
 | `starting` | Zaraz startujemy | Starting soon screen with countdown, socials and animated background |
 | `brb` | Przerwa / BRB | Break screen with a "back in" timer and a neon title |
 | `ending` | Koniec streama | Thank-you screen with the next stream date and socials |
@@ -92,6 +95,10 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 | `retroframe` | Ramka CRT / VHS | TV, VHS tape or camcorder; scanlines, PLAY, timecode, REC, tracking noise |
 | `polaroid` | Ramka polaroid | paper border, handwritten caption, tape or pin, tilt and sway |
 | `pixelframe` | Ramka 8-bit (pixel frame) | pixel border with a HUD: hearts, score, coins, blinking text |
+| `hudframe` | Ramka HUD sci-fi (HUD frame) | reticle with spinning rings, rulers, scanning bars, FPS / signal readouts, label |
+| `comicframe` | Ramka komiksowa (comic frame) | thick ink border, halftone corners, speech bubble, "POW!" burst, caption |
+| `doodleframe` | Ramka rysowana (doodle frame) | hand-drawn boiling line, draws itself on load, corner doodles, caption |
+| `ornateframe` | Ramka ornamentowa (ornate frame) | gold / silver / rose gold / copper, corner flourishes with gems, shimmer |
 | `holiday` | Ramki świąteczne (holiday frames) | 8 themes: Christmas, Winter, New Year's Eve, Valentine's, Easter, Halloween, Polish Independence Day (Nov 11), Birthday; corner decorations, garland, inner effect; each in 5 versions: animated, realistic (AI), 3D, cartoon, neon; label with size and position |
 
 ### 📰 Bars and text

@@ -311,7 +311,143 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
   { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
 ];
 
+
+type ProDefaults = {
+  title: string; subtitle: string; timer: string; timerLabel: string; doneText: string; bg: string; colors: string[];
+  effect: string; theme: string; introText: string; next?: string; thanks?: string;
+};
+const PRO_THEMES = [
+  { value: 'cinematic', label: 'Kinowy' }, { value: 'esport', label: 'Esport' }, { value: 'neon', label: 'Neon' },
+  { value: 'clean', label: 'Czysty (jasne karty)' }, { value: 'cozy', label: 'Przytulny' },
+];
+const PRO_LAYOUTS: Record<string, { label: string; thumb: string }> = {
+  split: { label: 'Tytuł z lewej, panel z prawej', thumb: layoutThumb([[8, 30, 42, 12, T], [8, 48, 20, 9, K], [60, 26, 32, 40, P], [30, 88, 40, 5, S]]) },
+  right: { label: 'Tytuł z prawej, panel z lewej', thumb: layoutThumb([[50, 30, 42, 12, T], [72, 48, 20, 9, K], [8, 26, 32, 40, P], [30, 88, 40, 5, S]]) },
+  center: { label: 'Wszystko na środku', thumb: layoutThumb([[25, 16, 50, 11, T], [38, 32, 24, 9, K], [28, 50, 44, 26, P], [30, 88, 40, 5, S]]) },
+  bottom: { label: 'Panel szeroki na dole', thumb: layoutThumb([[8, 24, 50, 12, T], [8, 42, 22, 9, K], [8, 62, 84, 16, P], [30, 88, 40, 5, S]]) },
+};
+const proFieldsScene = (d: ProDefaults, kind: 'starting' | 'brb' | 'ending'): Field[] => [
+  { group: 'Układ', key: 'theme', label: 'Motyw', type: 'select', default: d.theme, options: PRO_THEMES, hint: 'Każdy motyw inaczej rysuje panele i inaczej je wprowadza' },
+  { group: 'Układ', key: 'layout', label: 'Układ ekranu', type: 'select', default: 'split',
+    options: Object.entries(PRO_LAYOUTS).map(([value, l]) => ({ value, label: l.label })),
+    swatches: Object.fromEntries(Object.entries(PRO_LAYOUTS).map(([value, l]) => [value, l.thumb])) },
+  { group: 'Układ', key: 'intro', label: 'Intro z nickiem na starcie', type: 'toggle', default: true, hint: 'Przez 3 sekundy po wczytaniu źródła: nick literka po literce, potem wjeżdża scena' },
+  { group: 'Układ', key: 'introText', i18n: true, label: 'Napis pod nickiem w intro', type: 'text', default: d.introText, maxLength: 40, when: { key: 'intro', is: [true] } },
+  { group: 'Układ', key: 'flourishEvery', label: 'Błysk światła co', type: 'range', min: 5, max: 120, step: 1, default: 18, unit: 's' },
+
+  { group: 'Teksty', key: 'showKicker', label: 'Pokaż nick nad tytułem', type: 'toggle', default: true },
+  { group: 'Teksty', key: 'kicker', label: 'Nick / nazwa kanału', type: 'text', default: 'skullboypl', maxLength: 40 },
+  { group: 'Teksty', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
+  { group: 'Teksty', key: 'title', i18n: true, label: 'Tytuł', type: 'text', default: d.title, maxLength: 40, when: { key: 'showTitle', is: [true] } },
+  { group: 'Teksty', key: 'showSubtitle', label: 'Pokaż podtytuł', type: 'toggle', default: true },
+  { group: 'Teksty', key: 'subtitle', i18n: true, label: 'Podtytuł', type: 'text', default: d.subtitle, maxLength: 120, when: { key: 'showSubtitle', is: [true] } },
+  ...(kind === 'ending' ? [
+    { group: 'Teksty', key: 'showThanks', label: 'Pokaż podziękowanie', type: 'toggle', default: true } as Field,
+    { group: 'Teksty', key: 'thanks', i18n: true, label: 'Podziękowanie', type: 'text', default: d.thanks ?? '', maxLength: 80, when: { key: 'showThanks', is: [true] } } as Field,
+  ] : []),
+  { group: 'Teksty', key: 'uppercase', label: 'Tytuł wielkimi literami', type: 'toggle', default: false },
+
+  { group: 'Odliczanie', key: 'timer', label: 'Licznik', type: 'select', default: d.timer, options: [
+    { value: 'off', label: 'Brak' }, { value: 'countdown', label: 'Minuty' }, { value: 'clock', label: 'Do godziny' },
+  ] },
+  { group: 'Odliczanie', key: 'minutes', label: 'Ile minut', type: 'range', min: 1, max: 120, step: 1, default: 5, unit: ' min', when: { key: 'timer', is: ['countdown'] }, hint: 'Liczone od chwili, gdy OBS załaduje źródło' },
+  { group: 'Odliczanie', key: 'at', label: 'Godzina startu', type: 'text', default: '20:00', maxLength: 5, placeholder: 'HH:MM', when: { key: 'timer', is: ['clock'] } },
+  { group: 'Odliczanie', key: 'showTimerLabel', label: 'Pokaż napis nad licznikiem', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'timerLabel', i18n: true, label: 'Napis nad licznikiem', type: 'text', default: d.timerLabel, maxLength: 30, when: [{ key: 'timer', is: ['countdown', 'clock'] }, { key: 'showTimerLabel', is: [true] }] },
+  { group: 'Odliczanie', key: 'doneText', i18n: true, label: 'Napis po odliczeniu', type: 'text', default: d.doneText, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'progress', label: 'Pasek postępu', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'celebrate', label: 'Konfetti po odliczeniu', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
+
+  { group: 'Panele', key: 'panelEvery', label: 'Zmiana panelu co', type: 'range', min: 3, max: 60, step: 1, default: 9, unit: 's', hint: 'Panele zmieniają się po kolei: każdy social, informacje, nagrody, następny stream' },
+  { group: 'Panele', key: 'panelAnim', label: 'Wejście panelu', type: 'select', default: 'auto', options: [
+    { value: 'auto', label: 'Jak w motywie' }, { value: 'fade', label: 'Zanik' }, { value: 'rise', label: 'Wjazd z dołu' }, { value: 'bounce', label: 'Podskok' },
+    { value: 'flip', label: 'Obrót' }, { value: 'wipe', label: 'Odsłonięcie' }, { value: 'cut', label: 'Cięcie (esport)' }, { value: 'glitch', label: 'Glitch' },
+  ] },
+  { group: 'Panele', key: 'panelBar', label: 'Pasek czasu pod panelem', type: 'toggle', default: true },
+  { group: 'Panele', key: 'showSocialsPanel', label: 'Panele sociali', type: 'toggle', default: true, hint: 'Osobny panel dla każdego kanału z listy „Sociale”, z zachętą dopasowaną do serwisu' },
+  { group: 'Panele', key: 'socialQr', label: 'Kod QR do socialu', type: 'toggle', default: true, when: { key: 'showSocialsPanel', is: [true] } },
+  { group: 'Panele', key: 'socialCta', label: 'Zachęta', type: 'select', default: 'auto', when: { key: 'showSocialsPanel', is: [true] }, options: [
+    { value: 'auto', label: 'Dopasowana do serwisu' }, { value: 'custom', label: 'Własny tekst' },
+  ] },
+  { group: 'Panele', key: 'socialCtaText', i18n: true, label: 'Własna zachęta', type: 'text', default: 'Zostaw followa', maxLength: 40, when: [{ key: 'showSocialsPanel', is: [true] }, { key: 'socialCta', is: ['custom'] }] },
+  { group: 'Panele', key: 'showInfoPanel', label: 'Panel informacji', type: 'toggle', default: true },
+  { group: 'Panele', key: 'infoTitle', i18n: true, label: 'Nagłówek informacji', type: 'text', default: 'Dziś na streamie', maxLength: 30, when: { key: 'showInfoPanel', is: [true] } },
+  { group: 'Panele', key: 'infos', i18n: true, label: 'Informacje', type: 'text', list: 'lines', default: 'Ranked do 21:00, potem gramy z widzami | !discord po link do serwera | Giveaway klucza Steam o 22:00', maxLength: 400, placeholder: 'Jedna informacja', when: { key: 'showInfoPanel', is: [true] } },
+  { group: 'Panele', key: 'showRewardsPanel', label: 'Panel nagród / celów', type: 'toggle', default: true },
+  { group: 'Panele', key: 'rewardsTitle', i18n: true, label: 'Nagłówek nagród', type: 'text', default: 'Nagrody i cele', maxLength: 30, when: { key: 'showRewardsPanel', is: [true] } },
+  { group: 'Panele', key: 'rewards', i18n: true, label: 'Nagrody / cele', type: 'text', list: 'lines', default: '✓ 50 followów: wybór gry na jutro | 100 followów: giveaway klucza | 10 subów: stream 12h | Top donate: dedykowana piosenka', maxLength: 500, placeholder: 'Cel albo nagroda', hint: 'Zacznij wiersz od ✓, gdy cel jest już osiągnięty', when: { key: 'showRewardsPanel', is: [true] } },
+  { group: 'Panele', key: 'rewardsBar', label: 'Pasek osiągniętych celów', type: 'toggle', default: true, when: { key: 'showRewardsPanel', is: [true] } },
+  { group: 'Panele', key: 'showNextPanel', label: 'Panel następnego streama', type: 'toggle', default: kind === 'ending' },
+  { group: 'Panele', key: 'nextLabel', i18n: true, label: 'Nagłówek', type: 'text', default: 'Następny stream', maxLength: 30, when: { key: 'showNextPanel', is: [true] } },
+  { group: 'Panele', key: 'next', i18n: true, label: 'Kiedy', type: 'text', default: d.next ?? 'Jutro, 20:00', maxLength: 60, when: { key: 'showNextPanel', is: [true] } },
+  { group: 'Panele', key: 'nextNote', i18n: true, label: 'Dopisek', type: 'text', default: 'Kontynuujemy kampanię', maxLength: 60, when: { key: 'showNextPanel', is: [true] } },
+
+  { group: 'Sociale', key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl', maxLength: 300, hint: 'Każdy kanał dostaje swój panel ze spotlightem i podświetla się w rzędzie na dole, gdy jest jego kolej' },
+  { group: 'Sociale', key: 'showSocialsRow', label: 'Rząd sociali na dole', type: 'toggle', default: true },
+  { group: 'Sociale', key: 'showTicker', label: 'Przewijany pasek na samym dole', type: 'toggle', default: false },
+  { group: 'Sociale', key: 'ticker', i18n: true, label: 'Teksty paska', type: 'text', list: 'lines', default: 'Dzięki za każdy follow ❤️ | Streamy pon-pt od 20:00 | !discord po link do serwera', maxLength: 400, placeholder: 'Komunikat', when: { key: 'showTicker', is: [true] } },
+
+  { group: 'Czat', key: 'chat', label: 'Miejsce na czat', type: 'toggle', default: false, hint: 'Zostawia panel, na który kładziesz źródło czatu w OBS' },
+  { group: 'Czat', key: 'chatSide', label: 'Strona', type: 'select', default: 'right', when: { key: 'chat', is: [true] }, options: [{ value: 'right', label: 'Prawa' }, { value: 'left', label: 'Lewa' }] },
+  { group: 'Czat', key: 'chatWidth', label: 'Szerokość', type: 'range', min: 18, max: 40, step: 1, default: 24, unit: '%', when: { key: 'chat', is: [true] } },
+  { group: 'Czat', key: 'showChatTitle', label: 'Pokaż nagłówek czatu', type: 'toggle', default: true, when: { key: 'chat', is: [true] } },
+  { group: 'Czat', key: 'chatTitle', i18n: true, label: 'Nagłówek', type: 'text', default: 'CZAT', maxLength: 30, when: [{ key: 'chat', is: [true] }, { key: 'showChatTitle', is: [true] }] },
+
+  { group: 'Tło', key: 'bg', label: 'Wybierz tło', type: 'select', default: d.bg, options: BG_OPTIONS, swatches: BG_SWATCHES },
+  { group: 'Tło', key: 'bgImage', label: 'Adres obrazka', type: 'text', default: '', maxLength: 300, placeholder: 'https://...jpg', when: { key: 'bg', is: ['custom'] } },
+  { group: 'Tło', key: 'bgMotion', label: 'Ruch obrazka', type: 'select', default: 'zoom', when: { key: 'bg', is: [...PHOTO_IDS, 'custom'] }, options: [
+    { value: 'zoom', label: 'Powolny zoom' }, { value: 'pan', label: 'Przesuw' }, { value: 'still', label: 'Bez ruchu' },
+  ] },
+  { group: 'Tło', key: 'bgDim', label: 'Przyciemnienie', type: 'range', min: 0, max: 0.9, step: 0.05, default: 0.45, when: { key: 'bg', is: [...PHOTO_IDS, ...VIDEO_IDS, 'custom'] } },
+  { group: 'Tło', key: 'bgBlur', label: 'Rozmycie wideo', type: 'range', min: 0, max: 20, step: 1, default: 0, unit: 'px', when: { key: 'bg', is: VIDEO_IDS } },
+  { group: 'Tło', key: 'bgSpeed', label: 'Prędkość wideo', type: 'range', min: 0.25, max: 2, step: 0.05, default: 1, unit: '×', when: { key: 'bg', is: VIDEO_IDS } },
+  { group: 'Tło', key: 'bgTint', label: 'Zabarw kolorami motywu', type: 'toggle', default: false, when: { key: 'bg', is: [...PHOTO_IDS, ...VIDEO_IDS, 'custom'] } },
+  { group: 'Wygląd', key: 'colors', label: 'Kolory motywu', type: 'colors', max: 3, default: d.colors },
+  { group: 'Wygląd', key: 'base', label: 'Kolor bazowy tła', type: 'color', default: '#07070c' },
+  { group: 'Wygląd', key: 'textColor', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
+  { group: 'Wygląd', key: 'font', label: 'Czcionka tytułu', type: 'select', default: 'poppins', options: [
+    { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' },
+    { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' }, { value: 'dm', label: 'DM Sans' },
+  ] },
+  { group: 'Wygląd', key: 'titleSize', label: 'Wielkość tytułu', type: 'range', min: 0.5, max: 1.6, step: 0.05, default: 1, unit: '×' },
+  { group: 'Dodatki', key: 'effect', label: 'Efekt na wierzchu', type: 'select', default: d.effect, options: [
+    { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'warp', label: 'Warp' }, { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' },
+    { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' }, { value: 'emoji', label: 'Emoji' }, { value: 'fireworks', label: 'Fajerwerki' }, { value: 'embers', label: 'Iskry' },
+    { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' },
+    { value: 'digital', label: 'Cyfrowy deszcz' }, { value: 'fog', label: 'Mgła' }, { value: 'dust', label: 'Pyłki' }, { value: 'lightning', label: 'Błyskawice' }, { value: 'glitch', label: 'Glitch' },
+  ] },
+  { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
+];
+
 const ALL_OVERLAYS: OverlayDef[] = [
+  {
+    id: 'startpro', name: 'Zaraz startujemy Pro', icon: '🎬', category: 'scene', size: FULL_HD,
+    description: 'Ekran startowy jak z pakietu motion graphics: intro z nickiem, odliczanie, karuzela paneli (sociale z QR, informacje, nagrody), 5 motywów.',
+    fields: proFieldsScene({
+      title: 'ZARAZ STARTUJEMY', subtitle: 'Rozgość się, nalej coś do picia i daj znać na czacie, że jesteś',
+      timer: 'countdown', timerLabel: 'Start za', doneText: 'Już startujemy!', bg: 'aurora',
+      colors: ['#ff5900', '#ff2d6f', '#7a5cff'], effect: 'dust', theme: 'cinematic', introText: 'Stream zaraz się zacznie',
+    }, 'starting'),
+  },
+  {
+    id: 'brbpro', name: 'Przerwa / BRB Pro', icon: '🎞️', category: 'scene', size: FULL_HD,
+    description: 'Ekran przerwy z licznikiem powrotu, panelami sociali, informacji i nagród, w 5 motywach z animowanymi przejściami.',
+    fields: proFieldsScene({
+      title: 'ZARAZ WRACAM', subtitle: 'Krótka przerwa, nie uciekaj. Zostaw followa, jeśli jeszcze nie masz',
+      timer: 'countdown', timerLabel: 'Wracam za', doneText: 'Już jestem!', bg: 'synth',
+      colors: ['#ff2d95', '#ffb347', '#3a1c71'], effect: 'none', theme: 'neon', introText: 'Chwila przerwy',
+    }, 'brb'),
+  },
+  {
+    id: 'endpro', name: 'Koniec streama Pro', icon: '🏁', category: 'scene', size: FULL_HD,
+    description: 'Ekran końcowy z podziękowaniem, terminem następnego streama, podsumowaniem celów i socialami z kodami QR.',
+    fields: proFieldsScene({
+      title: 'DZIĘKI ZA DZIŚ!', subtitle: 'Do zobaczenia na następnym streamie',
+      timer: 'off', timerLabel: 'Koniec za', doneText: 'Pa pa!', bg: 'waves',
+      colors: ['#3bceac', '#7aa2ff', '#ff5900'], effect: 'fireflies', theme: 'clean', introText: 'To już koniec na dziś',
+      next: 'Jutro, 20:00', thanks: 'Dzięki za każdy follow, sub i wiadomość na czacie',
+    }, 'ending'),
+  },
   {
     id: 'starting', name: 'Zaraz startujemy', icon: '⏳', category: 'scene', size: FULL_HD,
     description: 'Ekran przed streamem z odliczaniem, socialami i animowanym tłem.',
@@ -977,6 +1113,103 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Dodatki', key: 'coins', label: 'Ile monet', type: 'range', min: 0, max: 999, step: 1, default: 99, when: { key: 'showCoin', is: [true] } },
       { group: 'Dodatki', key: 'showPress', label: 'Migający napis', type: 'toggle', default: false },
       { group: 'Dodatki', key: 'press', i18n: true, label: 'Tekst napisu', type: 'text', default: 'PRESS START', maxLength: 24, when: { key: 'showPress', is: [true] } },
+    ],
+  },
+  {
+    id: 'hudframe', name: 'Ramka HUD sci-fi', icon: '🛰️', category: 'camera', size: CAM,
+    description: 'Interfejs z gry: celownik z obracającymi się pierścieniami, linijki, skanujące paski i odczyty FPS / sygnału.',
+    fields: [
+      { group: 'Kolory', key: 'color', label: 'Kolor główny', type: 'color', default: '#7af0ff' },
+      { group: 'Kolory', key: 'color2', label: 'Akcent', type: 'color', default: '#ff5900' },
+      { group: 'Ramka', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 8, step: 1, default: 2, unit: 'px' },
+      { group: 'Ramka', key: 'inset', label: 'Margines', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px' },
+      { group: 'Ramka', key: 'speed', label: 'Prędkość animacji', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×' },
+      { group: 'Ramka', key: 'grid', label: 'Siatka w tle', type: 'toggle', default: false },
+      { group: 'Elementy', key: 'reticle', label: 'Celownik', type: 'toggle', default: true },
+      { group: 'Elementy', key: 'reticlePos', label: 'Miejsce celownika', type: 'select', default: 'tr', when: { key: 'reticle', is: [true] }, options: [
+        { value: 'tr', label: 'Góra, prawo' }, { value: 'tl', label: 'Góra, lewo' }, { value: 'br', label: 'Dół, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'c', label: 'Środek (delikatny)' },
+      ] },
+      { group: 'Elementy', key: 'rulers', label: 'Linijki góra / dół', type: 'toggle', default: true },
+      { group: 'Elementy', key: 'bars', label: 'Skanujące paski po bokach', type: 'toggle', default: true },
+      { group: 'Elementy', key: 'scan', label: 'Linia skanu', type: 'toggle', default: true },
+      { group: 'Elementy', key: 'readouts', label: 'Odczyty FPS / sygnał', type: 'toggle', default: true },
+      { group: 'Elementy', key: 'showLabel', label: 'Napis na górze', type: 'toggle', default: true },
+      { group: 'Elementy', key: 'label', label: 'Napis', type: 'text', default: 'CAM 01', maxLength: 20, when: { key: 'showLabel', is: [true] } },
+      { group: 'Elementy', key: 'font', label: 'Czcionka', type: 'select', default: 'orbitron', options: [
+        { value: 'orbitron', label: 'Orbitron' }, { value: 'russo', label: 'Russo' }, { value: 'dm', label: 'DM Sans' },
+      ] },
+    ],
+  },
+  {
+    id: 'comicframe', name: 'Ramka komiksowa', icon: '💥', category: 'camera', size: CAM,
+    description: 'Kadr z komiksu: gruba czarna obwódka, raster w rogach, dymek z tekstem i wybuchowe „POW!”.',
+    fields: [
+      { group: 'Kadr', key: 'ink', label: 'Kolor konturu', type: 'color', default: '#111111' },
+      { group: 'Kadr', key: 'paper', label: 'Kolor papieru', type: 'color', default: '#ffffff' },
+      { group: 'Kadr', key: 'fill', label: 'Kolor wypełnień', type: 'color', default: '#ffd23f' },
+      { group: 'Kadr', key: 'thickness', label: 'Grubość konturu', type: 'range', min: 3, max: 16, step: 1, default: 7, unit: 'px' },
+      { group: 'Kadr', key: 'inset', label: 'Margines', type: 'range', min: 6, max: 60, step: 1, default: 16, unit: 'px' },
+      { group: 'Kadr', key: 'tilt', label: 'Przekrzywienie', type: 'range', min: -6, max: 6, step: 0.5, default: -1.5, unit: '°' },
+      { group: 'Kadr', key: 'halftone', label: 'Raster w rogach', type: 'toggle', default: true },
+      { group: 'Kadr', key: 'speedLines', label: 'Linie ruchu', type: 'toggle', default: false },
+      { group: 'Dymek', key: 'showBubble', label: 'Pokaż dymek', type: 'toggle', default: true },
+      { group: 'Dymek', key: 'bubble', i18n: true, label: 'Tekst dymku', type: 'text', default: 'Siema czat!', maxLength: 30, when: { key: 'showBubble', is: [true] } },
+      { group: 'Dymek', key: 'bubblePos', label: 'Miejsce dymku', type: 'select', default: 'tl', when: { key: 'showBubble', is: [true] }, options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' },
+      ] },
+      { group: 'Dymek', key: 'bubbleAnim', label: 'Dymek się kołysze', type: 'toggle', default: true, when: { key: 'showBubble', is: [true] } },
+      { group: 'Dymek', key: 'showBurst', label: 'Wybuch z napisem', type: 'toggle', default: true },
+      { group: 'Dymek', key: 'burst', label: 'Napis w wybuchu', type: 'text', default: 'POW!', maxLength: 8, when: { key: 'showBurst', is: [true] } },
+      { group: 'Dymek', key: 'burstPos', label: 'Miejsce wybuchu', type: 'select', default: 'br', when: { key: 'showBurst', is: [true] }, options: [
+        { value: 'br', label: 'Dół, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'tl', label: 'Góra, lewo' },
+      ] },
+      { group: 'Dymek', key: 'caption', label: 'Podpis kadru', type: 'text', default: '', maxLength: 30, placeholder: 'np. TYMCZASEM...' },
+      { group: 'Dymek', key: 'fontSize', label: 'Wielkość pisma', type: 'range', min: 12, max: 40, step: 1, default: 20, unit: 'px' },
+      { group: 'Dymek', key: 'font', label: 'Czcionka', type: 'select', default: 'bebas', options: [
+        { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'poppins', label: 'Poppins' }, { value: 'pacifico', label: 'Pacifico' },
+      ] },
+    ],
+  },
+  {
+    id: 'doodleframe', name: 'Ramka rysowana', icon: '✏️', category: 'camera', size: CAM,
+    description: 'Odręczna kreska jak z kreskówki: lekko „gotuje się”, rysuje się przy starcie, z bazgrołami w rogach i podpisem.',
+    fields: [
+      { group: 'Kreska', key: 'color', label: 'Kolor', type: 'color', default: '#ffffff' },
+      { group: 'Kreska', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 12, step: 1, default: 4, unit: 'px' },
+      { group: 'Kreska', key: 'passes', label: 'Ile pociągnięć', type: 'range', min: 1, max: 3, step: 1, default: 2, hint: 'Kilka nałożonych linii wygląda jak szkic' },
+      { group: 'Kreska', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px' },
+      { group: 'Kreska', key: 'inset', label: 'Margines', type: 'range', min: 4, max: 60, step: 1, default: 16, unit: 'px' },
+      { group: 'Kreska', key: 'wobble', label: 'Drżenie kreski', type: 'range', min: 0, max: 14, step: 1, default: 5 },
+      { group: 'Kreska', key: 'boil', label: 'Gotująca się kreska', type: 'toggle', default: true, hint: 'Linia zmienia się kilka razy na sekundę jak w rysowanej animacji' },
+      { group: 'Kreska', key: 'boilSpeed', label: 'Tempo gotowania', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'boil', is: [true] } },
+      { group: 'Kreska', key: 'draw', label: 'Rysuje się przy starcie', type: 'toggle', default: true },
+      { group: 'Dodatki', key: 'showDoodles', label: 'Bazgroły w rogach', type: 'toggle', default: true },
+      { group: 'Dodatki', key: 'doodles', label: 'Znaki w rogach', type: 'text', default: '★♥✦', maxLength: 8, when: { key: 'showDoodles', is: [true] }, hint: 'Do 4 znaków albo emoji' },
+      { group: 'Dodatki', key: 'showCaption', label: 'Podpis', type: 'toggle', default: true },
+      { group: 'Dodatki', key: 'caption', i18n: true, label: 'Tekst podpisu', type: 'text', default: 'hej czat!', maxLength: 30, when: { key: 'showCaption', is: [true] } },
+      { group: 'Dodatki', key: 'captionSize', label: 'Wielkość podpisu', type: 'range', min: 12, max: 48, step: 1, default: 24, unit: 'px', when: { key: 'showCaption', is: [true] } },
+      { group: 'Dodatki', key: 'font', label: 'Czcionka podpisu', type: 'select', default: 'pacifico', when: { key: 'showCaption', is: [true] }, options: [
+        { value: 'pacifico', label: 'Pacifico (odręczna)' }, { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' },
+      ] },
+    ],
+  },
+  {
+    id: 'ornateframe', name: 'Ramka ornamentowa', icon: '👑', category: 'camera', size: CAM,
+    description: 'Złota, srebrna albo różowo-złota rama z ornamentami w rogach, podwójną linią i przesuwającym się błyskiem.',
+    fields: [
+      { group: 'Metal', key: 'metal', label: 'Metal', type: 'select', default: 'gold', options: [
+        { value: 'gold', label: 'Złoto' }, { value: 'silver', label: 'Srebro' }, { value: 'rose', label: 'Różowe złoto' }, { value: 'copper', label: 'Miedź' }, { value: 'custom', label: 'Własny kolor' },
+      ] },
+      { group: 'Metal', key: 'color', label: 'Kolor jasny', type: 'color', default: '#ffd700', when: { key: 'metal', is: ['custom'] } },
+      { group: 'Metal', key: 'color2', label: 'Kolor ciemny', type: 'color', default: '#5a4300', when: { key: 'metal', is: ['custom'] } },
+      { group: 'Rama', key: 'thickness', label: 'Grubość', type: 'range', min: 2, max: 20, step: 1, default: 5, unit: 'px' },
+      { group: 'Rama', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 40, step: 1, default: 6, unit: 'px' },
+      { group: 'Rama', key: 'inset', label: 'Margines', type: 'range', min: 8, max: 70, step: 1, default: 22, unit: 'px', hint: 'Miejsce na ornamenty wystające poza ramę' },
+      { group: 'Rama', key: 'cornerSize', label: 'Wielkość ornamentów', type: 'range', min: 30, max: 160, step: 2, default: 72, unit: 'px' },
+      { group: 'Rama', key: 'innerLine', label: 'Cienka linia wewnątrz', type: 'toggle', default: true },
+      { group: 'Rama', key: 'gems', label: 'Kamienie w ornamentach', type: 'toggle', default: true },
+      { group: 'Rama', key: 'shimmer', label: 'Przesuwający się błysk', type: 'toggle', default: true },
+      { group: 'Rama', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
     ],
   },
   {

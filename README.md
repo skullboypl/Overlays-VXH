@@ -53,6 +53,9 @@ Część zestawu narzędzi [VXH](https://vxh.pl/) dla streamerów (obok [FACEIT 
 
 | ID | Nazwa | Co robi |
 |---|---|---|
+| `startpro` | Zaraz startujemy Pro | intro z nickiem, odliczanie z animowanymi cyframi, karuzela paneli (sociale z QR i zachętą pod serwis, informacje, nagrody / cele, następny stream), 5 motywów, 4 układy, 8 wejść paneli, błysk światła, czat, pasek |
+| `brbpro` | Przerwa / BRB Pro | jak wyżej, z licznikiem powrotu |
+| `endpro` | Koniec streama Pro | jak wyżej, z podziękowaniem i panelem następnego streama |
 | `starting` | Zaraz startujemy | Ekran przed streamem z odliczaniem, socialami i animowanym tłem |
 | `brb` | Przerwa / BRB | Ekran przerwy z licznikiem powrotu i neonowym tytułem |
 | `ending` | Koniec streama | Podziękowanie, termin następnego streama i sociale |
@@ -92,6 +95,10 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `retroframe` | Ramka CRT / VHS | telewizor, kaseta VHS albo kamera; linie skanowania, PLAY, licznik czasu, REC, zakłócenia śledzenia |
 | `polaroid` | Ramka polaroid | papierowy brzeg, odręczny podpis, taśma lub pinezka, przekrzywienie i kołysanie |
 | `pixelframe` | Ramka 8-bit | pikselowa ramka z HUD: serduszka życia, wynik, monety, migający napis |
+| `hudframe` | Ramka HUD sci-fi | celownik z obracającymi się pierścieniami, linijki, skanujące paski, odczyty FPS / sygnał, napis |
+| `comicframe` | Ramka komiksowa | gruba obwódka, raster w rogach, dymek z tekstem, wybuch „POW!”, podpis kadru |
+| `doodleframe` | Ramka rysowana | odręczna „gotująca się” kreska, rysuje się przy starcie, bazgroły w rogach, podpis |
+| `ornateframe` | Ramka ornamentowa | złoto / srebro / różowe złoto / miedź, ornamenty w rogach z kamieniami, błysk |
 | `holiday` | Ramki świąteczne | 8 motywów: Boże Narodzenie, Zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, Urodziny; dekoracje w rogach, girlanda, efekt w środku; każde w 5 wersjach: animowana, realistyczna (AI), 3D, kreskówka, neon; napis z wyborem wielkości i pozycji |
 
 ### 📰 Paski i napisy

@@ -7,9 +7,9 @@ import { useLiveStats } from '../stats';
 
 /** Order of the left menu: what people set up first comes first; the 20 effects get their own sub-groups. */
 export const MENU_GROUPS: { id: string; title: string; note: string; items?: string[]; sub?: { title: string; items: string[] }[]; compact?: boolean }[] = [
-  { id: 'screens', title: tx('Ekrany na stream'), note: tx('Start, przerwa, koniec'), items: ['starting', 'brb', 'ending', 'videobg'] },
+  { id: 'screens', title: tx('Ekrany na stream'), note: tx('Start, przerwa, koniec'), items: ['startpro', 'brbpro', 'endpro', 'starting', 'brb', 'ending', 'videobg'] },
   { id: 'scenes', title: tx('Sceny z kamerką'), note: tx('Gotowy układ sceny'), items: ['camscene', 'fullcam'] },
-  { id: 'frames', title: tx('Ramki na kamerkę'), note: tx('Na źródło kamerki'), items: ['proframe', 'faceitcam', 'holiday', 'neon', 'nametag', 'corners', 'glitchframe', 'retroframe', 'polaroid', 'pixelframe'] },
+  { id: 'frames', title: tx('Ramki na kamerkę'), note: tx('Na źródło kamerki'), items: ['proframe', 'faceitcam', 'holiday', 'neon', 'nametag', 'corners', 'glitchframe', 'retroframe', 'polaroid', 'pixelframe', 'hudframe', 'comicframe', 'doodleframe', 'ornateframe'] },
   { id: 'bars', title: tx('Paski i sociale'), note: tx('Info dla widzów'), items: ['socials', 'social', 'ticker', 'lowerthird', 'schedule'] },
   { id: 'tools', title: tx('Narzędzia streamera'), note: tx('Licznik, zegar, cel, QR'), items: ['timer', 'clock', 'goal', 'reminder', 'qr', 'qrrotator'] },
   {
