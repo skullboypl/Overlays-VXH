@@ -69,7 +69,7 @@ const Timecode = ({ date }: { date: boolean }) => {
 export const RetroFrame = ({ params: p }: { params: Params }) => {
   const style: Vars = {
     '--inset': `${n(p.inset, 10)}px`,
-    '--bezel': `${n(p.bezel, 14)}px`,
+    '--bezel': n(p.bezel, 14),
     '--curve': `${n(p.curve, 6)}%`,
     '--bezelColor': c(p.bezelColor, '#1d1d22'),
     '--accent': c(p.accent, '#ff5900'),
@@ -104,13 +104,13 @@ export const PolaroidFrame = ({ params: p }: { params: Params }) => {
   const style: Vars = {
     '--inset': `${n(p.inset, 14)}px`,
     '--paper': c(p.paper, '#fbfaf6'),
-    '--border': `${n(p.border, 12)}px`,
-    '--bottom': `${n(p.bottom, 54)}px`,
+    '--border': n(p.border, 12),
+    '--bottom': n(p.bottom, 54),
     '--tilt': `${n(p.tilt, -2)}deg`,
     '--ink': c(p.ink, '#2b2b33'),
     '--tape': c(p.tapeColor, '#ffd57a'),
     '--font': SCENE_FONTS[c(p.font, 'pacifico')] ?? SCENE_FONTS.pacifico,
-    '--fs': `${n(p.captionSize, 22)}px`,
+    '--fs': n(p.captionSize, 22),
   };
   const tape = c(p.tape, 'top');
   return (
@@ -133,12 +133,12 @@ export const PixelFrame = ({ params: p }: { params: Params }) => {
   const px = Math.max(2, n(p.pixel, 6));
   const style: Vars = {
     '--inset': `${n(p.inset, 12)}px`,
-    '--px': `${px}px`,
+    '--px0': px,
     '--c1': c(p.color, '#ffffff'),
     '--c2': c(p.color2, '#ff5900'),
     '--c3': c(p.color3, '#1b1b24'),
     '--fg': c(p.textColor, '#ffffff'),
-    '--fs': `${n(p.fontSize, 12)}px`,
+    '--fs0': n(p.fontSize, 12),
   };
   const hearts = Math.max(1, Math.min(10, Math.round(n(p.hearts, 5))));
   const full = Math.max(0, Math.min(hearts, Math.round(n(p.hp, 3))));

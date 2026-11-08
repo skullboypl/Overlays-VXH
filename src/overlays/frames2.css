@@ -1,13 +1,14 @@
 /* Second set of webcam frames (frames2.tsx): glitch, CRT / VHS, polaroid, 8-bit. */
 
 /* ---------- glitch / cyberpunk ---------- */
-.gf { font-family: var(--font); }
+.gf { font-family: var(--font); container-type: size; }
 .gf-ring {
   position: absolute;
   inset: var(--inset);
   border: var(--thick) solid var(--c1);
   border-radius: var(--radius);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--c1) 60%, transparent), inset 0 0 10px color-mix(in srgb, var(--c1) 25%, transparent);
+  /* A thin dark rim on both sides keeps the pale ring visible over a bright camera or game. */
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(0, 0, 0, 0.35), 0 0 10px color-mix(in srgb, var(--c1) 60%, transparent), inset 0 0 10px color-mix(in srgb, var(--c1) 25%, transparent);
 }
 .gf-ring-a { animation: gf-tear-a var(--rate) steps(1) infinite; }
 .gf-ring-b { border-color: var(--c2); mix-blend-mode: screen; animation: gf-shift-b var(--rate) steps(1) infinite; box-shadow: none; }
@@ -67,10 +68,10 @@
 @keyframes gf-roll { to { background-position: 0 180px; } }
 .gf-corner {
   position: absolute;
-  width: 18px;
-  height: 18px;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 4px var(--c2));
+  width: clamp(14px, 5cqh, 60px);
+  height: clamp(14px, 5cqh, 60px);
   border: 0 solid var(--c2);
-  filter: drop-shadow(0 0 4px var(--c2));
 }
 .gf-corner.tl { left: calc(var(--inset) - 5px); top: calc(var(--inset) - 5px); border-left-width: 3px; border-top-width: 3px; }
 .gf-corner.tr { right: calc(var(--inset) - 5px); top: calc(var(--inset) - 5px); border-right-width: 3px; border-top-width: 3px; }
@@ -84,7 +85,7 @@
   padding: 3px 10px;
   background: var(--c3);
   color: #fff;
-  font: 800 12px/1.2 var(--font);
+  font: 800 clamp(11px, 3.33cqh, 44px) / 1.2 var(--font);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   clip-path: polygon(0 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
@@ -100,15 +101,17 @@
   position: absolute;
   right: calc(var(--inset) + var(--thick) + 10px);
   bottom: calc(var(--inset) + var(--thick) + 8px);
-  font: 700 11px/1 'JetBrains Mono', Consolas, monospace;
+  font: 700 clamp(10px, 3.05cqh, 36px) / 1 'JetBrains Mono', Consolas, monospace;
   letter-spacing: 0.1em;
   color: var(--c2);
-  text-shadow: 0 0 6px var(--c2);
+  text-shadow: 0 0 2px #000, 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px var(--c2);
 }
-.gf-label.at-br ~ .gf-code { bottom: calc(var(--inset) + var(--thick) + 34px); }
+.gf-label.at-br ~ .gf-code { bottom: calc(var(--inset) + var(--thick) + max(30px, 9.4cqh)); }
 
 /* ---------- CRT / VHS ---------- */
-.rf { font-family: 'VT323', 'JetBrains Mono', monospace; color: var(--fg); }
+.rf { font-family: 'VT323', 'JetBrains Mono', monospace; color: var(--fg); container-type: size; }
+/* cq units on the container itself would measure the page, so the derived sizes sit on its children. */
+.rf > * { --bz: calc(var(--bezel) * 100cqh / 360); --osd: clamp(16px, 6.1cqh, 72px); --pad: 3.9cqh; --padY: 2.8cqh; }
 .rf-bezel {
   position: absolute;
   inset: var(--inset);
@@ -118,7 +121,7 @@
 }
 .rf-screen {
   position: absolute;
-  inset: calc(var(--inset) + var(--bezel));
+  inset: calc(var(--inset) + var(--bz));
   border-radius: var(--curve) / calc(var(--curve) * 1.4);
   overflow: hidden;
   box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.6), inset 0 0 30px rgba(0, 0, 0, 0.6);
@@ -162,12 +165,12 @@
 }
 .rf-osd {
   position: absolute;
-  left: 14px;
-  top: 10px;
+  left: var(--pad);
+  top: var(--padY);
   display: flex;
   flex-direction: column;
   gap: 2px;
-  font-size: 22px;
+  font-size: var(--osd);
   line-height: 1;
   text-shadow: 2px 0 rgba(255, 0, 90, 0.55), -2px 0 rgba(0, 220, 255, 0.55), 0 2px 4px rgba(0, 0, 0, 0.8);
   letter-spacing: 0.06em;
@@ -177,29 +180,30 @@
 .rf-tc small { font-size: 0.75em; opacity: 0.85; }
 .rf-rec {
   position: absolute;
-  right: 14px;
-  top: 10px;
+  right: var(--pad);
+  top: var(--padY);
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 22px;
+  gap: 0.3em;
+  font-size: var(--osd);
   color: #ff3b3b;
   text-shadow: 0 0 8px #ff3b3b;
 }
-.rf-rec i { width: 12px; height: 12px; border-radius: 50%; background: #ff3b3b; animation: ov-blink 1s steps(1) infinite; }
-.rf-ch { position: absolute; right: 14px; bottom: 10px; font-size: 22px; letter-spacing: 0.08em; text-shadow: 2px 0 rgba(255, 0, 90, 0.55), -2px 0 rgba(0, 220, 255, 0.55); }
+.rf-rec i { width: 0.55em; height: 0.55em; border-radius: 50%; background: #ff3b3b; animation: ov-blink 1s steps(1) infinite; }
+.rf-ch { position: absolute; right: var(--pad); bottom: var(--padY); font-size: var(--osd); letter-spacing: 0.08em; text-shadow: 2px 0 rgba(255, 0, 90, 0.55), -2px 0 rgba(0, 220, 255, 0.55); }
 .rf-knobs { position: absolute; right: calc(var(--inset) + 6px); bottom: calc(var(--inset) + 4px); display: flex; gap: 5px; align-items: center; }
-.rf-knobs i { width: 6px; height: 6px; border-radius: 50%; background: rgba(255, 255, 255, 0.35); }
-.rf-knobs b { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.rf-knobs i { width: 1.7cqh; height: 1.7cqh; border-radius: 50%; background: rgba(255, 255, 255, 0.35); }
+.rf-knobs b { width: 2cqh; height: 2cqh; border-radius: 50%; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
 
 /* ---------- polaroid ---------- */
 .pl { font-family: var(--font); container-type: size; }
+.pl > * { --b: calc(var(--border) * 100cqh / 360); --bb: min(calc(var(--bottom) * 100cqh / 360), 30cqh); --u: 0.278cqh; }
 .pl-card {
   position: absolute;
   inset: var(--inset);
   /* The paper is a border, so the window in the middle stays transparent for the camera. */
-  border: var(--border) solid var(--paper);
-  border-bottom-width: var(--bottom);
+  border: var(--b) solid var(--paper);
+  border-bottom-width: var(--bb);
   border-radius: 3px;
   rotate: var(--tilt);
   transform-origin: 50% 40%;
@@ -217,13 +221,13 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: calc(var(--bottom) * -1);
-  height: var(--bottom);
+  bottom: calc(var(--bb) * -1);
+  height: var(--bb);
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--ink);
-  font-size: var(--fs);
+  font-size: min(calc(var(--fs) * 100cqh / 360), var(--bb) * 0.62);
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
@@ -232,34 +236,35 @@
 .pl-tape {
   position: absolute;
   width: 26%;
-  height: 22px;
+  height: calc(22 * var(--u));
   background: color-mix(in srgb, var(--tape) 70%, rgba(255, 255, 255, 0.55));
   opacity: 0.9;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
   mask: linear-gradient(90deg, transparent 0, #000 4px, #000 calc(100% - 4px), transparent 100%);
 }
-.pl-tape.t { left: 50%; top: calc(var(--border) * -1 - 10px); translate: -50% 0; rotate: -3deg; }
-.pl-tape.tl { left: calc(-8% - var(--border)); top: calc(var(--border) * -1 - 4px); width: 30%; rotate: -40deg; }
-.pl-tape.br { right: calc(-8% - var(--border)); bottom: calc(var(--bottom) * -0.7); width: 30%; rotate: -40deg; }
-.pl-tape.l { left: calc(-10% - var(--border)); top: 40%; width: 26%; rotate: 90deg; }
-.pl-tape.r { right: calc(-10% - var(--border)); top: 40%; width: 26%; rotate: 90deg; }
+.pl-tape.t { left: 50%; top: calc(var(--b) * -1 - 10 * var(--u)); translate: -50% 0; rotate: -3deg; }
+.pl-tape.tl { left: calc(-8% - var(--b)); top: calc(var(--b) * -1 - 4 * var(--u)); width: 30%; rotate: -40deg; }
+.pl-tape.br { right: calc(-8% - var(--b)); bottom: calc(var(--bb) * -0.7); width: 30%; rotate: -40deg; }
+.pl-tape.l { left: calc(-10% - var(--b)); top: 40%; width: 26%; rotate: 90deg; }
+.pl-tape.r { right: calc(-10% - var(--b)); top: 40%; width: 26%; rotate: 90deg; }
 .pl-pin {
   position: absolute;
   left: 50%;
-  top: calc(var(--border) * -1 - 8px);
+  top: calc(var(--b) * -1 - 8 * var(--u));
   translate: -50% 0;
-  width: 16px;
-  height: 16px;
+  width: calc(16 * var(--u));
+  height: calc(16 * var(--u));
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #fff, var(--tape) 35%, color-mix(in srgb, var(--tape) 60%, #000));
   box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4);
 }
-.pl-stickers { position: absolute; right: 0; bottom: calc(var(--bottom) * -0.9); display: flex; gap: 2px; }
-.pl-stickers span { font-size: calc(var(--bottom) * 0.42); rotate: calc(var(--i) * 12deg - 10deg); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); animation: pl-pop 4s ease-in-out calc(var(--i) * 0.3s) infinite; }
+.pl-stickers { position: absolute; right: 0; bottom: calc(var(--bb) * -0.9); display: flex; gap: 2px; }
+.pl-stickers span { font-size: calc(var(--bb) * 0.42); rotate: calc(var(--i) * 12deg - 10deg); filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.25)); animation: pl-pop 4s ease-in-out calc(var(--i) * 0.3s) infinite; }
 @keyframes pl-pop { 50% { scale: 1.12; } }
 
 /* ---------- 8-bit pixel ---------- */
-.px { font-family: 'Press Start 2P', 'VT323', monospace; color: var(--fg); image-rendering: pixelated; }
+.px { font-family: 'Press Start 2P', 'VT323', monospace; color: var(--fg); image-rendering: pixelated; container-type: size; }
+.px > * { --px: max(2px, round(calc(var(--px0) * 100cqh / 360), 1px)); --fs: max(8px, calc(var(--fs0) * 100cqh / 360)); }
 .px-border {
   position: absolute;
   inset: var(--inset);

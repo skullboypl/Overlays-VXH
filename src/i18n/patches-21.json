@@ -341,7 +341,9 @@
   "Zostaw followa": "Leave a follow",
   "Zwykła": "Plain",
   "Pyłki": "Dust motes",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Recognises day abbreviations and names in every studio language"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Recognises day abbreviations and names in every studio language",
+  "Skaluj z wysokością źródła": "Scale with source height",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "The text size applies to the suggested source size; a taller source in OBS scales everything up"
  },
  "de": {
   "animated lower third": "animated lower third",
@@ -685,7 +687,9 @@
   "Zostaw followa": "Lass ein Follow da",
   "Zwykła": "Normal",
   "Pyłki": "Staub",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Erkennt Abkürzungen und Namen der Wochentage in allen Studio-Sprachen"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Erkennt Abkürzungen und Namen der Wochentage in allen Studio-Sprachen",
+  "Skaluj z wysokością źródła": "Mit der Quellenhöhe skalieren",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "Die Textgröße gilt für die empfohlene Quellengröße; eine höhere Quelle in OBS vergrößert alles"
  },
  "cs": {
   "animated lower third": "animated lower third",
@@ -1029,7 +1033,9 @@
   "Zostaw followa": "Dej follow",
   "Zwykła": "Obyčejná",
   "Pyłki": "Prach",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Rozpozná zkratky i názvy dnů ve všech jazycích studia"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Rozpozná zkratky i názvy dnů ve všech jazycích studia",
+  "Skaluj z wysokością źródła": "Škálovat podle výšky zdroje",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "Velikost textu platí pro doporučenou velikost zdroje; vyšší zdroj v OBS vše zvětší"
  },
  "es": {
   "animated lower third": "animated lower third",
@@ -1373,7 +1379,9 @@
   "Zostaw followa": "Déjame un follow",
   "Zwykła": "Normal",
   "Pyłki": "Polvo",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Reconoce abreviaturas y nombres de los días en todos los idiomas del estudio"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Reconoce abreviaturas y nombres de los días en todos los idiomas del estudio",
+  "Skaluj z wysokością źródła": "Escalar con la altura de la fuente",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "El tamaño del texto se refiere al tamaño sugerido de la fuente; una fuente más alta en OBS lo agranda todo"
  },
  "fr": {
   "animated lower third": "animated lower third",
@@ -1717,7 +1725,9 @@
   "Zostaw followa": "Laisse un follow",
   "Zwykła": "Normale",
   "Pyłki": "Poussière",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Reconnaît les abréviations et noms des jours dans toutes les langues du studio"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Reconnaît les abréviations et noms des jours dans toutes les langues du studio",
+  "Skaluj z wysokością źródła": "Adapter à la hauteur de la source",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "La taille du texte correspond à la taille de source suggérée ; une source plus haute dans OBS agrandit le tout"
  },
  "pt": {
   "animated lower third": "animated lower third",
@@ -2061,7 +2071,9 @@
   "Zostaw followa": "Deixa um follow",
   "Zwykła": "Normal",
   "Pyłki": "Poeira",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Reconhece abreviações e nomes dos dias em todos os idiomas do estúdio"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Reconhece abreviações e nomes dos dias em todos os idiomas do estúdio",
+  "Skaluj z wysokością źródła": "Escalar com a altura da fonte",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "O tamanho do texto refere-se ao tamanho sugerido da fonte; uma fonte mais alta no OBS amplia tudo"
  },
  "ru": {
   "animated lower third": "animated lower third",
@@ -2405,7 +2417,9 @@
   "Zostaw followa": "Подпишись",
   "Zwykła": "Обычная",
   "Pyłki": "Пылинки",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Распознаёт сокращения и названия дней на всех языках студии"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Распознаёт сокращения и названия дней на всех языках студии",
+  "Skaluj z wysokością źródła": "Масштабировать по высоте источника",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "Размер текста задан для рекомендуемого размера источника; более высокий источник в OBS увеличивает всё"
  },
  "tr": {
   "animated lower third": "animated lower third",
@@ -2749,7 +2763,9 @@
   "Zostaw followa": "Takip et",
   "Zwykła": "Düz",
   "Pyłki": "Toz",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Stüdyonun tüm dillerinde gün kısaltmalarını ve adlarını tanır"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Stüdyonun tüm dillerinde gün kısaltmalarını ve adlarını tanır",
+  "Skaluj z wysokością źródła": "Kaynak yüksekliğiyle ölçekle",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "Metin boyutu önerilen kaynak boyutuna göredir; OBS’te daha yüksek bir kaynak her şeyi büyütür"
  },
  "uk": {
   "animated lower third": "animated lower third",
@@ -3093,6 +3109,8 @@
   "Zostaw followa": "Підпишись",
   "Zwykła": "Звичайна",
   "Pyłki": "Пилинки",
-  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Розпізнає скорочення та назви днів усіма мовами студії"
+  "Rozpoznaje skróty i nazwy dni we wszystkich językach studia": "Розпізнає скорочення та назви днів усіма мовами студії",
+  "Skaluj z wysokością źródła": "Масштабувати за висотою джерела",
+  "Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość": "Розмір тексту стосується рекомендованого розміру джерела; вище джерело в OBS збільшує все"
  }
 }

@@ -56,13 +56,19 @@ const FitBox = ({ children, className = '', deps = [] }: { children: ReactNode; 
   );
 };
 
+/**
+ * Text size: the px the streamer picked is what a source of `ref` px height shows; a taller or shorter
+ * source scales it along (unless "scale with source height" is off). FitBox still caps it by width.
+ */
+const fontSize = (p: Params, def: number, ref: number) =>
+  p.fitHeight === false ? `${num(p.fontSize, def)}px` : `max(9px, calc(${num(p.fontSize, def)} * 100cqh / ${ref}))`;
+
 const lookVars = (p: Params, extra: Vars = {}): Vars => ({
   '--accent': String(p.accent ?? '#ff5900'),
   '--accent2': String(p.accent2 ?? '#ff2d95'),
   '--bg': String(p.bg ?? '#111114'),
   '--fg': String(p.textColor ?? '#ffffff'),
   '--radius': `${num(p.radius, 10)}px`,
-  '--fs': `${num(p.fontSize, 30)}px`,
   '--font': SCENE_FONTS[String(p.font ?? 'poppins')] ?? SCENE_FONTS.poppins,
   ...extra,
 });
@@ -99,7 +105,7 @@ const useLoopVisible = (p: Params) => {
 
 export const LowerThirdWidget = ({ params: p }: { params: Params }) => {
   const { on, n } = useLoopVisible(p);
-  const style = lookVars(p, { '--show': `${num(p.duration, 8)}s` });
+  const style = lookVars(p, { '--show': `${num(p.duration, 8)}s`, '--fs': fontSize(p, 34, 160) });
   const brand = p.icon === 'brand' ? detectBrand(String(p.sub ?? '')) : 'link';
   const iconNode = p.icon === 'none' ? null
     : p.icon === 'brand' ? <span className="lt-icon" style={{ background: BRAND_COLORS[brand], color: BRAND_INK[brand] }}><BrandIcon brand={brand} size="1.1em" /></span>
@@ -162,7 +168,7 @@ export const ScheduleWidget = ({ params: p }: { params: Params }) => {
   useEffect(() => { const id = window.setInterval(() => setToday(todayIndex()), 60_000); return () => window.clearInterval(id); }, []);
   const highlight = String(p.highlight ?? 'today');
   const isActive = (s: Slot) => highlight === 'star' ? s.starred : highlight === 'today' ? (s.starred || s.dayIndex === today) : false;
-  const style = lookVars(p);
+  const style = lookVars(p, { '--fs': fontSize(p, 26, 120) });
   if (!slots.length) return null;
   const layout = String(p.layout ?? 'row');
   return (
@@ -209,7 +215,7 @@ export const SingleSocialWidget = ({ params: p }: { params: Params }) => {
   const style: Vars = {
     '--bg': String(p.bg ?? '#111114'),
     '--fg': String(p.textColor ?? '#ffffff'),
-    '--fs': `${num(p.fontSize, 34)}px`,
+    '--fs': fontSize(p, 34, 110),
     '--fit': 1,
     '--radius': `${num(p.radius, 999)}px`,
     '--gap': '14px',
@@ -279,12 +285,16 @@ export const QrRotatorWidget = ({ params: p }: { params: Params }) => {
   return (
     <div className={`ov-fill tl-root tl-qr qrr-root align-${p.align ?? 'center'}`} style={style}>
       <div className="qrr-stage">
-        {prev && transition !== 'none' && card(prev, 'out', shown.key)}
-        {card(cur, 'in', shown.key)}
-        {items.length > 1 && p.dots !== false && (
-          <div className="qrr-dots">{items.map((_, i) => <i key={i} className={i === shown.cur % items.length ? 'on' : ''} />)}</div>
+        <div className="qrr-cards">
+          {prev && transition !== 'none' && card(prev, 'out', shown.key)}
+          {card(cur, 'in', shown.key)}
+        </div>
+        {items.length > 1 && (p.dots !== false || p.progress !== false) && (
+          <div className="qrr-foot">
+            {p.dots !== false && <div className="qrr-dots">{items.map((_, i) => <i key={i} className={i === shown.cur % items.length ? 'on' : ''} />)}</div>}
+            {p.progress !== false && <i key={shown.key} className="qrr-bar" />}
+          </div>
         )}
-        {items.length > 1 && p.progress !== false && <i key={shown.key} className="qrr-bar" />}
       </div>
     </div>
   );

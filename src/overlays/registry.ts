@@ -149,6 +149,7 @@ const qrLook = (): Field[] => [
 // Shared look of the bars (bars.tsx): font, size, colours.
 const barLook = (d: { font?: string; fontSize?: number; radius?: number; accent?: string } = {}): Field[] => [
   { group: 'Wygląd', key: 'fontSize', label: 'Wielkość tekstu', type: 'range', min: 14, max: 72, step: 1, default: d.fontSize ?? 30, unit: 'px', hint: 'Całość zmniejsza się sama, gdy nie mieści się w źródle OBS' },
+  { group: 'Wygląd', key: 'fitHeight', label: 'Skaluj z wysokością źródła', type: 'toggle', default: true, hint: 'Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość' },
   { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: d.font ?? 'poppins', options: [
     { value: 'poppins', label: 'Poppins' }, { value: 'dm', label: 'DM Sans' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' },
   ] },
@@ -1102,6 +1103,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       ] },
       { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 40, unit: 'px' },
       { group: 'Wygląd', key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 72, step: 1, default: 34, unit: 'px', hint: 'Całość zmniejsza się sama, gdy nie mieści się w źródle' },
+      { group: 'Wygląd', key: 'fitHeight', label: 'Skaluj z wysokością źródła', type: 'toggle', default: true, hint: 'Wielkość tekstu odnosi się do proponowanego rozmiaru źródła; wyższe źródło w OBS powiększa całość' },
       { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
         { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
       ] },
