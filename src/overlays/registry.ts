@@ -1158,7 +1158,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Terminy', key: 'items', i18n: true, label: 'Terminy', type: 'text', list: 'lines', default: 'Pon 20:00 CS2 | Wt 20:00 | Śr - | Czw 19:00 Valorant | Pt 21:00 | Sob 18:00 Just chatting | Nd -', maxLength: 400, placeholder: 'Pon 20:00 Gra', hint: 'Każdy wiersz: dzień, godzina i opcjonalnie tytuł. Myślnik zamiast godziny to dzień wolny, gwiazdka na początku wymusza podświetlenie.' },
       { group: 'Terminy', key: 'highlight', label: 'Podświetlenie', type: 'select', default: 'today', options: [
         { value: 'today', label: 'Dzisiejszy dzień' }, { value: 'star', label: 'Tylko wiersze z gwiazdką' }, { value: 'none', label: 'Brak' },
-      ], hint: 'Rozpoznaje skróty dni po polsku, angielsku i niemiecku' },
+      ], hint: 'Rozpoznaje skróty i nazwy dni we wszystkich językach studia' },
       { group: 'Terminy', key: 'livePulse', label: 'Pulsująca kropka przy aktywnym', type: 'toggle', default: true },
       { group: 'Terminy', key: 'offText', i18n: true, label: 'Napis w dzień wolny', type: 'text', default: 'wolne', maxLength: 16 },
       { group: 'Terminy', key: 'showDay', label: 'Pokaż dzień', type: 'toggle', default: true },

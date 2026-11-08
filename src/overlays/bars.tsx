@@ -120,22 +120,31 @@ export const LowerThirdWidget = ({ params: p }: { params: Params }) => {
 };
 
 /* ---------------- schedule ---------------- */
-/** Weekday names the streamer may type: PL / EN / DE short and long forms map to 0..6 (Monday first). */
-const DAY_WORDS: Record<string, number> = {
-  pon: 0, poniedzialek: 0, poniedziałek: 0, mon: 0, monday: 0, mo: 0, montag: 0,
-  wt: 1, wtorek: 1, tue: 1, tuesday: 1, di: 1, dienstag: 1,
-  sr: 2, śr: 2, sroda: 2, środa: 2, wed: 2, wednesday: 2, mi: 2, mittwoch: 2,
-  czw: 3, czwartek: 3, thu: 3, thursday: 3, do: 3, donnerstag: 3,
-  pt: 4, piatek: 4, piątek: 4, fri: 4, friday: 4, fr: 4, freitag: 4,
-  sob: 5, sobota: 5, sat: 5, saturday: 5, sa: 5, samstag: 5,
-  nd: 6, ndz: 6, niedz: 6, niedziela: 6, sun: 6, sunday: 6, so: 6, sonntag: 6,
+/** Weekday names the streamer may type, Monday first. The studio language is checked first ("so" is Saturday in Czech, Sunday in German). */
+const DAY_WORDS: Record<string, Record<string, number>> = {
+  pl: { pon: 0, poniedzialek: 0, poniedziałek: 0, wt: 1, wtorek: 1, sr: 2, śr: 2, sroda: 2, środa: 2, czw: 3, czwartek: 3, pt: 4, piatek: 4, piątek: 4, sob: 5, sobota: 5, nd: 6, ndz: 6, niedz: 6, niedziela: 6 },
+  en: { mon: 0, monday: 0, tue: 1, tues: 1, tuesday: 1, wed: 2, wednesday: 2, thu: 3, thur: 3, thursday: 3, fri: 4, friday: 4, sat: 5, saturday: 5, sun: 6, sunday: 6 },
+  de: { mo: 0, montag: 0, di: 1, dienstag: 1, mi: 2, mittwoch: 2, do: 3, donnerstag: 3, fr: 4, freitag: 4, sa: 5, samstag: 5, so: 6, sonntag: 6 },
+  cs: { po: 0, pondeli: 0, pondělí: 0, ut: 1, út: 1, utery: 1, úterý: 1, st: 2, streda: 2, středa: 2, ct: 3, čt: 3, ctvrtek: 3, čtvrtek: 3, pa: 4, pá: 4, patek: 4, pátek: 4, so: 5, sobota: 5, ne: 6, nedele: 6, neděle: 6 },
+  es: { lun: 0, lunes: 0, mar: 1, martes: 1, mie: 2, mié: 2, miercoles: 2, miércoles: 2, jue: 3, jueves: 3, vie: 4, viernes: 4, sab: 5, sáb: 5, sabado: 5, sábado: 5, dom: 6, domingo: 6 },
+  fr: { lun: 0, lundi: 0, mar: 1, mardi: 1, mer: 2, mercredi: 2, jeu: 3, jeudi: 3, ven: 4, vendredi: 4, sam: 5, samedi: 5, dim: 6, dimanche: 6 },
+  pt: { seg: 0, segunda: 0, ter: 1, terca: 1, terça: 1, qua: 2, quarta: 2, qui: 3, quinta: 3, sex: 4, sexta: 4, sab: 5, sáb: 5, sabado: 5, sábado: 5, dom: 6, domingo: 6 },
+  ru: { пн: 0, понедельник: 0, вт: 1, вторник: 1, ср: 2, среда: 2, чт: 3, четверг: 3, пт: 4, пятница: 4, сб: 5, суббота: 5, вс: 6, воскресенье: 6 },
+  uk: { пн: 0, понеділок: 0, вт: 1, вівторок: 1, ср: 2, середа: 2, чт: 3, четвер: 3, пт: 4, пʼятниця: 4, "п'ятниця": 4, сб: 5, субота: 5, нд: 6, неділя: 6 },
+  tr: { pzt: 0, pazartesi: 0, sal: 1, salı: 1, sali: 1, çar: 2, car: 2, çarşamba: 2, per: 3, perşembe: 3, cum: 4, cuma: 4, cmt: 5, cumartesi: 5, paz: 6, pazar: 6 },
 };
-const dayOf = (word: string) => DAY_WORDS[word.toLowerCase().replace(/[.,:]/g, '')];
+const dayOf = (word: string, lang: string) => {
+  const w = word.toLowerCase().replace(/[.,:]/g, '');
+  const own = DAY_WORDS[lang]?.[w];
+  if (own !== undefined) return own;
+  for (const table of Object.values(DAY_WORDS)) if (table[w] !== undefined) return table[w];
+  return undefined;
+};
 const todayIndex = () => (new Date().getDay() + 6) % 7;
 
 type Slot = { day: string; time: string; title: string; dayIndex?: number; off: boolean; starred: boolean };
 /** "Pon 20:00 CS2" → day / time / title. A line starting with * is forced active; "Sob -" means a day off. */
-const parseSlot = (line: string): Slot => {
+const parseSlot = (line: string, lang: string): Slot => {
   const starred = line.startsWith('*');
   const parts = line.replace(/^\*\s*/, '').split(/\s+/);
   const day = parts[0] ?? '';
@@ -143,11 +152,12 @@ const parseSlot = (line: string): Slot => {
   const timeAt = rest.findIndex((w) => /^\d{1,2}[:.]\d{2}$/.test(w) || w === '-' || w === '–');
   const time = timeAt >= 0 ? rest[timeAt] : '';
   const title = rest.filter((_, i) => i !== timeAt).join(' ');
-  return { day, time: time === '–' ? '-' : time, title, dayIndex: dayOf(day), off: time === '-' || time === '–', starred };
+  return { day, time: time === '–' ? '-' : time, title, dayIndex: dayOf(day, lang), off: time === '-' || time === '–', starred };
 };
 
 export const ScheduleWidget = ({ params: p }: { params: Params }) => {
-  const slots = lines(p.items).map(parseSlot);
+  const lang = String(p._lang ?? 'pl');
+  const slots = lines(p.items).map((l) => parseSlot(l, lang));
   const [today, setToday] = useState(todayIndex);
   useEffect(() => { const id = window.setInterval(() => setToday(todayIndex()), 60_000); return () => window.clearInterval(id); }, []);
   const highlight = String(p.highlight ?? 'today');
