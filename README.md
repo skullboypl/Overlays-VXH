@@ -74,6 +74,10 @@ Wspólne opcje ekranów: tytuł, podtytuł i znaczek nad tytułem; licznik (brak
 | `fireworks` | Fajerwerki | rakiet na salwę, odstęp salw, kolory, kształt wybuchu (mieszany, pierścień, serce), migotanie |
 | `stars` | Gwiazdy / warp | migotanie ze spadającymi gwiazdami albo lot w hiperprzestrzeń |
 | `grain` | Ziarno + winieta | ziarno filmowe, winieta, linie VHS, migotanie |
+| `fog` | Mgła | kłęby przy ziemi, na górze albo na całym ekranie; wiatr, kolor |
+| `dust` | Pyłki w świetle | migoczące drobinki kurzu, poświata, obszar |
+| `lightning` | Błyskawice | rozgałęzione pioruny albo sam błysk co N sekund, siła błysku, kolory |
+| `glitch` | Glitch ekranu | rozdarcia RGB, bloki szumu, linie skanowania; tryb delikatny |
 
 Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 
@@ -84,6 +88,10 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `neon` | Neonowa ramka | obracający się gradient z do 5 kolorów, grubość, zaokrąglenie, poświata, prędkość |
 | `corners` | Narożniki HUD | narożniki celownika, linia skanu, kropka REC, oddychanie |
 | `nametag` | Ramka z podpisem | ramka z paskiem na nick i podpis, 5 pozycji paska, błysk co kilka sekund |
+| `glitchframe` | Ramka glitch | rozjechane kanały RGB, rozdarcia, celownik, napis i zmieniający się kod HEX |
+| `retroframe` | Ramka CRT / VHS | telewizor, kaseta VHS albo kamera; linie skanowania, PLAY, licznik czasu, REC, zakłócenia śledzenia |
+| `polaroid` | Ramka polaroid | papierowy brzeg, odręczny podpis, taśma lub pinezka, przekrzywienie i kołysanie |
+| `pixelframe` | Ramka 8-bit | pikselowa ramka z HUD: serduszka życia, wynik, monety, migający napis |
 | `holiday` | Ramki świąteczne | 8 motywów: Boże Narodzenie, Zima, Sylwester, Walentynki, Wielkanoc, Halloween, 11 Listopada, Urodziny; dekoracje w rogach, girlanda, efekt w środku; każde w 5 wersjach: animowana, realistyczna (AI), 3D, kreskówka, neon; napis z wyborem wielkości i pozycji |
 
 ### 📰 Paski i napisy
@@ -91,6 +99,10 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | ID | Nazwa | Rozmiar | Najważniejsze opcje |
 |---|---|---|---|
 | `ticker` | Przewijany pasek | 1920×64 | lista komunikatów, etykieta, separator, styl, prędkość w px/s, czcionka |
+| `social` | Pojedynczy social | 520×110 | jeden kanał z zachętą, 18 stylów, 13 animacji wejścia i 8 w pętli |
+| `lowerthird` | Belka z nazwiskiem | 900×160 | lower third: nick, podpis, ikona serwisu; 8 stylów, 8 animacji wejścia (w tym glitch), tryb „co jakiś czas” |
+| `schedule` | Harmonogram | 1200×120 | dni i godziny w rzędzie, kolumnie albo siatce; dzisiejszy dzień podświetla się sam |
+| `qrrotator` | Rotator kodów QR | 320×400 | kilka linków na zmianę; przejścia: glitch, obrót, kostka 3D, pikselizacja i inne |
 | `socials` | Rotator sociali | 560×100 | Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Facebook albo własny tekst; zmiana co N sekund, 3 animacje, kolory serwisów, pasek czasu |
 
 Pełna lista parametrów każdego overlaya (klucze, zakresy, wartości domyślne) jest generowana przy buildzie do [`/llms.txt`](https://overlays.vxh.pl/llms.txt).

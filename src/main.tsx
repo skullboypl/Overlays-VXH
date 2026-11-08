@@ -16,6 +16,8 @@ import './overlays/holiday.css';
 import './overlays/widgets.css';
 import './overlays/proframe.css';
 import './overlays/tools.css';
+import './overlays/bars.css';
+import './overlays/frames2.css';
 
 /** What OBS loads: just the effect on a transparent page. */
 const OverlayRoute = () => {

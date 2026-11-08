@@ -130,6 +130,45 @@ const toolLook = (style = 'glass', align = 'center'): Field[] => [
   { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
 ];
 
+// Look of the QR code itself (QrSvg): module shape, frame around the card, colours.
+const qrLook = (): Field[] => [
+  { group: 'Wygląd kodu', key: 'modules', label: 'Kształt kropek', type: 'select', default: 'square', options: [
+    { value: 'square', label: 'Kwadraty' }, { value: 'rounded', label: 'Zaokrąglone' }, { value: 'dots', label: 'Kółka' },
+  ], hint: 'Kwadraty skanują się najpewniej, kółka wyglądają najładniej' },
+  { group: 'Wygląd kodu', key: 'frame', label: 'Ramka karty', type: 'select', default: 'none', options: [
+    { value: 'none', label: 'Zwykła' }, { value: 'phone', label: 'Telefon' }, { value: 'ticket', label: 'Bilet' }, { value: 'tag', label: 'Etykieta' },
+    { value: 'corners', label: 'Narożniki celownika' }, { value: 'sticker', label: 'Naklejka' },
+  ] },
+  { group: 'Wygląd kodu', key: 'qrRounded', label: 'Zaokrąglone tło kodu', type: 'toggle', default: true },
+  { group: 'Kolory', key: 'qrColor', label: 'Kolor kodu', type: 'color', default: '#111114', hint: 'Ciemny kod na jasnym tle skanuje się najpewniej' },
+  { group: 'Kolory', key: 'qrGradient', label: 'Gradient na kodzie', type: 'toggle', default: false },
+  { group: 'Kolory', key: 'qrColor2', label: 'Drugi kolor kodu', type: 'color', default: '#ff5900', when: { key: 'qrGradient', is: [true] } },
+  { group: 'Kolory', key: 'qrBg', label: 'Tło kodu', type: 'color', default: '#ffffff' },
+];
+
+// Shared look of the bars (bars.tsx): font, size, colours.
+const barLook = (d: { font?: string; fontSize?: number; radius?: number; accent?: string } = {}): Field[] => [
+  { group: 'Wygląd', key: 'fontSize', label: 'Wielkość tekstu', type: 'range', min: 14, max: 72, step: 1, default: d.fontSize ?? 30, unit: 'px', hint: 'Całość zmniejsza się sama, gdy nie mieści się w źródle OBS' },
+  { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: d.font ?? 'poppins', options: [
+    { value: 'poppins', label: 'Poppins' }, { value: 'dm', label: 'DM Sans' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' },
+  ] },
+  { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: d.radius ?? 10, unit: 'px' },
+  { group: 'Wygląd', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
+  { group: 'Wygląd', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+  { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: d.accent ?? '#ff5900' },
+  { group: 'Kolory', key: 'accent2', label: 'Drugi kolor', type: 'color', default: '#ff2d95' },
+  { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114' },
+  { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
+];
+
+const SOCIAL_STYLES = [
+  { value: 'pill', label: 'Pigułka' }, { value: 'card', label: 'Karta' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' },
+  { value: 'gradient', label: 'Gradient' }, { value: 'outline', label: 'Kontur' }, { value: 'underline', label: 'Podkreślenie' }, { value: 'clean', label: 'Bez tła' },
+  { value: 'brand', label: 'Kolor serwisu' }, { value: 'split', label: 'Ikona w bloku' }, { value: 'skew', label: 'Esport (skos)' }, { value: 'cut', label: 'Ścięte rogi' },
+  { value: 'retro', label: 'Retro (twardy cień)' }, { value: 'light', label: 'Jasny' }, { value: 'button3d', label: 'Przycisk 3D' }, { value: 'tag', label: 'Etykieta' },
+  { value: 'glow', label: 'Krążąca ramka' }, { value: 'shine', label: 'Połysk' },
+];
+
 // Versions of a holiday frame. Picture versions only show up once their file exists (optionFilter).
 const FRAME_VARIANTS = [
   { value: 'anim', label: 'Animowana' },
@@ -265,6 +304,7 @@ const sceneFields = (d: SceneDefaults, ending = false): Field[] => [
     { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' }, { value: 'confetti', label: 'Konfetti' },
     { value: 'petals', label: 'Płatki' }, { value: 'emoji', label: 'Emoji' }, { value: 'fireworks', label: 'Fajerwerki' },
     { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
+    { value: 'fog', label: 'Mgła' }, { value: 'dust', label: 'Pyłki' }, { value: 'lightning', label: 'Błyskawice' }, { value: 'glitch', label: 'Glitch' },
   ] },
   { group: 'Dodatki', key: 'bars', label: 'Animowany equalizer', type: 'toggle', default: !ending },
   { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
@@ -432,6 +472,56 @@ const ALL_OVERLAYS: OverlayDef[] = [
     ],
   },
   {
+    id: 'fog', name: 'Mgła', icon: '🌫️', category: 'screen', size: FULL_HD,
+    description: 'Kłęby mgły sunące przez ekran: nad ziemią, na górze albo wszędzie.',
+    fields: [
+      density(14, 60), speed(1), size(1), wind(0.4), opacity(0.7),
+      { key: 'color', label: 'Kolor', type: 'color', default: '#cfd8e6' },
+      { key: 'where', label: 'Gdzie', type: 'select', default: 'bottom', options: [
+        { value: 'bottom', label: 'Przy ziemi' }, { value: 'top', label: 'Na górze' }, { value: 'full', label: 'Cały ekran' },
+      ] },
+    ],
+  },
+  {
+    id: 'dust', name: 'Pyłki w świetle', icon: '🌤️', category: 'screen', size: FULL_HD,
+    description: 'Drobinki kurzu dryfujące w promieniu światła, migoczące jak w starym kinie.',
+    fields: [
+      density(120, 500), speed(1), size(1), wind(0), opacity(0.8),
+      { key: 'color', label: 'Kolor', type: 'color', default: '#ffe9c4' },
+      { key: 'glow', label: 'Poświata', type: 'range', min: 0, max: 3, step: 0.1, default: 1, unit: '×' },
+      area,
+    ],
+  },
+  {
+    id: 'lightning', name: 'Błyskawice', icon: '⚡', category: 'screen', size: FULL_HD,
+    description: 'Rozgałęzione pioruny i błysk na całym ekranie co kilka sekund. Dobrze gra z deszczem.',
+    fields: [
+      { key: 'every', label: 'Piorun co', type: 'range', min: 1, max: 30, step: 0.5, default: 4, unit: 's' },
+      { key: 'bolts', label: 'Rysuj pioruny', type: 'toggle', default: true, hint: 'Wyłączone: tylko błysk, jak burza za oknem' },
+      { key: 'flash', label: 'Siła błysku', type: 'range', min: 0, max: 1, step: 0.05, default: 0.5 },
+      size(1), opacity(1),
+      { key: 'colors', label: 'Kolory piorunów', type: 'colors', max: 4, default: ['#dfe9ff', '#b9c8ff'] },
+      { key: 'flashColor', label: 'Kolor błysku', type: 'color', default: '#ffffff' },
+      { key: 'from', label: 'Dokąd sięga', type: 'select', default: 'top', options: [
+        { value: 'top', label: 'Do połowy ekranu' }, { value: 'ground', label: 'Do ziemi' },
+      ] },
+    ],
+  },
+  {
+    id: 'glitch', name: 'Glitch ekranu', icon: '📺', category: 'screen', size: FULL_HD,
+    description: 'Zakłócenia obrazu co kilka sekund: cyjanowo-różowe rozdarcia, bloki szumu i cienkie linie.',
+    fields: [
+      { key: 'every', label: 'Zakłócenie co', type: 'range', min: 1, max: 30, step: 0.5, default: 5, unit: 's' },
+      { key: 'intensity', label: 'Siła', type: 'range', min: 0.3, max: 3, step: 0.1, default: 1, unit: '×' },
+      { key: 'mode', label: 'Tryb', type: 'select', default: 'full', options: [
+        { value: 'full', label: 'Z dużymi rozdarciami' }, { value: 'subtle', label: 'Delikatny' },
+      ] },
+      { key: 'scanlines', label: 'Linie skanowania', type: 'toggle', default: true },
+      opacity(0.8),
+      { key: 'colors', label: 'Kolory', type: 'colors', max: 4, default: ['#00f0ff', '#ff00a8'] },
+    ],
+  },
+  {
     id: 'videobg', name: 'Tło wideo', icon: '🎬', category: 'scene', size: FULL_HD,
     description: 'Realistyczne zapętlone wideo na całą scenę: pokój nocą z deszczem, miasto neon, zimowy las, kominek i inne.',
     fields: [
@@ -446,6 +536,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
         { value: 'petals', label: 'Płatki' }, { value: 'confetti', label: 'Konfetti' },
     { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
+    { value: 'fog', label: 'Mgła' }, { value: 'dust', label: 'Pyłki' }, { value: 'lightning', label: 'Błyskawice' }, { value: 'glitch', label: 'Glitch' },
       ] },
       { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
       { group: 'Dodatki', key: 'grain', label: 'Ziarno filmowe', type: 'toggle', default: false },
@@ -491,6 +582,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'none', label: 'Brak' }, { value: 'snow', label: 'Śnieg' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'fireflies', label: 'Świetliki' },
         { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' }, { value: 'fireworks', label: 'Fajerwerki' },
     { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
+    { value: 'fog', label: 'Mgła' }, { value: 'dust', label: 'Pyłki' }, { value: 'lightning', label: 'Błyskawice' }, { value: 'glitch', label: 'Glitch' },
       ] },
       { group: 'Efekty', key: 'vignette', label: 'Winieta przy krawędziach', type: 'toggle', default: false },
       { group: 'Efekty', key: 'vignetteStrength', label: 'Siła winiety', type: 'range', min: 0.1, max: 1, step: 0.05, default: 0.6, when: { key: 'vignette', is: [true] } },
@@ -542,6 +634,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
         { value: 'none', label: 'Brak' }, { value: 'stars', label: 'Gwiazdy' }, { value: 'snow', label: 'Śnieg' }, { value: 'fireflies', label: 'Świetliki' },
         { value: 'confetti', label: 'Konfetti' }, { value: 'petals', label: 'Płatki' },
     { value: 'embers', label: 'Iskry' }, { value: 'bubbles', label: 'Bańki' }, { value: 'bokeh', label: 'Bokeh' }, { value: 'sparkles', label: 'Błyski' }, { value: 'balloons', label: 'Balony' }, { value: 'meteors', label: 'Spadające gwiazdy' }, { value: 'digital', label: 'Cyfrowy deszcz' },
+    { value: 'fog', label: 'Mgła' }, { value: 'dust', label: 'Pyłki' }, { value: 'lightning', label: 'Błyskawice' }, { value: 'glitch', label: 'Glitch' },
       ] },
       { group: 'Tło', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
       { group: 'Tło', key: 'bgMotion', label: 'Powolny ruch tła', type: 'toggle', default: false, hint: 'Delikatne przybliżanie i przesuwanie tła' },
@@ -775,6 +868,117 @@ const ALL_OVERLAYS: OverlayDef[] = [
     ],
   },
   {
+    id: 'glitchframe', name: 'Ramka glitch', icon: '🧬', category: 'camera', size: CAM,
+    description: 'Cyberpunkowa ramka z rozjechanymi kanałami RGB, rozdarciami, celownikiem i migającym napisem.',
+    fields: [
+      { group: 'Ramka', key: 'color', label: 'Kolor główny', type: 'color', default: '#e8f6ff' },
+      { group: 'Ramka', key: 'color2', label: 'Kanał cyjan', type: 'color', default: '#00f0ff' },
+      { group: 'Ramka', key: 'color3', label: 'Kanał magenta', type: 'color', default: '#ff00a8' },
+      { group: 'Ramka', key: 'thickness', label: 'Grubość', type: 'range', min: 1, max: 12, step: 1, default: 3, unit: 'px' },
+      { group: 'Ramka', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 40, step: 1, default: 4, unit: 'px' },
+      { group: 'Ramka', key: 'inset', label: 'Margines', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px' },
+      { group: 'Ramka', key: 'corners', label: 'Narożniki', type: 'toggle', default: true },
+      { group: 'Zakłócenia', key: 'intensity', label: 'Siła zakłóceń', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×' },
+      { group: 'Zakłócenia', key: 'scanlines', label: 'Linie skanowania', type: 'toggle', default: true },
+      { group: 'Zakłócenia', key: 'noise', label: 'Przesuwający się pas', type: 'toggle', default: true },
+      { group: 'Zakłócenia', key: 'shake', label: 'Drgania ramki', type: 'toggle', default: false },
+      { group: 'Napisy', key: 'showLabel', label: 'Pokaż napis', type: 'toggle', default: true },
+      { group: 'Napisy', key: 'label', i18n: true, label: 'Napis', type: 'text', default: 'LIVE SIGNAL', maxLength: 24, when: { key: 'showLabel', is: [true] } },
+      { group: 'Napisy', key: 'labelPos', label: 'Miejsce napisu', type: 'select', default: 'tl', when: { key: 'showLabel', is: [true] }, options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' },
+      ] },
+      { group: 'Napisy', key: 'showCode', label: 'Zmieniający się kod HEX', type: 'toggle', default: true },
+      { group: 'Napisy', key: 'font', label: 'Czcionka', type: 'select', default: 'orbitron', options: [
+        { value: 'orbitron', label: 'Orbitron' }, { value: 'russo', label: 'Russo' }, { value: 'dm', label: 'DM Sans' }, { value: 'bebas', label: 'Bebas' },
+      ] },
+    ],
+  },
+  {
+    id: 'retroframe', name: 'Ramka CRT / VHS', icon: '📼', category: 'camera', size: CAM,
+    description: 'Stary telewizor albo kaseta VHS: linie skanowania, napis PLAY, licznik czasu i zakłócenia śledzenia.',
+    fields: [
+      { group: 'Wygląd', key: 'look', label: 'Wersja', type: 'select', default: 'tv', options: [
+        { value: 'tv', label: 'Telewizor CRT' }, { value: 'vhs', label: 'Kaseta VHS' }, { value: 'handy', label: 'Kamera VHS-C' },
+      ] },
+      { group: 'Wygląd', key: 'bezelColor', label: 'Kolor obudowy', type: 'color', default: '#1d1d22' },
+      { group: 'Wygląd', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
+      { group: 'Wygląd', key: 'bezel', label: 'Grubość obudowy', type: 'range', min: 4, max: 40, step: 1, default: 14, unit: 'px' },
+      { group: 'Wygląd', key: 'curve', label: 'Wygięcie ekranu', type: 'range', min: 0, max: 14, step: 1, default: 6, unit: '%', when: { key: 'look', is: ['tv'] } },
+      { group: 'Wygląd', key: 'inset', label: 'Margines', type: 'range', min: 0, max: 60, step: 1, default: 10, unit: 'px' },
+      { group: 'Efekty', key: 'scanlines', label: 'Linie skanowania', type: 'toggle', default: true },
+      { group: 'Efekty', key: 'vignette', label: 'Winieta kineskopu', type: 'toggle', default: true },
+      { group: 'Efekty', key: 'tracking', label: 'Zakłócenia śledzenia', type: 'toggle', default: true },
+      { group: 'Efekty', key: 'trackEvery', label: 'Zakłócenie co', type: 'range', min: 2, max: 30, step: 1, default: 7, unit: 's', when: { key: 'tracking', is: [true] } },
+      { group: 'Efekty', key: 'tintOn', label: 'Zabarwienie obrazu', type: 'toggle', default: false },
+      { group: 'Efekty', key: 'tint', label: 'Kolor zabarwienia', type: 'color', default: '#8fd3ff', when: { key: 'tintOn', is: [true] } },
+      { group: 'Napisy', key: 'showOsd', label: 'Napis PLAY', type: 'toggle', default: true },
+      { group: 'Napisy', key: 'osd', label: 'Tekst napisu', type: 'text', default: 'PLAY', maxLength: 12, when: { key: 'showOsd', is: [true] } },
+      { group: 'Napisy', key: 'timecode', label: 'Licznik czasu', type: 'toggle', default: true, when: { key: 'showOsd', is: [true] }, hint: 'Liczy od chwili, gdy OBS załaduje źródło' },
+      { group: 'Napisy', key: 'date', label: 'Data pod licznikiem', type: 'toggle', default: false, when: [{ key: 'showOsd', is: [true] }, { key: 'timecode', is: [true] }] },
+      { group: 'Napisy', key: 'showRec', label: 'Kropka REC', type: 'toggle', default: false },
+      { group: 'Napisy', key: 'showChannel', label: 'Numer kanału', type: 'toggle', default: true },
+      { group: 'Napisy', key: 'channel', label: 'Numer kanału', type: 'text', default: 'CH 03', maxLength: 12, when: { key: 'showChannel', is: [true] } },
+      { group: 'Napisy', key: 'textColor', label: 'Kolor napisów', type: 'color', default: '#f2f2f2' },
+    ],
+  },
+  {
+    id: 'polaroid', name: 'Ramka polaroid', icon: '📸', category: 'camera', size: CAM,
+    description: 'Zdjęcie natychmiastowe przyklejone taśmą, z odręcznym podpisem i lekkim przekrzywieniem.',
+    fields: [
+      { group: 'Papier', key: 'paper', label: 'Kolor papieru', type: 'color', default: '#fbfaf6' },
+      { group: 'Papier', key: 'border', label: 'Szerokość brzegu', type: 'range', min: 4, max: 40, step: 1, default: 12, unit: 'px' },
+      { group: 'Papier', key: 'bottom', label: 'Dolny brzeg', type: 'range', min: 20, max: 120, step: 1, default: 54, unit: 'px' },
+      { group: 'Papier', key: 'tilt', label: 'Przekrzywienie', type: 'range', min: -12, max: 12, step: 0.5, default: -2, unit: '°' },
+      { group: 'Papier', key: 'inset', label: 'Margines', type: 'range', min: 0, max: 60, step: 1, default: 14, unit: 'px', hint: 'Miejsce na obrót i taśmę' },
+      { group: 'Papier', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+      { group: 'Papier', key: 'sway', label: 'Lekkie kołysanie', type: 'toggle', default: true },
+      { group: 'Podpis', key: 'showCaption', label: 'Pokaż podpis', type: 'toggle', default: true },
+      { group: 'Podpis', key: 'caption', i18n: true, label: 'Podpis', type: 'text', default: 'live z pokoju ✨', maxLength: 40, when: { key: 'showCaption', is: [true] } },
+      { group: 'Podpis', key: 'captionSize', label: 'Wielkość podpisu', type: 'range', min: 12, max: 48, step: 1, default: 22, unit: 'px', when: { key: 'showCaption', is: [true] } },
+      { group: 'Podpis', key: 'ink', label: 'Kolor pisaka', type: 'color', default: '#2b2b33', when: { key: 'showCaption', is: [true] } },
+      { group: 'Podpis', key: 'font', label: 'Czcionka', type: 'select', default: 'pacifico', when: { key: 'showCaption', is: [true] }, options: [
+        { value: 'pacifico', label: 'Pacifico (odręczna)' }, { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' },
+      ] },
+      { group: 'Dodatki', key: 'tape', label: 'Taśma', type: 'select', default: 'top', options: [
+        { value: 'top', label: 'Na górze' }, { value: 'corners', label: 'Dwa rogi' }, { value: 'sides', label: 'Po bokach' }, { value: 'none', label: 'Brak' },
+      ] },
+      { group: 'Dodatki', key: 'tapeColor', label: 'Kolor taśmy', type: 'color', default: '#ffd57a', when: { key: 'tape', is: ['top', 'corners', 'sides'] } },
+      { group: 'Dodatki', key: 'pin', label: 'Pinezka', type: 'toggle', default: false },
+      { group: 'Dodatki', key: 'stickers', label: 'Naklejki emoji', type: 'toggle', default: false },
+      { group: 'Dodatki', key: 'stickerSet', label: 'Emoji naklejek', type: 'text', default: '✨💖⭐', maxLength: 12, when: { key: 'stickers', is: [true] } },
+    ],
+  },
+  {
+    id: 'pixelframe', name: 'Ramka 8-bit', icon: '👾', category: 'camera', size: CAM,
+    description: 'Pikselowa ramka jak z gry na NES: serduszka życia, wynik, licznik monet i migający PRESS START.',
+    fields: [
+      { group: 'Ramka', key: 'color', label: 'Kolor ramki', type: 'color', default: '#ffffff' },
+      { group: 'Ramka', key: 'color2', label: 'Ramka wewnętrzna', type: 'color', default: '#ff5900' },
+      { group: 'Ramka', key: 'color3', label: 'Tło HUD', type: 'color', default: '#1b1b24' },
+      { group: 'Ramka', key: 'pixel', label: 'Wielkość piksela', type: 'range', min: 2, max: 16, step: 1, default: 6, unit: 'px' },
+      { group: 'Ramka', key: 'inset', label: 'Margines', type: 'range', min: 0, max: 60, step: 1, default: 12, unit: 'px' },
+      { group: 'Ramka', key: 'pulse', label: 'Migotanie ramki', type: 'toggle', default: false },
+      { group: 'HUD', key: 'showHud', label: 'Pokaż HUD', type: 'toggle', default: true },
+      { group: 'HUD', key: 'hudPos', label: 'Miejsce HUD', type: 'select', default: 'tl', when: { key: 'showHud', is: [true] }, options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' },
+      ] },
+      { group: 'HUD', key: 'showLabel', label: 'Pokaż etykietę', type: 'toggle', default: true, when: { key: 'showHud', is: [true] } },
+      { group: 'HUD', key: 'label', label: 'Etykieta', type: 'text', default: 'P1', maxLength: 16, hint: 'Nick albo poziom, np. LV.99', when: [{ key: 'showHud', is: [true] }, { key: 'showLabel', is: [true] }] },
+      { group: 'HUD', key: 'showHearts', label: 'Serduszka życia', type: 'toggle', default: true, when: { key: 'showHud', is: [true] } },
+      { group: 'HUD', key: 'hearts', label: 'Ile serduszek', type: 'range', min: 1, max: 10, step: 1, default: 5, when: [{ key: 'showHud', is: [true] }, { key: 'showHearts', is: [true] }] },
+      { group: 'HUD', key: 'hp', label: 'Ile pełnych', type: 'range', min: 0, max: 10, step: 1, default: 3, when: [{ key: 'showHud', is: [true] }, { key: 'showHearts', is: [true] }] },
+      { group: 'HUD', key: 'blink', label: 'Ostatnie serce miga', type: 'toggle', default: true, when: [{ key: 'showHud', is: [true] }, { key: 'showHearts', is: [true] }] },
+      { group: 'HUD', key: 'showScore', label: 'Pokaż wynik', type: 'toggle', default: false, when: { key: 'showHud', is: [true] } },
+      { group: 'HUD', key: 'score', label: 'Wynik', type: 'text', default: 'SCORE 001337', maxLength: 20, when: [{ key: 'showHud', is: [true] }, { key: 'showScore', is: [true] }] },
+      { group: 'HUD', key: 'fontSize', label: 'Wielkość pisma', type: 'range', min: 8, max: 28, step: 1, default: 12, unit: 'px' },
+      { group: 'HUD', key: 'textColor', label: 'Kolor pisma', type: 'color', default: '#ffffff' },
+      { group: 'Dodatki', key: 'showCoin', label: 'Licznik monet', type: 'toggle', default: true },
+      { group: 'Dodatki', key: 'coins', label: 'Ile monet', type: 'range', min: 0, max: 999, step: 1, default: 99, when: { key: 'showCoin', is: [true] } },
+      { group: 'Dodatki', key: 'showPress', label: 'Migający napis', type: 'toggle', default: false },
+      { group: 'Dodatki', key: 'press', i18n: true, label: 'Tekst napisu', type: 'text', default: 'PRESS START', maxLength: 24, when: { key: 'showPress', is: [true] } },
+    ],
+  },
+  {
     id: 'ticker', name: 'Przewijany pasek', icon: '📰', category: 'widget', size: { w: 1920, h: 64 },
     description: 'Pasek z przesuwającym się tekstem: harmonogram, info, zasady czatu.',
     fields: [
@@ -836,16 +1040,12 @@ const ALL_OVERLAYS: OverlayDef[] = [
       ], hint: 'Sam nick zamienia twitch.tv/skullboypl na skullboypl' },
       { group: 'Kanały', key: 'showPrefix', label: 'Pokaż tekst przed kanałem', type: 'toggle', default: false },
       { group: 'Kanały', key: 'prefix', i18n: true, label: 'Tekst przed kanałem', type: 'text', default: 'Obserwuj:', maxLength: 24, when: { key: 'showPrefix', is: [true] } },
-      { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: [
-        { value: 'pill', label: 'Pigułka' }, { value: 'card', label: 'Karta' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' },
-        { value: 'gradient', label: 'Gradient' }, { value: 'outline', label: 'Kontur' }, { value: 'underline', label: 'Podkreślenie' }, { value: 'clean', label: 'Bez tła' },
-        { value: 'brand', label: 'Kolor serwisu' }, { value: 'split', label: 'Ikona w bloku' }, { value: 'skew', label: 'Esport (skos)' }, { value: 'cut', label: 'Ścięte rogi' },
-        { value: 'retro', label: 'Retro (twardy cień)' }, { value: 'light', label: 'Jasny' }, { value: 'button3d', label: 'Przycisk 3D' }, { value: 'tag', label: 'Etykieta' },
-        { value: 'glow', label: 'Krążąca ramka' }, { value: 'shine', label: 'Połysk' },
-      ] },
+      { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: SOCIAL_STYLES },
       { group: 'Wygląd', key: 'anim', label: 'Animacja', type: 'select', default: 'slide', when: { key: 'layout', is: ['one'] }, options: [
         { value: 'slide', label: 'Wjazd' }, { value: 'flip', label: 'Obrót' }, { value: 'fade', label: 'Zanik' }, { value: 'zoom', label: 'Powiększenie' },
         { value: 'bounce', label: 'Podskok' }, { value: 'drop', label: 'Spadnięcie' }, { value: 'blur', label: 'Rozmycie' },
+        { value: 'glitch', label: 'Glitch' }, { value: 'swing', label: 'Huśtawka' }, { value: 'roll', label: 'Przetoczenie' },
+        { value: 'typewriter', label: 'Pisanie' }, { value: 'pixel', label: 'Pikselizacja' }, { value: 'rubber', label: 'Guma' },
       ] },
       { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
@@ -867,6 +1067,117 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114', when: { key: 'style', is: ['pill', 'card', 'glass', 'neon', 'gradient', 'split', 'skew', 'cut', 'retro', 'button3d', 'tag', 'glow', 'shine'] } },
       { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff', when: { key: 'style', is: ['pill', 'card', 'glass', 'neon', 'gradient', 'outline', 'underline', 'clean', 'split', 'skew', 'cut', 'retro', 'button3d', 'tag', 'glow', 'shine'] } },
       { group: 'Kolory', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true, when: { key: 'layout', is: ['one', 'row', 'column', 'grid', 'icons'] } },
+    ],
+  },
+  {
+    id: 'social', name: 'Pojedynczy social', icon: '📌', category: 'widget', size: { w: 520, h: 110 },
+    description: 'Jeden kanał na stałe: ikona, nick i zachęta, z animacją w pętli (puls, kiwanie, połysk...).',
+    fields: [
+      { group: 'Kanał', key: 'item', label: 'Kanał', type: 'text', default: 'twitch.tv/skullboypl', maxLength: 80, placeholder: 'twitch.tv/nick', hint: 'Ikona i kolor dobierają się same po adresie' },
+      { group: 'Kanał', key: 'textMode', label: 'Tekst', type: 'select', default: 'full', options: [
+        { value: 'full', label: 'Cały adres' }, { value: 'handle', label: 'Sam nick' },
+      ] },
+      { group: 'Kanał', key: 'showCta', label: 'Pokaż zachętę', type: 'toggle', default: true },
+      { group: 'Kanał', key: 'cta', i18n: true, label: 'Zachęta', type: 'text', default: 'Zostaw followa', maxLength: 30, when: { key: 'showCta', is: [true] } },
+      { group: 'Kanał', key: 'layout', label: 'Układ', type: 'select', default: 'cta-top', options: [
+        { value: 'cta-top', label: 'Zachęta nad kanałem' }, { value: 'cta-bottom', label: 'Zachęta pod kanałem' }, { value: 'row', label: 'W jednym rzędzie' },
+        { value: 'stack', label: 'Duża ikona nad nickiem' }, { value: 'icon', label: 'Sama ikona' },
+      ] },
+      { group: 'Kanał', key: 'arrow', label: 'Strzałka', type: 'toggle', default: false },
+      { group: 'Animacja', key: 'anim', label: 'Wejście', type: 'select', default: 'slide', options: [
+        { value: 'slide', label: 'Wjazd' }, { value: 'flip', label: 'Obrót' }, { value: 'fade', label: 'Zanik' }, { value: 'zoom', label: 'Powiększenie' },
+        { value: 'bounce', label: 'Podskok' }, { value: 'drop', label: 'Spadnięcie' }, { value: 'blur', label: 'Rozmycie' }, { value: 'glitch', label: 'Glitch' },
+        { value: 'swing', label: 'Huśtawka' }, { value: 'roll', label: 'Przetoczenie' }, { value: 'typewriter', label: 'Pisanie' }, { value: 'pixel', label: 'Pikselizacja' }, { value: 'rubber', label: 'Guma' },
+      ] },
+      { group: 'Animacja', key: 'loop', label: 'W pętli', type: 'select', default: 'pulse', options: [
+        { value: 'none', label: 'Brak' }, { value: 'pulse', label: 'Puls' }, { value: 'wiggle', label: 'Kiwanie' }, { value: 'bounce', label: 'Podskok' },
+        { value: 'float', label: 'Unoszenie' }, { value: 'glow', label: 'Poświata' }, { value: 'shine', label: 'Połysk' }, { value: 'icon', label: 'Ikona macha' },
+        { value: 'reenter', label: 'Powtórz wejście co kilka sekund' },
+      ] },
+      { group: 'Animacja', key: 'every', label: 'Powtórz co', type: 'range', min: 2, max: 60, step: 1, default: 6, unit: 's', when: { key: 'loop', is: ['reenter'] } },
+      { group: 'Animacja', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: false, when: { key: 'loop', is: ['reenter'] } },
+      { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: SOCIAL_STYLES },
+      { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'center', options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
+      { group: 'Wygląd', key: 'radius', label: 'Zaokrąglenie', type: 'range', min: 0, max: 60, step: 1, default: 40, unit: 'px' },
+      { group: 'Wygląd', key: 'fontSize', label: 'Wielkość', type: 'range', min: 14, max: 72, step: 1, default: 34, unit: 'px', hint: 'Całość zmniejsza się sama, gdy nie mieści się w źródle' },
+      { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'dm', options: [
+        { value: 'dm', label: 'DM Sans' }, { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' },
+      ] },
+      { group: 'Wygląd', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
+      { group: 'Wygląd', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+      { group: 'Ikona', key: 'showIcon', label: 'Pokaż ikonę serwisu', type: 'toggle', default: true },
+      { group: 'Ikona', key: 'iconShape', label: 'Kształt ikony', type: 'select', default: 'circle', when: { key: 'showIcon', is: [true] }, options: [
+        { value: 'circle', label: 'Koło' }, { value: 'rounded', label: 'Zaokrąglony kwadrat' }, { value: 'square', label: 'Kwadrat' },
+      ] },
+      { group: 'Kolory', key: 'brandColors', label: 'Kolor serwisu', type: 'toggle', default: true },
+      { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900', when: { key: 'brandColors', is: [false] } },
+      { group: 'Kolory', key: 'bg', label: 'Tło', type: 'color', default: '#111114' },
+      { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
+    ],
+  },
+  {
+    id: 'lowerthird', name: 'Belka z nazwiskiem', icon: '🪧', category: 'widget', size: { w: 900, h: 160 },
+    description: 'Telewizyjna belka (lower third): nick, podpis i ikona, 8 stylów i 9 animacji wejścia, w tym glitch.',
+    fields: [
+      { group: 'Teksty', key: 'title', label: 'Nick / tytuł', type: 'text', default: 'skullboypl', maxLength: 40 },
+      { group: 'Teksty', key: 'showSub', label: 'Pokaż podpis', type: 'toggle', default: true },
+      { group: 'Teksty', key: 'sub', i18n: true, label: 'Podpis', type: 'text', default: 'twitch.tv/skullboypl · codziennie od 20:00', maxLength: 80, when: { key: 'showSub', is: [true] } },
+      { group: 'Teksty', key: 'showKicker', label: 'Pokaż znaczek nad tytułem', type: 'toggle', default: false },
+      { group: 'Teksty', key: 'kicker', i18n: true, label: 'Znaczek nad tytułem', type: 'text', default: 'NA ŻYWO', maxLength: 24, when: { key: 'showKicker', is: [true] } },
+      { group: 'Teksty', key: 'icon', label: 'Ikona', type: 'select', default: 'brand', options: [
+        { value: 'brand', label: 'Serwis z podpisu' }, { value: 'emoji', label: 'Emoji' }, { value: 'none', label: 'Brak' },
+      ], hint: 'Serwis rozpoznawany po adresie w podpisie, np. twitch.tv' },
+      { group: 'Teksty', key: 'emoji', label: 'Emoji', type: 'text', default: '🎮', maxLength: 4, when: { key: 'icon', is: ['emoji'] } },
+      { group: 'Pokazywanie', key: 'show', label: 'Kiedy widać', type: 'select', default: 'always', options: [
+        { value: 'always', label: 'Cały czas' }, { value: 'loop', label: 'Co jakiś czas' },
+      ] },
+      { group: 'Pokazywanie', key: 'delay', label: 'Pierwsze pojawienie po', type: 'range', min: 0, max: 120, step: 1, default: 1, unit: 's', when: { key: 'show', is: ['loop'] } },
+      { group: 'Pokazywanie', key: 'duration', label: 'Widoczna przez', type: 'range', min: 3, max: 60, step: 1, default: 8, unit: 's', when: { key: 'show', is: ['loop'] } },
+      { group: 'Pokazywanie', key: 'every', label: 'Powtarzaj co', type: 'range', min: 10, max: 900, step: 10, default: 60, unit: 's', when: { key: 'show', is: ['loop'] }, hint: 'W studiu belka wraca po 1,5 s, żeby można było ustawić wygląd' },
+      { group: 'Pokazywanie', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true, when: { key: 'show', is: ['loop'] } },
+      { group: 'Animacja', key: 'anim', label: 'Wejście', type: 'select', default: 'slide', options: [
+        { value: 'slide', label: 'Wjazd z boku' }, { value: 'rise', label: 'Wjazd z dołu' }, { value: 'wipe', label: 'Odsłonięcie' }, { value: 'glitch', label: 'Glitch' },
+        { value: 'type', label: 'Pisanie' }, { value: 'flip', label: 'Obrót' }, { value: 'zoom', label: 'Powiększenie' }, { value: 'fade', label: 'Zanik' },
+      ] },
+      { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'classic', options: [
+        { value: 'classic', label: 'Klasyczna' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' }, { value: 'cut', label: 'Ścięta (esport)' },
+        { value: 'minimal', label: 'Minimal' }, { value: 'gradient', label: 'Gradient' }, { value: 'news', label: 'Wiadomości' }, { value: 'cyber', label: 'Cyber' },
+      ] },
+      { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
+      ...barLook({ fontSize: 34 }),
+    ],
+  },
+  {
+    id: 'schedule', name: 'Harmonogram', icon: '📅', category: 'widget', size: { w: 1200, h: 120 },
+    description: 'Dni i godziny streamów w rzędzie, kolumnie albo siatce; dzisiejszy dzień sam się podświetla.',
+    fields: [
+      { group: 'Terminy', key: 'items', i18n: true, label: 'Terminy', type: 'text', list: 'lines', default: 'Pon 20:00 CS2 | Wt 20:00 | Śr - | Czw 19:00 Valorant | Pt 21:00 | Sob 18:00 Just chatting | Nd -', maxLength: 400, placeholder: 'Pon 20:00 Gra', hint: 'Każdy wiersz: dzień, godzina i opcjonalnie tytuł. Myślnik zamiast godziny to dzień wolny, gwiazdka na początku wymusza podświetlenie.' },
+      { group: 'Terminy', key: 'highlight', label: 'Podświetlenie', type: 'select', default: 'today', options: [
+        { value: 'today', label: 'Dzisiejszy dzień' }, { value: 'star', label: 'Tylko wiersze z gwiazdką' }, { value: 'none', label: 'Brak' },
+      ], hint: 'Rozpoznaje skróty dni po polsku, angielsku i niemiecku' },
+      { group: 'Terminy', key: 'livePulse', label: 'Pulsująca kropka przy aktywnym', type: 'toggle', default: true },
+      { group: 'Terminy', key: 'offText', i18n: true, label: 'Napis w dzień wolny', type: 'text', default: 'wolne', maxLength: 16 },
+      { group: 'Terminy', key: 'showDay', label: 'Pokaż dzień', type: 'toggle', default: true },
+      { group: 'Terminy', key: 'showTime', label: 'Pokaż godzinę', type: 'toggle', default: true },
+      { group: 'Terminy', key: 'showName', label: 'Pokaż tytuł', type: 'toggle', default: true },
+      { group: 'Terminy', key: 'showTitle', label: 'Pokaż nagłówek', type: 'toggle', default: true },
+      { group: 'Terminy', key: 'title', i18n: true, label: 'Nagłówek', type: 'text', default: 'Harmonogram', maxLength: 24, when: { key: 'showTitle', is: [true] } },
+      { group: 'Układ', key: 'layout', label: 'Układ', type: 'select', default: 'row', options: [
+        { value: 'row', label: 'W rzędzie' }, { value: 'column', label: 'W kolumnie' }, { value: 'grid', label: 'Siatka 4 kolumny' },
+      ], hint: 'Do rzędu szerokie źródło, np. 1200 × 120; do kolumny wysokie, np. 420 × 400' },
+      { group: 'Układ', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: [
+        { value: 'pill', label: 'Pigułki' }, { value: 'card', label: 'Karty' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' },
+        { value: 'strip', label: 'Jeden pasek' }, { value: 'cut', label: 'Ścięte (esport)' },
+      ] },
+      { group: 'Układ', key: 'align', label: 'Wyrównanie', type: 'select', default: 'center', options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
+      { group: 'Układ', key: 'stagger', label: 'Wjazd kolejno przy starcie', type: 'toggle', default: true },
+      ...barLook({ fontSize: 26, radius: 999 }),
     ],
   },
   // ---------- streamer tools ----------
@@ -982,9 +1293,32 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Kod', key: 'logo', label: 'Logo serwisu w środku', type: 'toggle', default: true, hint: 'Działa dla Discorda, Twitcha, YouTube, TikToka, Kicka, Instagrama, X i Facebooka' },
       { group: 'Kod', key: 'anim', label: 'Animacja', type: 'select', default: 'scan', options: [
         { value: 'none', label: 'Brak' }, { value: 'scan', label: 'Linia skanowania' }, { value: 'pulse', label: 'Puls' }, { value: 'float', label: 'Unoszenie' },
+        { value: 'glitch', label: 'Glitch' }, { value: 'spin', label: 'Obrót 3D' }, { value: 'breathe', label: 'Oddech z poświatą' }, { value: 'shake', label: 'Potrząsanie co kilka sekund' },
       ] },
-      { group: 'Kolory', key: 'qrColor', label: 'Kolor kodu', type: 'color', default: '#111114', hint: 'Ciemny kod na jasnym tle skanuje się najpewniej' },
-      { group: 'Kolory', key: 'qrBg', label: 'Tło kodu', type: 'color', default: '#ffffff' },
+      ...qrLook(),
+      ...toolLook('glass'),
+    ],
+  },
+  {
+    id: 'qrrotator', name: 'Rotator kodów QR', icon: '🔄', category: 'widget', size: { w: 320, h: 400 },
+    description: 'Kilka kodów QR na zmianę: Discord, donejty, sklep. Przejścia: glitch, obrót, pikselizacja, kostka i inne.',
+    fields: [
+      { group: 'Kody', key: 'items', label: 'Linki', type: 'text', list: 'lines', default: 'https://discord.skullmedia.pl Wbijaj na Discorda | https://twitch.tv/skullboypl Obserwuj na Twitchu | https://youtube.com/@skullboypl Subskrybuj na YouTube', maxLength: 600, placeholder: 'https://... Tytuł', hint: 'Każdy wiersz: link, a po spacji tytuł nad kodem' },
+      { group: 'Kody', key: 'every', label: 'Zmiana co', type: 'range', min: 3, max: 60, step: 1, default: 8, unit: 's' },
+      { group: 'Kody', key: 'transition', label: 'Przejście', type: 'select', default: 'glitch', options: [
+        { value: 'glitch', label: 'Glitch' }, { value: 'flip', label: 'Obrót' }, { value: 'cube', label: 'Kostka 3D' }, { value: 'pixelate', label: 'Pikselizacja' },
+        { value: 'slide', label: 'Przesunięcie' }, { value: 'zoom', label: 'Powiększenie' }, { value: 'blur', label: 'Rozmycie' }, { value: 'wipe', label: 'Odsłonięcie' },
+        { value: 'drop', label: 'Spadnięcie' }, { value: 'fade', label: 'Zanik' }, { value: 'none', label: 'Bez przejścia' },
+      ] },
+      { group: 'Kody', key: 'showTitle', label: 'Pokaż tytuł', type: 'toggle', default: true },
+      { group: 'Kody', key: 'title', i18n: true, label: 'Tytuł, gdy wiersz go nie ma', type: 'text', default: 'Zeskanuj', maxLength: 30, when: { key: 'showTitle', is: [true] } },
+      { group: 'Kody', key: 'caption', label: 'Podpis pod kodem', type: 'select', default: 'url', options: [
+        { value: 'url', label: 'Adres' }, { value: 'title', label: 'Tytuł' }, { value: 'none', label: 'Brak' },
+      ] },
+      { group: 'Kody', key: 'logo', label: 'Logo serwisu w środku', type: 'toggle', default: true },
+      { group: 'Kody', key: 'dots', label: 'Kropki pod kodem', type: 'toggle', default: true },
+      { group: 'Kody', key: 'progress', label: 'Pasek czasu', type: 'toggle', default: true },
+      ...qrLook(),
       ...toolLook('glass'),
     ],
   },

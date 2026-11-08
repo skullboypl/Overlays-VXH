@@ -322,34 +322,65 @@ export const ReminderWidget = ({ params: p }: { params: Params }) => {
 };
 
 /* ---------------- QR code ---------------- */
-export const QrWidget = ({ params: p }: { params: Params }) => {
-  const url = String(p.url ?? '').trim() || 'https://overlays.vxh.pl';
+type QrPath = { d: string; n: number; eyes: string };
+
+/** QR modules as one SVG path; `dots` draws circles, `rounded` soft squares. Finder eyes come separately so they can stay square. */
+export const buildQr = (url: string, high: boolean, modules: string): QrPath => {
+  const qr = qrcode(0, high ? 'H' : 'M');
+  qr.addData(url);
+  qr.make();
+  const n = qr.getModuleCount();
+  const isEye = (r: number, c: number) => (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
+  let d = '', eyes = '';
+  for (let r = 0; r < n; r += 1) {
+    for (let c = 0; c < n; c += 1) {
+      if (!qr.isDark(r, c)) continue;
+      if (isEye(r, c)) { eyes += `M${c} ${r}h1v1h-1z`; continue; }
+      if (modules === 'dots') d += `M${c + 0.5} ${r + 0.08}a0.42 0.42 0 1 1 0 0.84a0.42 0.42 0 1 1 0 -0.84z`;
+      else if (modules === 'rounded') d += `M${c + 0.33} ${r + 0.08}h0.34a0.25 0.25 0 0 1 0.25 0.25v0.34a0.25 0.25 0 0 1 -0.25 0.25h-0.34a0.25 0.25 0 0 1 -0.25 -0.25v-0.34a0.25 0.25 0 0 1 0.25 -0.25z`;
+      else d += `M${c} ${r}h1v1h-1z`;
+    }
+  }
+  return { d, n, eyes };
+};
+
+/** The code itself with its quiet zone, logo and scan line; shared by the QR card and the QR rotator. */
+export const QrSvg = ({ url, p, className = '' }: { url: string; p: Params; className?: string }) => {
   const brand = detectBrand(url);
   const logo = p.logo !== false && brand !== 'link';
-  const path = useMemo(() => {
-    const qr = qrcode(0, logo ? 'H' : 'M');
-    qr.addData(url);
-    qr.make();
-    const n = qr.getModuleCount();
-    let d = '';
-    for (let r = 0; r < n; r += 1) for (let c = 0; c < n; c += 1) if (qr.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
-    return { d, n };
-  }, [url, logo]);
-  const caption = p.caption === 'url' ? url.replace(/^https?:\/\//, '').replace(/\/$/, '') : p.caption === 'text' ? String(p.captionText ?? '') : '';
+  const modules = String(p.modules ?? 'square');
+  const path = useMemo(() => buildQr(url, logo, modules), [url, logo, modules]);
   const q = 2; // quiet zone in modules
+  const fill = p.qrGradient ? 'url(#qr-grad)' : 'var(--qr-fg)';
   return (
-    <Shell p={p} kind="qr" className={`anim-${p.anim ?? 'none'}`}>
+    <div className={`tl-qr-box ${className}`} style={{ '--qr-fg': String(p.qrColor ?? '#111114'), '--qr-fg2': String(p.qrColor2 ?? p.accent ?? '#ff5900'), '--qr-bg': String(p.qrBg ?? '#ffffff') } as Vars}>
+      <svg viewBox={`${-q} ${-q} ${path.n + q * 2} ${path.n + q * 2}`} shapeRendering={modules === 'square' ? 'crispEdges' : 'geometricPrecision'} aria-label={url}>
+        {p.qrGradient && (
+          <defs>
+            <linearGradient id="qr-grad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="var(--qr-fg)" />
+              <stop offset="1" stopColor="var(--qr-fg2)" />
+            </linearGradient>
+          </defs>
+        )}
+        <rect x={-q} y={-q} width={path.n + q * 2} height={path.n + q * 2} fill="var(--qr-bg)" rx={p.qrRounded ? 2 : 0} />
+        <path d={path.d} fill={fill} />
+        <path d={path.eyes} fill={fill} className="tl-qr-eyes" />
+      </svg>
+      {logo && <span className="tl-qr-logo" style={{ background: BRAND_COLORS[brand], color: BRAND_INK[brand] } as Vars}><BrandIcon brand={brand} size="70%" /></span>}
+      {p.anim === 'scan' && <i className="tl-qr-scan" />}
+    </div>
+  );
+};
+
+export const QrWidget = ({ params: p }: { params: Params }) => {
+  const url = String(p.url ?? '').trim() || 'https://overlays.vxh.pl';
+  const caption = p.caption === 'url' ? url.replace(/^https?:\/\//, '').replace(/\/$/, '') : p.caption === 'text' ? String(p.captionText ?? '') : '';
+  return (
+    <Shell p={p} kind="qr" className={`anim-${p.anim ?? 'none'} frame-${p.frame ?? 'none'}`}>
       {p.showTitle !== false && p.title && <div className="tl-label">{String(p.title)}</div>}
-      <div className="tl-qr-box" style={{ '--qr-fg': String(p.qrColor ?? '#111114'), '--qr-bg': String(p.qrBg ?? '#ffffff') } as Vars}>
-        <svg viewBox={`${-q} ${-q} ${path.n + q * 2} ${path.n + q * 2}`} shapeRendering="crispEdges" aria-label={url}>
-          <rect x={-q} y={-q} width={path.n + q * 2} height={path.n + q * 2} fill="var(--qr-bg)" />
-          <path d={path.d} fill="var(--qr-fg)" />
-        </svg>
-        {logo && <span className="tl-qr-logo" style={{ background: BRAND_COLORS[brand], color: BRAND_INK[brand] } as Vars}><BrandIcon brand={brand} size="70%" /></span>}
-        {p.anim === 'scan' && <i className="tl-qr-scan" />}
-      </div>
+      <QrSvg url={url} p={p} />
       {caption && <div className="tl-sub">{caption}</div>}
     </Shell>
   );
 };
-

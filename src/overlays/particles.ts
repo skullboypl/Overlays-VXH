@@ -4,7 +4,7 @@
 import type { Params } from './schema';
 
 export type ParticleKind = 'snow' | 'rain' | 'confetti' | 'emoji' | 'fireflies' | 'petals'
-  | 'embers' | 'bubbles' | 'bokeh' | 'sparkles' | 'balloons' | 'meteors' | 'digital';
+  | 'embers' | 'bubbles' | 'bokeh' | 'sparkles' | 'balloons' | 'meteors' | 'digital' | 'fog' | 'dust';
 
 type P = {
   x: number; y: number; vx: number; vy: number;
@@ -153,6 +153,20 @@ const balloonSprite = (color: string) =>
     c.beginPath(); c.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); c.fill();
     c.fillStyle = color;
     c.beginPath(); c.moveTo(cx - 6, cy + ry + 6); c.lineTo(cx + 6, cy + ry + 6); c.lineTo(cx, cy + ry - 3); c.fill();
+  });
+
+/** A soft, lumpy cloud: a few overlapping radial blobs so fog does not look like a row of circles. */
+const fogSprite = (color: string) =>
+  sprite(`fog:${color}`, 256, (c, s) => {
+    const blobs = [[0.5, 0.5, 0.42], [0.32, 0.56, 0.3], [0.68, 0.54, 0.3], [0.45, 0.4, 0.26], [0.6, 0.62, 0.24]];
+    for (const [x, y, r] of blobs) {
+      const g = c.createRadialGradient(x * s, y * s, 0, x * s, y * s, r * s);
+      g.addColorStop(0, color + '30');
+      g.addColorStop(0.5, color + '14');
+      g.addColorStop(1, color + '00');
+      c.fillStyle = g;
+      c.fillRect(0, 0, s, s);
+    }
   });
 
 const DIGITS = 'ｱｲｳｴｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄ0123456789ABCDEF';
@@ -324,6 +338,27 @@ export const startParticles = (canvas: HTMLCanvasElement, kind: ParticleKind, ge
         p.life = -rand(0, num('every', 3) * 2); // waits a while before it flies
         break;
       }
+      case 'fog': {
+        const where = str('where', 'bottom');
+        p.r = rand(260, 520) * size * s;
+        p.x = rand(-p.r, w + p.r);
+        p.y = where === 'full' ? rand(0, h) : where === 'top' ? rand(-h * 0.05, h * 0.3) : rand(h * 0.6, h * 1.05);
+        p.vx = rand(8, 22) * speed * s;
+        p.vy = rand(-3, 3) * speed * s;
+        p.sprite = fogSprite(str('color', '#cfd8e6'));
+        p.vr = rand(0.15, 0.4); // breathing rate
+        break;
+      }
+      case 'dust': {
+        p.r = rand(1, 2.6) * size * s * (0.6 + p.z);
+        p.x = rand(0, w);
+        p.y = rand(0, h);
+        p.vx = rand(-6, 6) * speed * s;
+        p.vy = rand(-5, 5) * speed * s;
+        p.sprite = glowSprite(str('color', '#ffe9c4'));
+        p.vr = rand(0.5, 1.5); // twinkle rate
+        break;
+      }
       case 'digital': {
         const fs = 20 * size * s;
         p.r = fs;
@@ -441,6 +476,23 @@ export const startParticles = (canvas: HTMLCanvasElement, kind: ParticleKind, ge
         p.x += p.vx * dt;
         p.y += p.vy * dt;
         return p.y < h + p.r && p.x > -p.r * 2 && p.x < w + p.r * 2;
+      case 'fog':
+        p.x += (p.vx + wind * 1.5) * dt;
+        p.y += (p.vy + Math.sin(t * 0.3 + p.phase) * 4 * s) * dt;
+        if (p.x < -p.r * 1.2) p.x = w + p.r; else if (p.x > w + p.r * 1.2) p.x = -p.r;
+        return true;
+      case 'dust': {
+        // Slow random walk, so the motes drift like dust in a sunbeam instead of falling.
+        p.vx += rand(-1, 1) * 30 * s * dt;
+        p.vy += rand(-1, 1) * 30 * s * dt;
+        p.vx *= 1 - 0.5 * dt;
+        p.vy *= 1 - 0.5 * dt;
+        p.x += (p.vx + wind * 0.6) * dt;
+        p.y += (p.vy + 6 * s * speed) * dt;
+        if (p.x < -10) p.x = w + 10; else if (p.x > w + 10) p.x = -10;
+        if (p.y < -10) p.y = h + 10; else if (p.y > h + 10) p.y = -10;
+        return true;
+      }
       case 'digital':
         p.y += p.vy * dt;
         if (Math.random() < dt * 8 && p.chars) p.chars[Math.floor(Math.random() * p.chars.length)] = pick([...DIGITS]);
@@ -553,6 +605,18 @@ export const startParticles = (canvas: HTMLCanvasElement, kind: ParticleKind, ge
         ctx.lineCap = 'round';
         ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(tx, ty); ctx.stroke();
         ctx.drawImage(glowSprite(p.color), p.x - 14 * s, p.y - 14 * s, 28 * s, 28 * s);
+        return;
+      }
+      case 'fog': {
+        ctx.globalAlpha = num('opacity') * (0.7 + 0.3 * Math.sin(t * p.vr + p.phase));
+        ctx.drawImage(p.sprite!, p.x - p.r, p.y - p.r * 0.6, p.r * 2, p.r * 1.2);
+        return;
+      }
+      case 'dust': {
+        const tw = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin(t * p.vr * 2 + p.phase)) ** 2;
+        ctx.globalAlpha = num('opacity') * tw * (0.5 + 0.5 * p.z);
+        const r = p.r * (1.5 + num('glow', 1) * 2.5);
+        ctx.drawImage(p.sprite!, p.x - r, p.y - r, r * 2, r * 2);
         return;
       }
       case 'digital': {

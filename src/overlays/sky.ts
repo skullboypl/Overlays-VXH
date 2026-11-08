@@ -8,7 +8,7 @@ type Engine = { reset: () => void; stop: () => void };
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
 const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
 
-const runLoop = (
+export const runLoop = (
   canvas: HTMLCanvasElement,
   onResize: (w: number, h: number) => void,
   onFrame: (ctx: CanvasRenderingContext2D, dt: number, w: number, h: number) => void,

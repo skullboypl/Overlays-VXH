@@ -216,6 +216,10 @@ export const EFFECT_DEFAULTS: Record<string, Params> = {
   balloons: { count: 14, speed: 0.8, size: 1, wind: 0, opacity: 1, colors: ['#ff5900', '#ffd23f', '#3bceac', '#7aa2ff', '#f26b8a'] },
   meteors: { count: 4, speed: 1, size: 1, opacity: 1, every: 3, from: 'left', colors: ['#bfe3ff', '#ffffff'] },
   digital: { count: 60, speed: 1, size: 1, opacity: 0.8, colors: ['#3bff7a'] },
+  fog: { count: 14, speed: 1, size: 1, wind: 0.4, opacity: 0.55, color: '#cfd8e6', where: 'bottom' },
+  dust: { count: 120, speed: 1, size: 1, wind: 0, opacity: 0.8, glow: 1, color: '#ffe9c4', area: 'full' },
+  lightning: { every: 5, bolts: true, flash: 0.35, size: 1, opacity: 1, colors: ['#dfe9ff', '#b9c8ff'], flashColor: '#ffffff', from: 'top' },
+  glitch: { every: 6, intensity: 0.8, mode: 'subtle', scanlines: false, opacity: 0.7, colors: ['#00f0ff', '#ff00a8'] },
 };
 
 export const SceneScreen = ({ kind, params }: { kind: 'starting' | 'brb' | 'ending'; params: Params }) => {

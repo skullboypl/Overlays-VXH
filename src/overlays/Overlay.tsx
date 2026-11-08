@@ -10,6 +10,8 @@ import { VideoScene } from './VideoScene';
 import { FullCam } from './FullCam';
 import { SocialsWidget, TickerWidget } from './widgets';
 import { ClockWidget, GoalWidget, QrWidget, ReminderWidget, TimerWidget } from './tools';
+import { LowerThirdWidget, QrRotatorWidget, ScheduleWidget, SingleSocialWidget } from './bars';
+import { GlitchFrame, PixelFrame, PolaroidFrame, RetroFrame } from './frames2';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
 /** Overlay plus the optional "made with AI" label (EU AI Act), drawn only when the streamer turns it on. */
@@ -47,6 +49,14 @@ const OverlayBody = ({ id, params }: { id: string; params: Params }) => {
     case 'goal': return <GoalWidget params={params} />;
     case 'reminder': return <ReminderWidget params={params} />;
     case 'qr': return <QrWidget params={params} />;
+    case 'lowerthird': return <LowerThirdWidget params={params} />;
+    case 'schedule': return <ScheduleWidget params={params} />;
+    case 'social': return <SingleSocialWidget params={params} />;
+    case 'qrrotator': return <QrRotatorWidget params={params} />;
+    case 'glitchframe': return <GlitchFrame params={params} />;
+    case 'retroframe': return <RetroFrame params={params} />;
+    case 'polaroid': return <PolaroidFrame params={params} />;
+    case 'pixelframe': return <PixelFrame params={params} />;
     default: return null;
   }
 };

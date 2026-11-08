@@ -73,6 +73,10 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 | `petals` | Płatki / liście (petals / leaves) | up to 5 colors, petal or leaf shape |
 | `fireworks` | Fajerwerki (fireworks) | rockets per volley, volley interval, colors, burst shape (mixed, ring, heart), twinkle |
 | `stars` | Gwiazdy / warp | twinkling sky with shooting stars, or a hyperspace warp |
+| `fog` | Mgła (fog) | banks near the ground, at the top or everywhere; wind, colour |
+| `dust` | Pyłki w świetle (dust motes) | twinkling specks in a light beam, glow, area |
+| `lightning` | Błyskawice (lightning) | branching bolts or just the flash every N seconds, flash strength, colours |
+| `glitch` | Glitch ekranu (screen glitch) | RGB tears, noise blocks, scanlines; subtle mode |
 | `grain` | Ziarno + winieta (grain + vignette) | film grain, vignette, VHS scanlines, flicker |
 
 `area` is the full screen, left or right half, or the edges only.
@@ -84,6 +88,10 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 | `neon` | Neonowa ramka (neon frame) | rotating gradient of up to 5 colors, thickness, radius, glow, speed |
 | `corners` | Narożniki HUD (HUD corners) | crosshair corners, scan line, REC dot, breathing |
 | `nametag` | Ramka z podpisem (name tag) | frame with a bar for a nick and caption, 5 bar positions, periodic shine |
+| `glitchframe` | Ramka glitch (glitch frame) | split RGB channels, tears, crosshair corners, label and a changing HEX code |
+| `retroframe` | Ramka CRT / VHS | TV, VHS tape or camcorder; scanlines, PLAY, timecode, REC, tracking noise |
+| `polaroid` | Ramka polaroid | paper border, handwritten caption, tape or pin, tilt and sway |
+| `pixelframe` | Ramka 8-bit (pixel frame) | pixel border with a HUD: hearts, score, coins, blinking text |
 | `holiday` | Ramki świąteczne (holiday frames) | 8 themes: Christmas, Winter, New Year's Eve, Valentine's, Easter, Halloween, Polish Independence Day (Nov 11), Birthday; corner decorations, garland, inner effect; each in 5 versions: animated, realistic (AI), 3D, cartoon, neon; label with size and position |
 
 ### 📰 Bars and text
@@ -91,6 +99,10 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 | ID | Name (PL) | Size | Main options |
 |---|---|---|---|
 | `ticker` | Przewijany pasek (ticker) | 1920x64 | list of messages, label, separator, style, speed in px/s, font |
+| `social` | Pojedynczy social (single social) | 520×110 | one channel with a call to action, 18 looks, 13 enter and 8 loop animations |
+| `lowerthird` | Belka z nazwiskiem (lower third) | 900×160 | name, caption, brand icon; 8 looks, 8 enter animations (glitch included), show-every-N-seconds mode |
+| `schedule` | Harmonogram (schedule) | 1200×120 | days and times in a row, column or grid; today highlights itself |
+| `qrrotator` | Rotator kodów QR (QR rotator) | 320×400 | several links in turn; transitions: glitch, flip, 3D cube, pixelate and more |
 | `socials` | Rotator sociali (socials rotator) | 560x100 | Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Facebook or custom text; switch every N seconds, 3 animations, brand colors, timer bar |
 
 The full parameter list of every overlay (keys, ranges, defaults) is generated at build time into [`/llms.txt`](https://overlays.vxh.pl/llms.txt).
