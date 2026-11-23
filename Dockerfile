@@ -7,7 +7,7 @@ COPY . .
 RUN pnpm build
 
 # nginx serves the site; a tiny Node counter (deploy/stats-server.mjs) answers /api/presence.
-FROM nginx:1.27-alpine
+FROM nginx:1.30-alpine
 RUN apk add --no-cache nodejs
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
 COPY deploy/stats-server.mjs deploy/followers.mjs deploy/panel.mjs /srv/
