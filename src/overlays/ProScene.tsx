@@ -9,6 +9,7 @@ import { Background, EFFECT_DEFAULTS, SCENE_FONTS } from './SceneScreen';
 import { BRAND_COLORS, BRAND_INK, BrandIcon, parseSocials, type Brand } from './icons';
 import { QrSvg } from './tools';
 import { isLang, translate } from '../i18n';
+import { ProExtraLayers, ProFinalCount, ProIntroLogo, ProWaiting, lateText, proExtraClass, useProExtraPanels } from './more/proExtras';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
 type Kind = 'starting' | 'brb' | 'ending';
@@ -138,7 +139,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
   const socials = parseSocials(String(p.socials ?? ''));
   const infos = lines(p.infos);
   const rewards = lines(p.rewards).map((l) => ({ done: /^[✓✔x]\s*/i.test(l), text: l.replace(/^[✓✔x]\s*/i, '') }));
-  const panels: Panel[] = useMemo(() => {
+  const basePanels: Panel[] = useMemo(() => {
     const out: Panel[] = [];
     if (p.showSocialsPanel !== false) {
       socials.forEach((s, i) => {
@@ -204,6 +205,10 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
     return out;
   }, [p.socials, p.infos, p.rewards, p.next, p.nextLabel, p.nextNote, p.infoTitle, p.rewardsTitle, p.showSocialsPanel, p.showInfoPanel, p.showRewardsPanel, p.showNextPanel, p.socialQr, p.socialCta, p.socialCtaText, p.rewardsBar, p.textMode, lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Panels added later (all off by default) come after the original ones.
+  const extraPanels = useProExtraPanels(p, t);
+  const panels = extraPanels.length ? [...basePanels, ...extraPanels] : basePanels;
+
   const every = Math.max(3, num(p.panelEvery, 9)) * 1000;
   const [panelIndex, setPanelIndex] = useState(0);
   useEffect(() => {
@@ -233,12 +238,14 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
   const cls = [
     'pr-root', `pr-${kind}`, `theme-${theme}`, `lay-${p.layout ?? 'split'}`, `phase-${phase}`, `panel-anim-${panelAnim}`,
     chat ? `has-chat chat-${chatSide}` : '', done ? 'is-done' : '', p.uppercase ? 'is-upper' : '',
-  ].join(' ');
+  ].join(' ') + (proExtraClass(p) ? ` ${proExtraClass(p)}` : '');
+  const afterDone = String(p.afterDone ?? 'text');
 
   return (
     <div className={cls} style={style}>
       <div className="pr-layers">
         <Background bg={String(p.bg ?? 'aurora')} colors={colors} params={p} />
+        <ProExtraLayers p={p} colors={colors} />
         {effectParams && <ParticleLayer key={effect} kind={(effect === 'warp' ? 'stars' : effect) as EffectKind} params={effectParams} />}
         {done && p.celebrate !== false && <ParticleLayer kind="confetti" params={{ ...EFFECT_DEFAULTS.confetti, colors, mode: 'burst', every: 6, count: 160 }} />}
         {p.vignette !== false && <div className="pr-vignette" />}
@@ -251,6 +258,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
       {introOn && (
         <div className={`pr-intro intro-${p.introStyle ?? 'letters'} ${phase === 'main' ? 'is-leaving' : ''}`} aria-hidden={phase === 'main'}>
           <div className="pr-intro-line" />
+          <ProIntroLogo p={p} />
           <div className="pr-intro-nick"><Letters text={String(p.kicker || ' ')} /></div>
           {p.introText && <div className="pr-intro-sub">{String(p.introText)}</div>}
           <div className="pr-intro-line r" />
@@ -280,9 +288,9 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
               </h1>
             )}
             {p.showSubtitle !== false && p.subtitle && <p className="pr-sub">{String(p.subtitle)}</p>}
-            {timer !== 'off' && (
+            {timer !== 'off' && !(done && afterDone === 'hide') && (
               <div className={`pr-timer tstyle-${timerStyle}`}>
-                {done ? <strong className="pr-done">{String(p.doneText ?? '')}</strong> : (
+                {done ? (afterDone === 'late' ? <strong className="pr-done mo-pro-late">{lateText(-left)}</strong> : <strong className="pr-done">{String(p.doneText ?? '')}</strong>) : (
                   <>
                     {p.showTimerLabel !== false && p.timerLabel && <span>{String(p.timerLabel)}</span>}
                     {timerStyle === 'ring' ? (
@@ -302,6 +310,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
               </div>
             )}
             {kind === 'ending' && p.showThanks !== false && p.thanks && <p className="pr-thanks">{String(p.thanks)}</p>}
+            <ProWaiting p={p} t={t} />
           </header>
 
           {panel && (
@@ -334,6 +343,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
           </div>
         )}
       </div>
+      <ProFinalCount left={left} active={timer !== 'off' && p.finalCount === true} beep={p.beep === true} />
     </div>
   );
 };

@@ -510,3 +510,51 @@
 .mf-season-fall i { position: absolute; top: -10%; font-style: normal; font-size: calc(var(--u) * 16); opacity: 0.85; animation: mf-fall linear infinite; }
 .mf-season-fall i:nth-child(odd) { left: 2% !important; } .mf-season-fall i:nth-child(3n) { left: 93% !important; }
 @keyframes mf-fall { to { transform: translateY(calc(100cqh + 20%)) rotate(240deg); } }
+
+/* =================== Pro screen additions (proExtras.tsx) =================== */
+.mo-pro-game { display: flex; align-items: center; gap: 0.8em; }
+.mo-pro-game img { width: 7em; aspect-ratio: 3 / 4; object-fit: cover; border-radius: 0.4em; box-shadow: 0 0.3em 0.9em rgba(0, 0, 0, 0.5); }
+.mo-pro-game > div, .mo-pro-music > div, .mo-pro-weather > div { display: flex; flex-direction: column; gap: 0.15em; min-width: 0; }
+.mo-pro-game small, .mo-pro-music small, .mo-pro-goal small { font-size: 1.1em; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: var(--c1); }
+.mo-pro-game b, .mo-pro-music b, .mo-pro-goal b { font-size: 2.3em; font-weight: 800; line-height: 1.15; }
+.mo-pro-game span, .mo-pro-music span { font-size: 1.2em; opacity: 0.8; }
+.mo-pro-sponsor { display: flex; flex-direction: column; align-items: center; gap: 0.5em; text-align: center; }
+.mo-pro-sponsor img { max-width: 70%; max-height: 7em; object-fit: contain; }
+.mo-pro-sponsor b { font-size: 1.8em; }
+.mo-pro-sponsor span { font-size: 1.4em; }
+.mo-pro-sponsor code { font-family: ui-monospace, monospace; font-weight: 800; padding: 0.1em 0.5em; border-radius: 0.3em; border: 0.08em dashed currentColor; }
+.mo-pro-fact p { margin: 0; font-size: 1.5em; line-height: 1.35; }
+.mo-pro-music { display: flex; align-items: center; gap: 0.8em; }
+.mo-pro-music .mo-eq { height: 3.4em; gap: 0.15em; }
+.mo-pro-music .mo-eq i { width: 0.3em; background: var(--c1); }
+.mo-pro-poll-row { position: relative; display: flex; justify-content: space-between; gap: 0.6em; font-size: 1.3em; font-weight: 600; padding: 0.35em 0.6em; border-radius: 0.4em; background: rgba(255, 255, 255, 0.08); overflow: hidden; }
+.mo-pro-poll-row > i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(90deg, var(--c1), var(--c2)); opacity: 0.75; }
+.mo-pro-poll-row > b, .mo-pro-poll-row > span { position: relative; }
+.mo-pro-schedule li b { color: var(--c1); margin-right: 0.4em; }
+.mo-pro-goal { display: flex; flex-direction: column; gap: 0.35em; }
+.mo-pro-goal span { font-size: 1.3em; font-variant-numeric: tabular-nums; opacity: 0.85; }
+.mo-pro-weather { display: flex; align-items: center; gap: 0.6em; }
+.mo-pro-weather > span { font-size: 4.4em; }
+.mo-pro-weather b { font-size: 3em; }
+.mo-pro-weather small { font-size: 1.3em; opacity: 0.85; }
+.mo-pro-credits { height: 16em; overflow: hidden; -webkit-mask: linear-gradient(transparent, #000 18%, #000 82%, transparent); mask: linear-gradient(transparent, #000 18%, #000 82%, transparent); }
+.mo-pro-roll { animation: mo-roll-up var(--every) linear both; text-align: center; }
+.mo-pro-roll p { margin: 0 0 0.7em; font-size: 1.45em; font-weight: 600; }
+@keyframes mo-roll-up { from { transform: translateY(12em); } to { transform: translateY(-100%); } }
+.mo-pro-logo { display: block; height: 14cqh; max-width: 40cqw; margin: 0 auto 2cqh; object-fit: contain; animation: mo-bump-pop 0.9s cubic-bezier(0.3, 1.6, 0.5, 1) both; filter: drop-shadow(0 1cqh 2cqh rgba(0, 0, 0, 0.5)); }
+.mo-pro-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.mo-pro-late { font-variant-numeric: tabular-nums; }
+.mo-pro-waiting { display: inline-flex; align-items: center; gap: 0.4em; margin-top: 0.6em; padding: 0.3em 0.9em; border-radius: 2em; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.15); font-size: max(12px, 2.2cqh); font-weight: 600; }
+.mo-pro-waiting b { color: var(--c1); font-variant-numeric: tabular-nums; }
+.mo-pro-final { position: absolute; inset: 0; z-index: 20; display: grid; place-items: center; pointer-events: none; }
+.mo-pro-final b { font-size: 42cqh; font-weight: 900; line-height: 1; color: var(--fg); text-shadow: 0 0 6cqh var(--c1), 0 1cqh 4cqh rgba(0, 0, 0, 0.6); animation: mo-final 1s ease-out both; }
+@keyframes mo-final { 0% { transform: scale(1.8); opacity: 0; } 20% { transform: scale(1); opacity: 1; } 80% { opacity: 1; } 100% { transform: scale(0.85); opacity: 0; } }
+/* title effects */
+.mo-tfx-gradient .pr-title .pr-letters > span { background: linear-gradient(100deg, var(--c1), var(--c2), var(--c3)); background-size: 1000% 100%; background-position: calc(var(--i) * 7%) 0; -webkit-background-clip: text; background-clip: text; color: transparent; }
+.mo-tfx-stroke .pr-title { color: transparent; -webkit-text-stroke: 0.035em var(--fg); }
+.mo-tfx-stroke .pr-title .pr-letters > span { color: transparent; }
+.mo-tfx-glow .pr-title { text-shadow: 0 0 0.12em var(--c1), 0 0 0.35em var(--c1), 0 0 0.8em var(--c2); }
+.mo-tfx-shine .pr-title .pr-letters > span { background: linear-gradient(100deg, var(--fg) 40%, #fff 50%, var(--fg) 60%) 0 0 / 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: mo-shine 3.5s linear infinite; }
+@keyframes mo-shine { from { background-position: 150% 0; } to { background-position: -150% 0; } }
+.mo-parallax .pr-layers { animation: mo-parallax 30s ease-in-out infinite alternate; }
+@keyframes mo-parallax { from { transform: scale(1.06) translate(-1.2%, -0.8%); } to { transform: scale(1.08) translate(1.2%, 0.8%); } }

@@ -114,6 +114,22 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 
 The full parameter list of every overlay (keys, ranges, defaults) is generated at build time into [`/llms.txt`](https://overlays.vxh.pl/llms.txt).
 
+### 🧩 Add-ons (`src/overlays/more`)
+
+New overlays added without touching the old ones: each has its own ID, and old links show exactly what they showed before.
+
+| Group | IDs |
+|---|---|
+| Effects | `rays` light rays, `smoke`, `fire`, `glassrain` drops on glass, `drift` snow drifts, `flyers` butterflies / birds / bats, `wordworks` firework text, `auroralayer` aurora, `heartbeat` pulsing vignette, `flare` lens flare, `glitter`, `storm`, `autumn` leaves, `plexus`, `pixelsnow`, `waveslayer` waves, `imagerain` picture rain, `burst` confetti / hearts from an OBS panel button, `kickrain` Kick chat emote rain |
+| Widgets | `poll`, `giveaway`, `commands` chat commands, `facts`, `topdonors`, `leaderboard`, `checklist` goals of the day, `dice`, `counter` death / win counter, `scoreboard`, `subathon`, `wheel` wheel of fortune, `alertbox` alerts sent by hand from the panel |
+| Bars | `duo` two-person lower third, `nowplaying`, `sponsors` sponsor rotator, `discount` discount code, `brbbadge` "be right back" badge |
+| Tools | `worldclock`, `streamgoal` stream-length goal, `livecount` live followers / viewers, `weather` (Open-Meteo, no key), `streak` day streak |
+| Camera | `shapeframe` heart / star / hexagon window with marching ants, `filmframe` film strip, `postcardframe`, `termframe` terminal, `winframe` retro OS window, `wantedframe` wanted poster, `speedframe` anime speed lines, `neonsign`, `statframe` frame with a follower badge, `aquaframe` aquarium, `boxframe` 3D box, `consoleframe` handheld console, `ekgframe` EKG with BPM, `stickerframe` emoji stickers, `aviaframe` pilot HUD, `artframe` watercolor / paper cut / chalk, `seasonframe` St. Nicholas Day, Children's Day, Women's Day, Black Friday, Lunar New Year, seasons |
+
+Old overlays only gained new options that are off by default: service icons in the ticker, "Calendar" and "Today only" schedule layouts, a "VHS on pause" version of the CRT frame, and on the Pro screens: game, sponsor, facts, music, poll, schedule, goal and weather panels, end credits, a logo in the intro, title effects, a second effect, your own background video, parallax, what happens after the countdown, a big 10 s countdown with beeps and a count of viewers waiting on Kick.
+
+The OBS panel now also has counters (deaths, wins, your own), a match score, effect buttons (confetti, hearts, stars, money, wheel of fortune) and manual alerts. In the studio: colour packs, "my style", colours from a logo, compare with defaults, your own picture behind the preview, rule-of-thirds lines, version history and saving a frame as PNG.
+
 ## Using it in OBS
 
 1. Open [overlays.vxh.pl](https://overlays.vxh.pl/), pick an overlay and set it up on the preview.

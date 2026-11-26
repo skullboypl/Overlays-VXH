@@ -11,6 +11,7 @@ import { LangSelect } from './LangSelect';
 import { OverlayMenu, rememberRecent } from './OverlayMenu';
 import { LivePill } from './LivePill';
 import { AiNotice } from '../seo/AiNotice';
+import { StylePopover, VersionsPopover, exportPng, useCustomBackdrop, useVersions } from './StudioTools';
 import './studio.css';
 
 const STORAGE = 'vxh-overlays:';
@@ -19,6 +20,7 @@ const BACKDROPS = [
   { id: 'checker', label: tx('Przezroczyste') },
   { id: 'dark', label: tx('Ciemne') },
   { id: 'light', label: tx('Jasne') },
+  { id: 'custom', label: tx('Własny obraz') },
 ] as const;
 type Backdrop = (typeof BACKDROPS)[number]['id'];
 
@@ -66,14 +68,16 @@ const useFitScale = (w: number, h: number, maxScale: number) => {
   return { ref, scale };
 };
 
-const Preview = ({ def, params, backdrop, camera, size, replay, guides }: {
-  def: OverlayDef; params: Params; backdrop: Backdrop; camera: boolean; size: { w: number; h: number }; replay: number; guides: boolean;
+type Guides = 'off' | 'safe' | 'thirds';
+const Preview = ({ def, params, backdrop, camera, size, replay, guides, compare, customBg }: {
+  def: OverlayDef; params: Params; backdrop: Backdrop; camera: boolean; size: { w: number; h: number }; replay: number; guides: Guides;
+  compare: Params | null; customBg: string;
 }) => {
   const isCam = def.category === 'camera';
-  const { lang } = useT();
+  const { lang, t } = useT();
   const { ref, scale } = useFitScale(size.w, size.h, isCam ? 1.6 : 1);
   return (
-    <div className={`st-preview bg-${backdrop}`} ref={ref}>
+    <div className={`st-preview bg-${backdrop}`} ref={ref} style={backdrop === 'custom' && customBg ? { backgroundImage: `url("${customBg}")` } : undefined}>
       {backdrop === 'scene' && <div className="st-scene" aria-hidden />}
       <div
         className="st-canvas"
@@ -81,8 +85,18 @@ const Preview = ({ def, params, backdrop, camera, size, replay, guides }: {
       >
         {isCam && camera && <div className="st-cam" aria-hidden><span /></div>}
         {/* A new key mounts the overlay again: intros and enter animations play from the start. */}
-        <Overlay key={replay} id={def.id} params={{ ...params, _lang: lang, _preview: true }} />
-        {guides && <div className="st-guides" aria-hidden><i /><i /></div>}
+        {compare
+          ? <div className="st-compare-right"><Overlay key={replay} id={def.id} params={{ ...params, _lang: lang, _preview: true }} /></div>
+          : <Overlay key={replay} id={def.id} params={{ ...params, _lang: lang, _preview: true }} />}
+        {/* Before / after: the default look on the left half, the current one on the right. */}
+        {compare && (
+          <div className="st-compare" aria-hidden>
+            <div className="st-compare-left"><Overlay key={`c${replay}`} id={def.id} params={{ ...compare, _lang: lang, _preview: true }} /></div>
+            <i /><span className="l">{t('Domyślnie')}</span><span className="r">{t('Teraz')}</span>
+          </div>
+        )}
+        {guides === 'safe' && <div className="st-guides" aria-hidden><i /><i /></div>}
+        {guides === 'thirds' && <div className="st-thirds" aria-hidden><i /><i /><i /><i /></div>}
       </div>
       <span className="st-scale" aria-hidden>{size.w}×{size.h} · {Math.round(scale * 100)}%</span>
     </div>
@@ -202,7 +216,11 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
   const [size, setSize] = useState(def.size);
   const [menuOpen, setMenuOpen] = useState(false);
   const [replay, setReplay] = useState(0);
-  const [guides, setGuides] = useState(false);
+  const [guides, setGuides] = useState<Guides>('off');
+  const [compare, setCompare] = useState(false);
+  const [pop, setPop] = useState<'' | 'style' | 'versions'>('');
+  const customBg = useCustomBackdrop();
+  const bgFile = useRef<HTMLInputElement>(null);
   const previewWrap = useRef<HTMLDivElement>(null);
   const settingsSearch = useRef<HTMLInputElement>(null);
   const history = useHistory(params, setParams);
@@ -259,6 +277,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
   }, [lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const query = useMemo(() => paramsToQuery(def, params), [def, params]);
+  const versions = useVersions(def.id, query);
 
   useEffect(() => {
     saveParams(def, params);
@@ -333,21 +352,31 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
                   </button>
                 )}
                 {def.category !== 'scene' && BACKDROPS.map((b) => (
-                  <button key={b.id} type="button" className={b.id === backdrop ? 'is-active' : ''} onClick={() => setBackdrop(b.id)}>
+                  <button key={b.id} type="button" className={b.id === backdrop ? 'is-active' : ''}
+                    onClick={() => { if (b.id === 'custom' && (!customBg.url || backdrop === 'custom')) bgFile.current?.click(); setBackdrop(b.id === 'custom' && !customBg.url ? backdrop : b.id); }}
+                    title={b.id === 'custom' ? t('Zrzut ekranu z Twojej gry albo sceny pod podglądem') : undefined}>
                     {t(b.label)}
                   </button>
                 ))}
+                <input ref={bgFile} type="file" accept="image/*" hidden onChange={(e) => { const f = e.currentTarget.files?.[0]; e.currentTarget.value = ''; if (f) { customBg.pick(f); setBackdrop('custom'); } }} />
               </div>
             )}
           </div>
 
           <div className="st-preview-wrap" ref={previewWrap}>
-            <Preview def={def} params={params} backdrop={backdrop} camera={camera} size={size} replay={replay} guides={guides} />
+            <Preview def={def} params={params} backdrop={backdrop} camera={camera} size={size} replay={replay} guides={guides} compare={compare ? defaults : null} customBg={customBg.url} />
             <div className="st-ptools" role="toolbar" aria-label={t('Podgląd')}>
               <button type="button" onClick={() => setReplay((n) => n + 1)} title={`${t('Odtwórz od nowa')} (R)`}>↻ <span>{t('Od nowa')}</span></button>
-              <button type="button" className={guides ? 'is-active' : ''} onClick={() => setGuides((v) => !v)} aria-pressed={guides} title={t('Linie bezpiecznego obszaru i środka')}>⌗ <span>{t('Linie')}</span></button>
+              <button type="button" className={guides !== 'off' ? 'is-active' : ''} onClick={() => setGuides((v) => (v === 'off' ? 'safe' : v === 'safe' ? 'thirds' : 'off'))} aria-pressed={guides !== 'off'}
+                title={t('Linie: bezpieczny obszar, potem trójpodział, potem wyłączone')}>⌗ <span>{guides === 'thirds' ? t('Trójpodział') : t('Linie')}</span></button>
+              <button type="button" className={compare ? 'is-active' : ''} onClick={() => setCompare((v) => !v)} aria-pressed={compare} title={t('Porównaj z ustawieniami domyślnymi')}>⇋ <span>{t('Porównaj')}</span></button>
+              <button type="button" className={`st-pop-btn ${pop === 'style' ? 'is-active' : ''}`} onClick={() => setPop((v) => (v === 'style' ? '' : 'style'))} aria-expanded={pop === 'style'} title={t('Paczki kolorów, mój styl, kolory z logo')}>🎨 <span>{t('Styl')}</span></button>
+              <button type="button" className={`st-pop-btn ${pop === 'versions' ? 'is-active' : ''}`} onClick={() => setPop((v) => (v === 'versions' ? '' : 'versions'))} aria-expanded={pop === 'versions'} title={t('Historia wersji')}>🕘 <span>{t('Wersje')}</span></button>
+              <button type="button" onClick={() => { const el = previewWrap.current?.querySelector<HTMLElement>('.st-canvas'); if (el) void exportPng(el, size.w, size.h, def.id).catch(() => window.alert(t('Nie udało się zapisać obrazka w tej przeglądarce.'))); }} title={t('Zapisz klatkę podglądu jako PNG (beta)')}>⤓ <span>PNG</span></button>
               <button type="button" onClick={fullscreen} title={t('Pełny ekran')}>⛶ <span>{t('Pełny ekran')}</span></button>
             </div>
+            {pop === 'style' && <StylePopover def={def} params={params} onApply={(p) => history.commit(p)} onClose={() => setPop('')} />}
+            {pop === 'versions' && <VersionsPopover list={versions} current={query} onRestore={(q) => history.commit(queryToParams(def, new URLSearchParams(q), defaults))} onClose={() => setPop('')} />}
           </div>
 
           <OutputPanel def={def} query={query} size={size} setSize={setSize} onApply={apply} />

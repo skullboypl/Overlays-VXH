@@ -112,6 +112,22 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `qrrotator` | Rotator kodów QR | 320×400 | kilka linków na zmianę; przejścia: glitch, obrót, kostka 3D, pikselizacja i inne |
 | `socials` | Rotator sociali | 560×100 | Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Facebook albo własny tekst; zmiana co N sekund, 3 animacje, kolory serwisów, pasek czasu |
 
+### 🧩 Dodatki (`src/overlays/more`)
+
+Nowe overlaye dokładane bez ruszania starych: każdy ma własne ID, a stare linki pokazują to samo co wcześniej.
+
+| Grupa | ID |
+|---|---|
+| Efekty | `rays` promienie światła, `smoke` dym, `fire` ogień, `glassrain` krople na szybie, `drift` zaspy śniegu, `flyers` motyle / ptaki / nietoperze, `wordworks` napis z fajerwerków, `auroralayer` zorza, `heartbeat` pulsująca winieta, `flare` flara obiektywu, `glitter` brokat, `storm` burza, `autumn` jesienne liście, `plexus` sieć punktów, `pixelsnow` pikselowy śnieg, `waveslayer` fale, `imagerain` deszcz obrazków, `burst` konfetti / serca z przycisku w Panelu OBS, `kickrain` deszcz emotek z czatu Kick |
+| Widżety | `poll` ankieta, `giveaway`, `commands` komendy czatu, `facts` ciekawostki, `topdonors` top donatorzy, `leaderboard` ranking, `checklist` cele dnia, `dice` kości, `counter` licznik śmierci / wygranych, `scoreboard` tablica wyników, `subathon`, `wheel` koło fortuny, `alertbox` alerty wysyłane ręcznie z panelu |
+| Paski | `duo` belka dla dwóch osób, `nowplaying` teraz gra, `sponsors` rotator sponsorów, `discount` kod rabatowy, `brbbadge` plakietka „Zaraz wracam” |
+| Narzędzia | `worldclock` zegar świata, `streamgoal` cel długości streama, `livecount` followy / widzowie na żywo, `weather` pogoda (Open-Meteo, bez klucza), `streak` seria dni |
+| Kamerka | `shapeframe` okno w kształcie serca / gwiazdy / sześciokąta z „mrówkami”, `filmframe` taśma filmowa, `postcardframe` pocztówka, `termframe` terminal, `winframe` okno retro systemu, `wantedframe` list gończy, `speedframe` linie prędkości anime, `neonsign` neonowy szyld, `statframe` ramka z licznikiem followów, `aquaframe` akwarium, `boxframe` ramka 3D, `consoleframe` konsola przenośna, `ekgframe` EKG z tętnem, `stickerframe` naklejki, `aviaframe` HUD pilota, `artframe` akwarela / wycinanka / kreda, `seasonframe` Mikołajki, Dzień Dziecka, Dzień Kobiet, Black Friday, Nowy Rok Księżycowy, pory roku |
+
+Do starych overlayów doszły tylko nowe, domyślnie wyłączone opcje: ikony serwisów w tickerze, układy „Kalendarz” i „Tylko dzisiaj” w harmonogramie, wersja „VHS na pauzie” w ramce CRT oraz w ekranach Pro: panele gry, sponsora, ciekawostek, muzyki, ankiety, harmonogramu, celu i pogody, napisy końcowe, logo w intro, efekt tytułu, drugi efekt, własne wideo w tle, parallax, zachowanie po odliczeniu, wielkie odliczanie 10 s z pikiem i licznik widzów czekających na Kicku.
+
+Panel OBS ma teraz też liczniki (śmierci, wygrane, własne), wynik meczu, przyciski efektów (konfetti, serca, gwiazdki, kasa, koło fortuny) i ręczne alerty. W studiu: paczki kolorów, „mój styl”, kolory z logo, porównanie z domyślnymi, własny obraz pod podglądem, trójpodział, historia wersji i zapis klatki do PNG.
+
 Pełna lista parametrów każdego overlaya (klucze, zakresy, wartości domyślne) jest generowana przy buildzie do [`/llms.txt`](https://overlays.vxh.pl/llms.txt).
 
 ## Jak użyć w OBS

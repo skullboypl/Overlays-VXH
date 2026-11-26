@@ -1,6 +1,7 @@
 import type { Field, OverlayDef } from './schema';
 import { CHARACTERS, CHARACTER_LABELS, FRAME_URLS, PHOTO_IDS, VIDEO_IDS } from './backgrounds';
 import { MORE_DEFS } from './more';
+import { proExtraFields } from './more/proExtras';
 
 const FULL_HD = { w: 1920, h: 1080 };
 const CAM = { w: 640, h: 360 };
@@ -429,6 +430,7 @@ const proFieldsScene = (d: ProDefaults, kind: 'starting' | 'brb' | 'ending'): Fi
     { value: 'digital', label: 'Cyfrowy deszcz' }, { value: 'fog', label: 'Mgła' }, { value: 'dust', label: 'Pyłki' }, { value: 'lightning', label: 'Błyskawice' }, { value: 'glitch', label: 'Glitch' },
   ] },
   { group: 'Dodatki', key: 'vignette', label: 'Winieta', type: 'toggle', default: true },
+  ...proExtraFields(kind),
 ];
 
 const ALL_OVERLAYS: OverlayDef[] = [

@@ -1439,3 +1439,47 @@ a { color: inherit; text-decoration: none; }
   .st-out { padding: 10px; }
   .st-size input { width: 60px; }
 }
+
+/* ---------- studio tools v3: custom backdrop, compare, thirds, style & versions popovers ---------- */
+.st-preview.bg-custom { background: #000 center / cover no-repeat; }
+.bg-custom .st-canvas { outline: 1px dashed rgba(255, 89, 0, 0.35); }
+.st-compare { position: absolute; inset: 0; pointer-events: none; z-index: 25; }
+.st-compare-left, .st-compare-right { position: absolute; inset: 0; }
+.st-compare-left { clip-path: inset(0 50% 0 0); }
+.st-compare-right { clip-path: inset(0 0 0 50%); }
+.st-compare > i { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; translate: -1.5px 0; background: #fff; box-shadow: 0 0 12px rgba(0, 0, 0, 0.6); }
+.st-compare > span { position: absolute; top: 12px; padding: 4px 12px; border-radius: 99px; background: rgba(0, 0, 0, 0.7); color: #fff; font: 700 clamp(14px, 2.2cqh, 40px) 'DM Sans', sans-serif; }
+.st-compare > span.l { right: calc(50% + 14px); }
+.st-compare > span.r { left: calc(50% + 14px); }
+.st-thirds { position: absolute; inset: 0; pointer-events: none; z-index: 30; }
+.st-thirds i { position: absolute; background: rgba(0, 220, 255, 0.6); }
+.st-thirds i:nth-child(1) { left: 33.333%; top: 0; bottom: 0; width: 2px; }
+.st-thirds i:nth-child(2) { left: 66.666%; top: 0; bottom: 0; width: 2px; }
+.st-thirds i:nth-child(3) { top: 33.333%; left: 0; right: 0; height: 2px; }
+.st-thirds i:nth-child(4) { top: 66.666%; left: 0; right: 0; height: 2px; }
+.st-ptools { flex-wrap: wrap; justify-content: flex-end; max-width: calc(100% - 20px); }
+@media (max-width: 1500px) { .st-ptools button span { display: none; } }
+.st-pop {
+  position: absolute; right: 10px; top: 52px; z-index: 40; width: min(340px, calc(100vw - 32px)); max-height: min(70vh, 560px); overflow: auto;
+  padding: 14px; border-radius: 14px; background: var(--panel); border: 1px solid var(--line); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.55); color: var(--text);
+}
+.st-pop h4 { font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin: 4px 0 8px; }
+.st-pop h4:not(:first-child) { margin-top: 14px; }
+.st-pop-note { font-size: 12px; color: var(--muted); line-height: 1.4; margin-bottom: 8px; }
+.st-pop-error { font-size: 12px; color: #ff6b6b; margin-top: 6px; }
+.st-pop-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.st-pop .st-pop-row button, .st-versions-pop li button {
+  display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-radius: 9px; border: 1px solid var(--line); background: var(--input); color: var(--text); font-size: 13px; cursor: pointer;
+}
+.st-pop .st-pop-row button.is-primary { background: var(--orange); border-color: var(--orange); color: #fff; }
+.st-pop button:disabled { opacity: 0.45; cursor: default; }
+.st-packs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.st-packs button { display: flex; flex-direction: column; align-items: center; gap: 5px; padding: 6px 2px; border-radius: 10px; border: 1px solid transparent; background: transparent; color: var(--text); cursor: pointer; }
+.st-packs button:hover { border-color: var(--line); background: var(--input); }
+.st-packs small { font-size: 10.5px; color: var(--muted); text-align: center; line-height: 1.15; }
+.st-pack-sw { display: block; width: 34px; height: 34px; border-radius: 50%; outline-offset: -1px; }
+.st-pack-sw.sm { display: inline-block; width: 16px; height: 16px; outline: 0; }
+.st-versions-pop ul { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+.st-versions-pop li { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 9px; background: var(--input); font-size: 12.5px; }
+.st-versions-pop li code { font-size: 11px; color: var(--muted); max-width: 90px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st-versions-pop li button { height: 26px; padding: 0 10px; font-size: 12px; }
