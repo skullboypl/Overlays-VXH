@@ -502,3 +502,11 @@
 .of-corner.br { right: calc(var(--inset) - var(--corner) * 0.12); bottom: calc(var(--inset) - var(--corner) * 0.12); transform: scale(-1, 1); }
 .of-gem { fill: #ffffff; stroke: none; animation: of-gem 2.2s ease-in-out infinite; }
 @keyframes of-gem { 50% { fill: var(--hi); r: 4; } }
+
+/* "VHS on pause" version, added later: new class names only. */
+.rf.look-pause .rf-bezel { border-radius: 6px; background: var(--bezelColor); }
+.rf.look-pause .rf-screen { border-radius: 3px; box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.6); }
+.rf-pause-band { position: absolute; left: 0; right: 0; height: 3.2%; background: linear-gradient(90deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.35) 20%, rgba(200, 220, 255, 0.15) 50%, rgba(255, 255, 255, 0.4) 80%, rgba(255, 255, 255, 0.05)); filter: blur(1px); mix-blend-mode: screen; animation: rf-pause-jit 0.18s steps(2) infinite; }
+.rf-pause-band.a { top: 68%; }
+.rf-pause-band.b { top: 84%; height: 2%; animation-delay: -0.09s; }
+@keyframes rf-pause-jit { 50% { transform: translate(-0.6%, 18%) scaleY(1.3); opacity: 0.7; } }

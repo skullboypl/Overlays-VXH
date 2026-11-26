@@ -83,9 +83,12 @@ export const RetroFrame = ({ params: p }: { params: Params }) => {
       <div className="rf-bezel" />
       <div className="rf-screen">
         {p.tracking !== false && <i className="rf-track" />}
+        {look === 'pause' && <><i className="rf-pause-band a" /><i className="rf-pause-band b" /></>}
         {p.showOsd !== false && (
           <div className="rf-osd">
-            <span className="rf-play">{c(p.osd, 'PLAY')} <b>▶</b></span>
+            {look === 'pause'
+              ? <span className="rf-play">{c(p.osd, 'PLAY') === 'PLAY' ? 'PAUSE' : c(p.osd, 'PLAY')} <b>❚❚</b></span>
+              : <span className="rf-play">{c(p.osd, 'PLAY')} <b>▶</b></span>}
             {p.timecode !== false && <Timecode date={p.date === true} />}
           </div>
         )}

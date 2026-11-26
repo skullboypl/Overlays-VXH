@@ -1050,6 +1050,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
     fields: [
       { group: 'Wygląd', key: 'look', label: 'Wersja', type: 'select', default: 'tv', options: [
         { value: 'tv', label: 'Telewizor CRT' }, { value: 'vhs', label: 'Kaseta VHS' }, { value: 'handy', label: 'Kamera VHS-C' },
+        { value: 'pause', label: 'VHS na pauzie' },
       ] },
       { group: 'Wygląd', key: 'bezelColor', label: 'Kolor obudowy', type: 'color', default: '#1d1d22' },
       { group: 'Wygląd', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
