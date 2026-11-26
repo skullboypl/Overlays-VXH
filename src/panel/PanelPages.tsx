@@ -254,6 +254,8 @@ export const PanelDock = () => {
         </div>
       </section>
 
+      <LiveControls state={s} send={send} />
+
       <section className="pn-box">
         <button type="button" className="pn-vis-toggle" onClick={() => setOpenVis((v) => !v)} aria-expanded={openVis}>
           <h3>👁️ {t('Pokaż / ukryj overlaye')}</h3><span>{openVis ? '▾' : '▸'}</span>
@@ -278,6 +280,90 @@ export const PanelDock = () => {
       </section>
       <p className="pn-note pn-foot">{t('Działa z overlayami, które mają w linku „Steruj z Panelu OBS”.')}</p>
     </div>
+  );
+};
+
+/* Counters, score, one-shot effects and manual alerts (newer widgets: counter, scoreboard, wheel, burst, alertbox). */
+const COUNTER_NAMES: [string, string, string][] = [['deaths', '💀', tx('Śmierci')], ['wins', '🏆', tx('Wygrane')], ['losses', '❌', tx('Przegrane')], ['kills', '🎯', tx('Kille')], ['count', '🔢', tx('Licznik ogólny')]];
+const BURSTS: [string, string, string][] = [['confetti', '🎉', tx('Konfetti')], ['hearts', '❤️', tx('Serca')], ['stars', '⭐', tx('Gwiazdki')], ['money', '💸', tx('Kasa')]];
+const ALERT_KINDS: [string, string][] = [['follow', tx('Follow')], ['sub', tx('Sub')], ['donate', tx('Donacja')], ['raid', tx('Raid')], ['bits', tx('Bitsy')], ['custom', tx('Własny tekst')]];
+const SHOWN_COUNTERS = 'vxh-overlays:panel-counters';
+
+const LiveControls = ({ state: s, send }: { state: PanelState | null; send: (patch: object) => void }) => {
+  const { t } = useT();
+  const [shown, setShown] = useState<string[]>(() => { try { const v = JSON.parse(localStorage.getItem(SHOWN_COUNTERS) ?? 'null'); return Array.isArray(v) ? v : ['deaths', 'wins']; } catch { return ['deaths', 'wins']; } });
+  const [custom, setCustom] = useState('');
+  const [alertKind, setAlertKind] = useState('follow');
+  const [alertText, setAlertText] = useState('');
+  const counters = s?.counters ?? {};
+  const toggle = (name: string) => setShown((list) => {
+    const next = list.includes(name) ? list.filter((n) => n !== name) : [...list, name];
+    try { localStorage.setItem(SHOWN_COUNTERS, JSON.stringify(next)); } catch { /* ignore */ }
+    return next;
+  });
+  const names = [...new Set([...shown, ...Object.keys(counters).filter((n) => n !== 'left' && n !== 'right')])];
+  const label = (n: string) => COUNTER_NAMES.find((c) => c[0] === n);
+  return (
+    <>
+      <section className="pn-box">
+        <h3>🔢 {t('Liczniki')}</h3>
+        {names.map((n) => (
+          <div key={n} className="pn-counter">
+            <span>{label(n)?.[1] ?? '#'} {label(n) ? t(label(n)![2]) : n}</span>
+            <b>{counters[n] ?? 0}</b>
+            <button type="button" className="pn-ghost" onClick={() => send({ counters: { [n]: { add: -1 } } })}>−1</button>
+            <button type="button" className="pn-primary" onClick={() => send({ counters: { [n]: { add: 1 } } })}>+1</button>
+            <button type="button" className="pn-ghost" title={t('Reset')} onClick={() => send({ counters: { [n]: { set: 0 } } })}>↺</button>
+          </div>
+        ))}
+        <div className="pn-chips">
+          {COUNTER_NAMES.map(([n, icon, l]) => (
+            <button key={n} type="button" className={`pn-chip ${shown.includes(n) ? '' : 'is-hidden'}`} onClick={() => toggle(n)}><span>{icon}</span>{t(l)}</button>
+          ))}
+        </div>
+        <div className="pn-row">
+          <input value={custom} onChange={(e) => setCustom(e.currentTarget.value.toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 16))} placeholder={t('Własna nazwa licznika')} />
+          <button type="button" className="pn-ghost" disabled={!custom} onClick={() => { toggle(custom); send({ counters: { [custom]: { add: 0 } } }); setCustom(''); }}>{t('Dodaj')}</button>
+        </div>
+      </section>
+
+      <section className="pn-box">
+        <h3>🆚 {t('Tablica wyników')}</h3>
+        <div className="pn-score">
+          {(['left', 'right'] as const).map((side) => (
+            <div key={side}>
+              <b>{counters[side] ?? 0}</b>
+              <div className="pn-row">
+                <button type="button" className="pn-ghost" onClick={() => send({ counters: { [side]: { add: -1 } } })}>−1</button>
+                <button type="button" className="pn-primary" onClick={() => send({ counters: { [side]: { add: 1 } } })}>+1</button>
+              </div>
+            </div>
+          ))}
+        </div>
+        <button type="button" className="pn-link" onClick={() => send({ counters: { left: { set: 0 }, right: { set: 0 } } })}>{t('Wyzeruj wynik')}</button>
+      </section>
+
+      <section className="pn-box">
+        <h3>🎉 {t('Efekty na przycisk')}</h3>
+        <div className="pn-row pn-wrap">
+          {BURSTS.map(([n, icon, l]) => <button key={n} type="button" className="pn-ghost" onClick={() => send({ fire: n })}>{icon} {t(l)}</button>)}
+          <button type="button" className="pn-primary" onClick={() => send({ fire: 'wheel' })}>🎡 {t('Zakręć kołem')}</button>
+        </div>
+      </section>
+
+      <section className="pn-box">
+        <h3>🔔 {t('Alert')}</h3>
+        <div className="pn-seg pn-wrap">
+          {ALERT_KINDS.map(([k, l]) => <button key={k} type="button" className={alertKind === k ? 'is-on' : ''} onClick={() => setAlertKind(k)}>{t(l)}</button>)}
+        </div>
+        <div className="pn-row">
+          <input value={alertText} maxLength={140} onChange={(e) => setAlertText(e.currentTarget.value)} placeholder={alertKind === 'custom' ? t('Treść alertu') : t('Nick')}
+            onKeyDown={(e) => { if (e.key === 'Enter' && alertText.trim()) { send({ alert: { kind: alertKind, text: alertText } }); setAlertText(''); } }} />
+          <button type="button" className="pn-primary" disabled={!alertText.trim()} onClick={() => { send({ alert: { kind: alertKind, text: alertText } }); setAlertText(''); }}>{t('Wyślij')}</button>
+        </div>
+        {s?.alert && <p className="pn-note">{t('Ostatni')}: {s.alert.text}</p>}
+      </section>
+    </>
   );
 };
 

@@ -104,3 +104,11 @@ html.is-dock body { background: #101012; }
 .st-panel-entry b { display: block; font-size: 14px; font-weight: 600; }
 .st-panel-entry small { color: var(--muted); font-size: 12px; }
 .st-panel-entry:hover { border-color: var(--orange); }
+
+/* Counters, score, effects and alerts (added later). */
+.pn-counter { display: grid; grid-template-columns: 1fr auto auto auto auto; align-items: center; gap: 6px; margin-bottom: 6px; }
+.pn-counter > span { font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.pn-counter > b { min-width: 2.4em; text-align: right; font-size: 18px; font-variant-numeric: tabular-nums; }
+.pn-score { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
+.pn-score b { display: block; font-size: 30px; font-variant-numeric: tabular-nums; }
+.pn-seg.pn-wrap { grid-template-columns: repeat(3, 1fr); }

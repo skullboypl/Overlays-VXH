@@ -29,12 +29,29 @@ const rooms = new Map();
 let listeners = 0;
 let dirty = false;
 
-const fresh = () => ({ hidden: {}, timer: null, goal: { current: null, target: null }, reminder: { fire: 0, paused: false } });
+const fresh = () => ({ hidden: {}, timer: null, goal: { current: null, target: null }, reminder: { fire: 0, paused: false }, counters: {}, fire: {}, alert: null });
 
 // ---------- state validation: only known fields with sane values get in ----------
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
 const clampNum = (v, lo, hi) => (isNum(v) ? Math.min(hi, Math.max(lo, v)) : null);
 const OVERLAY_ID = /^[a-z0-9-]{2,24}$/;
+// Added later, all optional: named counters (deaths, wins, score...), one-shot triggers (confetti, wheel...) and a manual alert.
+const COUNTER = /^[a-z0-9_-]{1,16}$/;
+const MAX_COUNTERS = 24;
+const FIRE = /^[a-z]{2,16}$/;
+const ALERT_KIND = /^[a-z]{2,12}$/;
+const applyCounters = (s, patch) => {
+  if (!patch || typeof patch !== 'object') return;
+  for (const [name, op] of Object.entries(patch).slice(0, MAX_COUNTERS)) {
+    if (!COUNTER.test(name)) continue;
+    if (op === null) { delete s.counters[name]; continue; }
+    if (!op || typeof op !== 'object') continue;
+    if (!(name in s.counters) && Object.keys(s.counters).length >= MAX_COUNTERS) continue;
+    const base = s.counters[name] ?? (isNum(op.from) ? op.from : 0);
+    if (isNum(op.set)) s.counters[name] = clampNum(op.set, -1e9, 1e9);
+    else if (isNum(op.add)) s.counters[name] = clampNum(base + op.add, -1e9, 1e9);
+  }
+};
 
 /** Applies a patch from the dock. Timer times come from the server clock, so OBS and the dock never disagree. */
 export const applyPatch = (state, patch, now = Date.now()) => {
@@ -43,6 +60,7 @@ export const applyPatch = (state, patch, now = Date.now()) => {
   if (patch && typeof patch === 'object' && patch.restore && typeof patch.restore === 'object') {
     const r = patch.restore;
     s = applyPatch(fresh(), { hidden: r.hidden, goal: { current: r.goal?.current ?? null, target: r.goal?.target ?? null }, reminder: { paused: r.reminder?.paused === true } }, now);
+    if (r.counters && typeof r.counters === 'object') applyCounters(s, Object.fromEntries(Object.entries(r.counters).map(([k, v]) => [k, { set: v }])));
     const t = r.timer;
     if (t && typeof t === 'object' && (t.mode === 'countdown' || t.mode === 'stopwatch')) {
       const total = clampNum(t.total, 0, 24 * 3_600_000) ?? 300_000;
@@ -82,6 +100,14 @@ export const applyPatch = (state, patch, now = Date.now()) => {
     if (patch.reminder && typeof patch.reminder === 'object') {
       if (patch.reminder.fire === true) s.reminder.fire = now;
       if (typeof patch.reminder.paused === 'boolean') s.reminder.paused = patch.reminder.paused;
+    }
+    s.counters ??= {}; s.fire ??= {}; s.alert ??= null;
+    applyCounters(s, patch.counters);
+    if (typeof patch.fire === 'string' && FIRE.test(patch.fire) && (patch.fire in s.fire || Object.keys(s.fire).length < 16)) s.fire[patch.fire] = now;
+    if (patch.alert && typeof patch.alert === 'object') {
+      const text = String(patch.alert.text ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 140);
+      const kind = ALERT_KIND.test(String(patch.alert.kind)) ? String(patch.alert.kind) : 'custom';
+      s.alert = text ? { text, kind, at: now } : null;
     }
   }
   return s;

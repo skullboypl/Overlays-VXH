@@ -7,6 +7,10 @@ export type PanelState = {
   timer: TimerState | null;
   goal: { current: number | null; target: number | null };
   reminder: { fire: number; paused: boolean };
+  /** Added later; a server or dock from before sends none of these. */
+  counters?: Record<string, number>;
+  fire?: Record<string, number>;
+  alert?: { text: string; kind: string; at: number } | null;
 };
 export type PanelSnapshot = { room: string; version: number; now: number; sources: number; state: PanelState };
 
