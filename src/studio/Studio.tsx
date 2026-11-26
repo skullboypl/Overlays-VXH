@@ -317,7 +317,11 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
 
         <main className="st-stage">
           <div className="st-stage-head">
-            <div>
+            {/* Laptops 901-1279 px: the overlay list is a drawer opened from here. */}
+            <button type="button" className="st-drawer-btn" onClick={() => setMenuOpen(true)} aria-expanded={menuOpen} aria-controls="st-menu">
+              <span className="st-burger" aria-hidden><i /><i /><i /></span>{t('Overlaye')}
+            </button>
+            <div className="st-stage-title">
               <h1>{def.icon} {t(def.name)}</h1>
               <p>{t(def.description)}</p>
             </div>
