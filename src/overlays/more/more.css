@@ -2,7 +2,7 @@
 
 /* ---------- heartbeat vignette ---------- */
 .mo-heart {
-  background: radial-gradient(ellipse at center, transparent var(--edge), var(--c) 140%);
+  background: radial-gradient(ellipse at center, transparent var(--edge), color-mix(in srgb, var(--c) 70%, transparent) 92%, var(--c) 112%);
   opacity: calc(var(--str) * 0.5);
   animation: mo-beat var(--beat) ease-out infinite;
 }
@@ -28,8 +28,13 @@
 
 /* =================== widgets (widgets.tsx) =================== */
 /* Shared card parts. The card font size follows the OBS source (cqmin), so a bigger source means a bigger widget. */
-.mo-card .tl-card { --base: min(9cqh, 5.2cqw); align-items: stretch; text-align: left; gap: 0.35em; width: 100%; padding: 0.6em 0.85em; }
+.mo-card .tl-card { --base: min(9cqh, 5.2cqw); align-items: stretch; text-align: left; gap: 0.35em; min-width: min(100%, 11em); padding: 0.6em 0.85em; }
 .mo-card.align-center .tl-card { text-align: center; }
+.mo-card.align-right .tl-card { text-align: right; }
+.mo-card.align-right .mo-title { justify-content: flex-end; }
+.mo-streamgoal .tl-card, .mo-nowplaying .tl-card, .mo-facts .tl-card { width: 100%; }
+.mo-card.align-center .mo-np-text { text-align: center; }
+.mo-card.align-right .mo-np-text { text-align: right; }
 .mo-title { display: flex; align-items: center; justify-content: space-between; gap: 0.5em; font-weight: 800; font-size: 0.82em; letter-spacing: 0.02em; }
 .align-center > .tl-card > .mo-title { justify-content: center; }
 .mo-title em { font-style: normal; font-size: 0.8em; color: var(--accent); }
@@ -335,7 +340,8 @@
 .mf-film.is-rolling .mf-film-strip i { animation: mf-film 1.2s linear infinite; }
 @keyframes mf-film { to { transform: translateX(calc(var(--u) * -26)); } }
 .mf-film-win { position: absolute; inset: calc(var(--inset) + 13%) var(--inset); border-left: calc(var(--u) * 10) solid var(--film); border-right: calc(var(--u) * 10) solid var(--film); }
-.mf-film-label { position: absolute; left: calc(var(--inset) + 3%); bottom: calc(var(--inset) + 0.5%); font: 700 calc(var(--u) * 13) ui-monospace, monospace; letter-spacing: 0.1em; color: var(--fg); }
+/* Sits in the window, just above the bottom strip, on a dark tab: never over the perforation. */
+.mf-film-label { position: absolute; left: calc(var(--inset) + var(--u) * 16); bottom: calc(var(--inset) + 13% + var(--u) * 4); padding: calc(var(--u) * 2) calc(var(--u) * 8); border-radius: calc(var(--u) * 3); background: rgba(0, 0, 0, 0.55); font: 700 calc(var(--u) * 12) ui-monospace, monospace; letter-spacing: 0.1em; color: var(--fg); white-space: nowrap; }
 .mf-film-label b { margin-left: 1em; }
 
 /* postcard */
@@ -406,8 +412,8 @@
 /* neon sign */
 .mf-neon-tube { position: absolute; inset: var(--inset); border-radius: calc(var(--u) * 26); border: calc(var(--u) * 4) solid #fff; box-shadow: 0 0 calc(var(--u) * 4) var(--n1), 0 0 calc(var(--u) * 14) var(--n1), 0 0 calc(var(--u) * 30) var(--n1), inset 0 0 calc(var(--u) * 10) var(--n1); }
 .mf-neon-sign { position: absolute; left: 50%; translate: -50% 0; padding: 0 calc(var(--u) * 14); font-size: calc(var(--u) * 40); line-height: 1.2; color: #fff; white-space: nowrap; text-shadow: 0 0 calc(var(--u) * 3) var(--n2), 0 0 calc(var(--u) * 12) var(--n2), 0 0 calc(var(--u) * 26) var(--n2); }
-.mf-neon-sign.pos-top { top: calc(var(--inset) - var(--u) * 22); }
-.mf-neon-sign.pos-bottom { bottom: calc(var(--inset) - var(--u) * 20); }
+.mf-neon-sign.pos-top { top: max(calc(var(--u) * 2), calc(var(--inset) - var(--u) * 22)); }
+.mf-neon-sign.pos-bottom { bottom: max(calc(var(--u) * 2), calc(var(--inset) - var(--u) * 20)); }
 .mf-neon.has-flicker .mf-neon-sign { animation: mf-flicker 5s linear infinite; }
 .mf-neon.has-flicker .mf-neon-tube { animation: mf-flicker 9s linear infinite 1.3s; }
 @keyframes mf-flicker { 0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; } 20%, 24%, 55% { opacity: 0.35; } }
@@ -508,7 +514,6 @@
 .mf-season-label { position: absolute; left: 50%; top: calc(var(--inset) - var(--u) * 2); translate: -50% 0; padding: calc(var(--u) * 4) calc(var(--u) * 18); border-radius: calc(var(--u) * 30); background: var(--c1); color: var(--c2); font: 800 calc(var(--u) * 17) var(--font); white-space: nowrap; box-shadow: 0 calc(var(--u) * 3) calc(var(--u) * 10) rgba(0, 0, 0, 0.4); }
 .mf-season-fall { position: absolute; inset: var(--inset); overflow: hidden; border-radius: calc(var(--u) * 14); }
 .mf-season-fall i { position: absolute; top: -10%; font-style: normal; font-size: calc(var(--u) * 16); opacity: 0.85; animation: mf-fall linear infinite; }
-.mf-season-fall i:nth-child(odd) { left: 2% !important; } .mf-season-fall i:nth-child(3n) { left: 93% !important; }
 @keyframes mf-fall { to { transform: translateY(calc(100cqh + 20%)) rotate(240deg); } }
 
 /* =================== Pro screen additions (proExtras.tsx) =================== */
@@ -560,3 +565,9 @@
 @keyframes mo-parallax { from { transform: scale(1.06) translate(-1.2%, -0.8%); } to { transform: scale(1.08) translate(1.2%, 0.8%); } }
 .mo-alert-detail { font-style: normal; font-size: 0.55em; font-weight: 800; opacity: 0.95; }
 .mo-alert-note { display: block; max-width: 22em; margin-top: 0.15em; font-size: 0.45em; font-weight: 500; opacity: 0.9; quotes: '„' '”'; white-space: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+/* Handheld console on a portrait source: screen on top, d-pad and buttons underneath. */
+@container (max-aspect-ratio: 4 / 5) {
+  .mf-console .mf-con-body { flex-wrap: wrap; align-content: stretch; justify-content: space-around; padding: 5% 5% 4%; }
+  .mf-console .mf-con-screen { order: -1; flex: 1 1 100%; height: 72%; }
+  .mf-console .mf-con-btns { rotate: -20deg; }
+}

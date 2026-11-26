@@ -962,7 +962,9 @@ a { color: inherit; text-decoration: none; }
   font-variant-numeric: tabular-nums;
 }
 .st-live-badge i { width: 6px; height: 6px; border-radius: 50%; background: #2ed573; }
-.st-item.is-compact .st-live-badge { position: absolute; top: 4px; right: 4px; padding: 1px 5px; font-size: 10px; }
+.st-item.is-compact .st-item-icon { position: relative; overflow: visible; }
+.st-live-badge.is-on-icon { position: absolute; left: 50%; bottom: -7px; translate: -50% 0; margin: 0; padding: 0 4px; gap: 3px; font-size: 9.5px; line-height: 14px; background: #133b25; box-shadow: 0 0 0 2px var(--panel); pointer-events: none; }
+.st-live-badge.is-on-icon i { width: 5px; height: 5px; }
 .st-empty { padding: 10px 8px; color: var(--muted); font-size: 13px; }
 
 @media (max-width: 1180px) {
@@ -1314,7 +1316,7 @@ a { color: inherit; text-decoration: none; }
 .st-fav:hover { color: #ffd23f; background: var(--input); }
 .st-fav.is-on { color: #ffd23f; }
 .st-item.is-compact .st-fav { top: auto; bottom: 3px; right: 3px; width: 18px; height: 18px; font-size: 11px; }
-.st-item.is-compact .st-live-badge ~ .st-fav { display: none; }
+
 .st-item.is-dense { padding: 6px 10px !important; }
 .st-item.is-dense .st-item-icon { width: 28px !important; height: 28px !important; font-size: 15px !important; border-radius: 8px; }
 .st-quick { padding: 10px 8px; border-radius: var(--radius); border: 1px solid var(--line-soft); background: rgba(255, 255, 255, 0.015); }

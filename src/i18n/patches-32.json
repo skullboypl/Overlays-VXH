@@ -1,0 +1,83 @@
+{
+ "en": {
+  "bitsów": "bits",
+  "gift subów": "gift subs",
+  "killi": "kills",
+  "przegranych": "losses",
+  "raidów": "raids",
+  "subów": "subs",
+  "wygranych": "wins"
+ },
+ "de": {
+  "bitsów": "Bits",
+  "gift subów": "Geschenk-Subs",
+  "killi": "Kills",
+  "przegranych": "Niederlagen",
+  "raidów": "Raids",
+  "subów": "Subs",
+  "wygranych": "Siege"
+ },
+ "cs": {
+  "bitsów": "bitů",
+  "gift subów": "darovaných subů",
+  "killi": "killů",
+  "przegranych": "proher",
+  "raidów": "raidů",
+  "subów": "subů",
+  "wygranych": "výher"
+ },
+ "es": {
+  "bitsów": "bits",
+  "gift subów": "subs regaladas",
+  "killi": "kills",
+  "przegranych": "derrotas",
+  "raidów": "raids",
+  "subów": "subs",
+  "wygranych": "victorias"
+ },
+ "fr": {
+  "bitsów": "bits",
+  "gift subów": "subs offerts",
+  "killi": "kills",
+  "przegranych": "défaites",
+  "raidów": "raids",
+  "subów": "subs",
+  "wygranych": "victoires"
+ },
+ "pt": {
+  "bitsów": "bits",
+  "gift subów": "subs de presente",
+  "killi": "abates",
+  "przegranych": "derrotas",
+  "raidów": "raids",
+  "subów": "subs",
+  "wygranych": "vitórias"
+ },
+ "ru": {
+  "bitsów": "битсов",
+  "gift subów": "подарочных сабов",
+  "killi": "киллов",
+  "przegranych": "поражений",
+  "raidów": "рейдов",
+  "subów": "сабов",
+  "wygranych": "побед"
+ },
+ "tr": {
+  "bitsów": "bit",
+  "gift subów": "hediye abonelik",
+  "killi": "öldürme",
+  "przegranych": "mağlubiyet",
+  "raidów": "baskın",
+  "subów": "abone",
+  "wygranych": "galibiyet"
+ },
+ "uk": {
+  "bitsów": "бітсів",
+  "gift subów": "подарованих сабів",
+  "killi": "кілів",
+  "przegranych": "поразок",
+  "raidów": "рейдів",
+  "subów": "сабів",
+  "wygranych": "перемог"
+ }
+}

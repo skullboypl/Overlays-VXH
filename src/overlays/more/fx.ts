@@ -78,20 +78,26 @@ const startRising = (canvas: HTMLCanvasElement, g: G, kind: 'smoke' | 'fire'): E
   let list: Puff[] = [];
   let sc = 1;
   let acc = 0;
+  let warm = false;
   const stop = runLoop(canvas, (_w, h) => { sc = h / 1080; }, (ctx, dt, w, h) => {
     const speed = n(g, 'speed', 1);
     const size = n(g, 'size', 1);
     const rate = n(g, 'count', kind === 'fire' ? 60 : 14) * (kind === 'fire' ? 3 : 1);
     acc += dt * rate;
+    // Smoke starts already on screen (a few seconds of puffs), instead of an empty frame that slowly fills.
+    const prewarm = !warm && kind === 'smoke';
+    if (prewarm) { warm = true; acc += rate * 6; }
     const where = s(g, 'where', 'bottom');
     while (acc > 1) {
       acc -= 1;
       const x = where === 'left' ? rand(-w * 0.05, w * 0.25) : where === 'right' ? rand(w * 0.75, w * 1.05) : where === 'corners' ? (Math.random() < 0.5 ? rand(-w * 0.05, w * 0.18) : rand(w * 0.82, w * 1.05)) : rand(-w * 0.05, w * 1.05);
-      const max = kind === 'fire' ? rand(0.6, 1.2) * n(g, 'height', 1) : rand(4, 8);
+      const max = kind === 'fire' ? rand(0.6, 1.2) * n(g, 'height', 1) : rand(5, 9);
+      const vy = -(kind === 'fire' ? rand(180, 320) : rand(45, 95)) * sc * speed;
+      const born = prewarm ? rand(0, max * 0.9) : 0;
       list.push({
-        x, y: h + (kind === 'fire' ? rand(0, 10) : rand(20, 80)) * sc, vx: rand(-15, 15) * sc,
-        vy: -(kind === 'fire' ? rand(180, 320) : rand(25, 60)) * sc * speed,
-        r: (kind === 'fire' ? rand(55, 110) : rand(90, 180)) * sc * size, life: 0, max, rot: rand(0, 6.28),
+        x, y: h + (kind === 'fire' ? rand(0, 10) : rand(20, 80)) * sc + vy * born, vx: rand(-15, 15) * sc,
+        vy,
+        r: (kind === 'fire' ? rand(55, 110) : rand(90, 180)) * sc * size, life: born, max, rot: rand(0, 6.28),
         c: kind === 'fire' ? pick(['#fff3b0', '#ffb347', '#ff7a1a', '#ff3d00']) : s(g, 'color', '#b9bfcc'),
       });
     }
@@ -103,10 +109,10 @@ const startRising = (canvas: HTMLCanvasElement, g: G, kind: 'smoke' | 'fire'): E
       p.life += dt;
       if (p.life > p.max) return false;
       const k = p.life / p.max;
-      p.x += (p.vx + Math.sin(p.life * 2 + p.rot) * 20 * sc + n(g, 'wind', 0) * 40 * sc) * dt;
+      p.x += (p.vx + Math.sin(p.life * 2 + p.rot) * 20 * sc + n(g, 'wind', 0) * (kind === 'smoke' ? 70 : 40) * sc) * dt;
       p.y += p.vy * dt;
       const r = kind === 'fire' ? p.r * (1 - k * 0.7) : p.r * (0.6 + k * 1.4);
-      ctx.globalAlpha = op * (kind === 'fire' ? (1 - k) * 0.42 : Math.sin(k * Math.PI) * 0.35);
+      ctx.globalAlpha = op * (kind === 'fire' ? (1 - k) * 0.42 : Math.sin(k * Math.PI) * 0.6);
       const col = kind === 'fire' ? (k < 0.25 ? '#fff3b0' : k < 0.5 ? '#ffb347' : k < 0.75 ? '#ff7a1a' : '#ff3d00') : p.c;
       // Flames are taller than wide; smoke puffs are round.
       const ry = kind === 'fire' ? r * 1.7 : r;
@@ -116,7 +122,7 @@ const startRising = (canvas: HTMLCanvasElement, g: G, kind: 'smoke' | 'fire'): E
     ctx.globalAlpha = 1;
     ctx.globalCompositeOperation = 'source-over';
   });
-  return { reset: () => { list = []; }, stop };
+  return { reset: () => { list = []; warm = false; }, stop };
 };
 export const startSmoke = (c: HTMLCanvasElement, g: G) => startRising(c, g, 'smoke');
 export const startFire = (c: HTMLCanvasElement, g: G) => startRising(c, g, 'fire');
@@ -455,9 +461,11 @@ export const startImageRain = (canvas: HTMLCanvasElement, g: G): Engine => {
     while (list.length < target) list.push({ x: rand(0, w), y: rand(0, h), v: rand(60, 130) * sc * n(g, 'speed', 1), r: rand(22, 46) * sc * n(g, 'size', 1), rot: rand(0, 6.28), vr: rand(-1, 1) * (g().spin === false ? 0 : 1), ph: rand(0, 6.28) });
     if (list.length > target) list.length = target;
     ctx.clearRect(0, 0, w, h);
-    if (!img.complete || !img.naturalWidth) return;
+    // No picture yet: the studio preview shows stars so the settings can be tried; OBS shows nothing.
+    const placeholder = (!img.complete || !img.naturalWidth) && g()._preview === true;
+    if (!placeholder && (!img.complete || !img.naturalWidth)) return;
     ctx.globalAlpha = n(g, 'opacity', 0.95);
-    const ratio = img.naturalHeight / img.naturalWidth;
+    const ratio = placeholder ? 1 : img.naturalHeight / img.naturalWidth;
     for (const p of list) {
       p.y += (up ? -1 : 1) * p.v * dt;
       p.x += Math.sin(t + p.ph) * 20 * sc * dt;
@@ -465,7 +473,8 @@ export const startImageRain = (canvas: HTMLCanvasElement, g: G): Engine => {
       if (!up && p.y > h + p.r * 2) Object.assign(p, { y: -p.r * 2, x: rand(0, w) });
       if (up && p.y < -p.r * 2) Object.assign(p, { y: h + p.r * 2, x: rand(0, w) });
       ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
-      ctx.drawImage(img, -p.r, -p.r * ratio, p.r * 2, p.r * 2 * ratio);
+      if (placeholder) { ctx.font = `${p.r * 1.6}px system-ui, "Segoe UI Emoji", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('⭐', 0, 0); }
+      else ctx.drawImage(img, -p.r, -p.r * ratio, p.r * 2, p.r * 2 * ratio);
       ctx.restore();
     }
     ctx.globalAlpha = 1;

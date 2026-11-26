@@ -56,16 +56,26 @@ const demoOf = (p: Params, ms: number) => (p._preview === true || p.demo === tru
 
 /* ---------------- 41 / 42 counter ---------------- */
 const counterKey = (p: Params) => (p.counter === 'custom' ? str(p.customKey, 'count').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 16) || 'count' : str(p.counter, 'deaths'));
+/** Icon and word that fit each counter type, used while the label / icon are still the deaths defaults. */
+const COUNTER_LOOK: Record<string, [string, string]> = {
+  deaths: ['💀', tx('śmierci')], wins: ['🏆', tx('wygranych')], losses: ['❌', tx('przegranych')], kills: ['🎯', tx('killi')], count: ['🔢', ''],
+  follows: ['❤️', tx('followów')], subs: ['⭐', tx('subów')], bits: ['💎', tx('bitsów')], gifts: ['🎁', tx('gift subów')], kicks: ['🟢', 'Kicks'], raids: ['🚀', tx('raidów')],
+};
 const Counter: Renderer = ({ params: p }) => {
   const panel = usePanel();
   const value = panel?.state.counters?.[counterKey(p)] ?? num(p.value, 0);
   const bump = useBump(value);
+  const lang = langOf(p);
+  const look = COUNTER_LOOK[str(p.counter, 'deaths')];
+  // Picking "wins" should not keep showing "deaths" and a skull: untouched defaults follow the counter type.
+  const label = look && (p.label === 'śmierci' || p.label === translate(lang, 'śmierci')) ? translate(lang, look[1]) : str(p.label);
+  const icon = look && p.icon === '💀' ? look[0] : str(p.icon);
   return (
     <Card p={p} kind="counter" className={`layout-${p.layout ?? 'row'}`}>
       <div className="mo-counter-row">
-        {p.icon && <span className="mo-counter-icon" aria-hidden>{str(p.icon)}</span>}
+        {icon && <span className="mo-counter-icon" aria-hidden>{icon}</span>}
         <b key={bump?.k} className={bump ? 'is-bump' : ''}>{value.toLocaleString(langOf(p))}</b>
-        {p.label && <small>{str(p.label)}</small>}
+        {label && <small>{label}</small>}
         {bump && p.showDelta !== false && <em key={`d${bump.k}`} className="mo-counter-delta">{bump.d > 0 ? `+${bump.d}` : bump.d}</em>}
       </div>
     </Card>

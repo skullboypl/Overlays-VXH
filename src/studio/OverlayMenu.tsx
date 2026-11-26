@@ -98,12 +98,16 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
   const item = (o: OverlayDef, compact = false, keyPrefix = '') => (
     <Link key={keyPrefix + o.id} to={`/${o.id}`} onClick={onPick} title={compact || dense ? t(o.description) : undefined}
       className={`st-item ${compact ? 'is-compact' : ''} ${dense ? 'is-dense' : ''} ${o.id === active ? 'is-active' : ''}`}>
-      <span className="st-item-icon" aria-hidden>{o.icon}</span>
+      <span className="st-item-icon" aria-hidden>
+        {o.icon}
+        {/* Small tiles: the live count sits on the icon, so it never covers the name. */}
+        {compact && live(o.id) > 0 && <span className="st-live-badge is-on-icon"><i />{live(o.id)}</span>}
+      </span>
       <span className="st-item-text">
         <b>{t(o.name)}{NEW_IDS.has(o.id) && <span className="st-new">{t('Nowe')}</span>}</b>
         {!compact && !dense && <small>{t(o.description)}</small>}
       </span>
-      {live(o.id) > 0 && <span className="st-live-badge" title={t('Teraz w OBS')}><i />{live(o.id)}</span>}
+      {!compact && live(o.id) > 0 && <span className="st-live-badge" title={t('Teraz w OBS')}><i />{live(o.id)}</span>}
       <button type="button" className={`st-fav ${favs.includes(o.id) ? 'is-on' : ''}`}
         onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFav(o.id); }}
         aria-pressed={favs.includes(o.id)} aria-label={favs.includes(o.id) ? t('Usuń z ulubionych') : t('Dodaj do ulubionych')}

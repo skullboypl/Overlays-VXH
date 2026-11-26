@@ -304,7 +304,7 @@ const SeasonFrame: Renderer = ({ params: p }) => {
       {em.map((ch, i) => <span key={`a${i}`} className="mf-season-deco t" style={{ left: `${8 + i * 21}%`, '--i': i } as Vars}>{ch}</span>)}
       {em.map((ch, i) => <span key={`b${i}`} className="mf-season-deco b" style={{ left: `${4 + i * 22}%`, '--i': i + 3 } as Vars}>{em[(i + 2) % em.length] ?? ch}</span>)}
       {label && <div className="mf-season-label">{label}</div>}
-      {p.fall !== false && <div className="mf-season-fall">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${(i * 31) % 100}%`, animationDelay: `${-i * 0.9}s`, animationDuration: `${7 + (i % 4)}s` }}>{em[i % em.length]}</i>)}</div>}
+      {p.fall !== false && <div className="mf-season-fall">{Array.from({ length: 12 }, (_, i) => <i key={i} style={{ left: `${i % 2 ? 93 + ((i * 7) % 5) : 1 + ((i * 7) % 5)}%`, animationDelay: `${-i * 0.9}s`, animationDuration: `${7 + (i % 4)}s` }}>{em[i % em.length]}</i>)}</div>}
     </Root>
   );
 };
@@ -323,13 +323,13 @@ export const FRAME_DEFS: OverlayDef[] = [
       { value: 'circle', label: 'Koło' }, { value: 'blob', label: 'Plama' }, { value: 'shield', label: 'Tarcza' }, { value: 'rect', label: 'Prostokąt' },
     ] },
     { group: 'Kształt', key: 'fillOutside', label: 'Zamaluj tło poza kształtem', type: 'toggle', default: true, when: { key: 'shape', is: ['heart', 'hexagon', 'star', 'diamond', 'circle', 'blob', 'shield'] } },
-    rangeF('radius', 'Zaokrąglenie', 0, 120, 2, 24, 'px', 'Kształt'),
+    { ...rangeF('radius', 'Zaokrąglenie', 0, 120, 2, 24, 'px', 'Kształt'), when: { key: 'shape', is: ['rect'] } },
     rangeF('border', 'Grubość linii', 1, 12, 0.5, 3, 'px', 'Kształt'),
     toggle('ants', 'Maszerujące mrówki', false, 'Kształt'),
-    rangeF('speed', 'Tempo mrówek', 0.2, 4, 0.1, 1, '×', 'Kształt'),
+    { ...rangeF('speed', 'Tempo mrówek', 0.2, 4, 0.1, 1, '×', 'Kształt'), when: { key: 'ants', is: [true] } },
     toggle('pulse', 'Pulsowanie', false, 'Kształt'),
     inset(10),
-    color('accent', 'Linia', '#ff5900'), color('lineColor', 'Mrówki', '#ffffff'), color('bg', 'Tło poza kształtem', '#111114'),
+    color('accent', 'Linia', '#ff5900'), { ...color('lineColor', 'Mrówki', '#ffffff'), when: { key: 'ants', is: [true] } }, color('bg', 'Tło poza kształtem', '#111114'),
   ]),
   F('filmframe', 'Taśma filmowa', '🎞️', 'Kamerka jak klatka taśmy filmowej z perforacją, która przesuwa się w pętli.', [
     toggle('roll', 'Przesuwanie perforacji', true), inset(0),
