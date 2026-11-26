@@ -253,10 +253,13 @@ export const kickAlert = (type, p) => {
     case 'channel.followed': return { kind: 'follow', text: userName(p.follower) };
     case 'channel.subscription.new': return { kind: 'sub', text: userName(p.subscriber), months: Number(p.duration) || 1 };
     case 'channel.subscription.renewal': return { kind: 'sub', text: userName(p.subscriber), months: Number(p.duration) || 0 };
-    case 'channel.subscription.gifts': return { kind: 'gift', text: p.gifter?.is_anonymous ? 'Anonim' : userName(p.gifter), amount: Array.isArray(p.giftees) ? p.giftees.length : 1 };
+    case 'channel.subscription.gifts': return { kind: 'gift', text: p.gifter?.is_anonymous || !p.gifter?.username ? 'Anonim' : userName(p.gifter), amount: Array.isArray(p.giftees) ? p.giftees.length : 1 };
     case 'kicks.gifted': return { kind: 'donate', text: userName(p.sender), amount: Number(p.gift?.amount) || 0, note: String(p.gift?.message ?? p.gift?.name ?? '').slice(0, 120) };
     case 'channel.reward.redemption.updated':
-      if (p.status && String(p.status).toLowerCase() !== 'pending' && String(p.status).toLowerCase() !== 'accepted') return null;
+      // Kick sends this on every status change (pending, then accepted / rejected): one alert per redemption id,
+      // and none for a rejected one.
+      if (String(p.status ?? '').toLowerCase() === 'rejected') return null;
+      if (p.id && !firstTime(`kr:${p.id}`)) return null;
       return { kind: 'reward', text: userName(p.redeemer), reward: String(p.reward?.title ?? '').slice(0, 60), amount: Number(p.reward?.cost) || 0, note: String(p.user_input ?? '').slice(0, 120) };
     default: return null;
   }
