@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { OVERLAYS } from '../overlays/registry';
+import { MORE_MENU } from '../overlays/more';
 import type { OverlayDef } from '../overlays/schema';
 import { tx, useT } from '../i18n';
 import { useLiveStats } from '../stats';
@@ -26,6 +27,16 @@ export const MENU_GROUPS: { id: string; title: string; note: string; items?: str
 /** Shown with a "new" badge in the menu. */
 const NEW_IDS = new Set(['startpro', 'brbpro', 'endpro', 'hudframe', 'comicframe', 'doodleframe', 'ornateframe', 'glitchframe', 'retroframe',
   'polaroid', 'pixelframe', 'logo', 'textfx', 'social', 'lowerthird', 'schedule', 'qrrotator', 'fog', 'dust', 'lightning', 'glitch']);
+
+// Add-on overlays (src/overlays/more) slot into their menu groups and count as new.
+for (const [where, ids] of Object.entries(MORE_MENU)) {
+  const [groupId, sub] = where.split(':');
+  const g = MENU_GROUPS.find((x) => x.id === groupId);
+  if (!g) continue;
+  if (sub && g.sub) (g.sub.find((x) => x.title === tx(sub)) ?? g.sub[g.sub.length - 1]).items.push(...ids);
+  else (g.items ??= []).push(...ids);
+  ids.forEach((id) => NEW_IDS.add(id));
+}
 
 const BY_ID = new Map(OVERLAYS.map((o) => [o.id, o]));
 const pick = (ids: string[]) => ids.map((id) => BY_ID.get(id)).filter((o): o is OverlayDef => Boolean(o));

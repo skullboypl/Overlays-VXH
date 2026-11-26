@@ -20,6 +20,7 @@ import './overlays/bars.css';
 import './overlays/frames2.css';
 import './overlays/proscene.css';
 import './overlays/extras.css';
+import './overlays/more/more.css';
 
 /** What OBS loads: just the effect on a transparent page. */
 const OverlayRoute = () => {

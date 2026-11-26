@@ -14,6 +14,7 @@ import { LowerThirdWidget, QrRotatorWidget, ScheduleWidget, SingleSocialWidget }
 import { ComicFrame, DoodleFrame, GlitchFrame, HudFrame, OrnateFrame, PixelFrame, PolaroidFrame, RetroFrame } from './frames2';
 import { ProScene } from './ProScene';
 import { LogoWidget, TextFxWidget } from './extras';
+import { MORE_RENDERERS } from './more';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
 /** Overlay plus the optional "made with AI" label (EU AI Act), drawn only when the streamer turns it on. */
@@ -28,6 +29,8 @@ export const Overlay = ({ id, params }: { id: string; params: Params }) => (
 
 const OverlayBody = ({ id, params }: { id: string; params: Params }) => {
   if ((EFFECT_KINDS as string[]).includes(id)) return <ParticleLayer kind={id as EffectKind} params={params} />;
+  const More = MORE_RENDERERS[id];
+  if (More) return <More params={params} />;
   switch (id) {
     case 'starting':
     case 'brb':

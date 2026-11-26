@@ -1,5 +1,6 @@
 import type { Field, OverlayDef } from './schema';
 import { CHARACTERS, CHARACTER_LABELS, FRAME_URLS, PHOTO_IDS, VIDEO_IDS } from './backgrounds';
+import { MORE_DEFS } from './more';
 
 const FULL_HD = { w: 1920, h: 1080 };
 const CAM = { w: 640, h: 360 };
@@ -1642,6 +1643,8 @@ const AI_FIELDS: Field[] = [
     { value: 'br', label: 'Prawy dolny róg' }, { value: 'bl', label: 'Lewy dolny róg' }, { value: 'tr', label: 'Prawy górny róg' }, { value: 'tl', label: 'Lewy górny róg' },
   ] },
 ];
+// Add-on overlays (src/overlays/more) join the list here, so they get the AI label fields too.
+ALL_OVERLAYS.push(...MORE_DEFS);
 for (const o of ALL_OVERLAYS) o.fields.push(...AI_FIELDS);
 
 export const OVERLAYS = ALL_OVERLAYS.filter((o) => (o.id !== 'character' || Object.keys(CHARACTERS).length > 0) && (o.id !== 'videobg' || VIDEO_IDS.length > 0));

@@ -1,0 +1,27 @@
+/* Add-on overlays (src/overlays/more). Every selector here starts with a class that only these overlays use (mo-...). */
+
+/* ---------- heartbeat vignette ---------- */
+.mo-heart {
+  background: radial-gradient(ellipse at center, transparent var(--edge), var(--c) 140%);
+  opacity: calc(var(--str) * 0.5);
+  animation: mo-beat var(--beat) ease-out infinite;
+}
+@keyframes mo-beat { 0% { opacity: calc(var(--str) * 0.45); } 12% { opacity: var(--str); } 24% { opacity: calc(var(--str) * 0.55); } 36% { opacity: calc(var(--str) * 0.9); } 100% { opacity: calc(var(--str) * 0.45); } }
+
+/* ---------- lens flare ---------- */
+.mo-flare { container-type: size; overflow: hidden; }
+.mo-flare i { position: absolute; border-radius: 50%; mix-blend-mode: screen; pointer-events: none; }
+.mo-flare .f0 { width: calc(34cqh * var(--k)); aspect-ratio: 1; background: radial-gradient(circle, #fff 0 6%, color-mix(in srgb, var(--c) 80%, transparent) 14%, transparent 62%); }
+.mo-flare .f1 { width: calc(9cqh * var(--k)); aspect-ratio: 1; background: radial-gradient(circle, transparent 50%, color-mix(in srgb, var(--c) 45%, transparent) 60%, transparent 70%); }
+.mo-flare .f2 { width: calc(5cqh * var(--k)); aspect-ratio: 1; background: color-mix(in srgb, #7aa2ff 35%, transparent); filter: blur(1px); }
+.mo-flare .f3 { width: calc(14cqh * var(--k)); aspect-ratio: 1; background: radial-gradient(circle, color-mix(in srgb, #3bceac 28%, transparent), transparent 70%); }
+.mo-flare .f4 { width: calc(120cqh * var(--k)); height: calc(1.2cqh * var(--k)); border-radius: 50%; background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--c) 55%, transparent), transparent); }
+/* Each element sits on the line from the light through the centre, at its own distance (--d). */
+.mo-flare i { --d: 0; left: calc(var(--lx) + (50% - var(--lx)) * var(--d)); top: calc(var(--ly) + (50% - var(--ly)) * var(--d)); translate: -50% -50%; }
+.mo-flare .f1 { --d: 0.7; } .mo-flare .f2 { --d: 1.25; } .mo-flare .f3 { --d: 1.6; } .mo-flare .f4 { --d: 0; }
+@property --lx { syntax: '<percentage>'; inherits: true; initial-value: 20%; }
+@property --ly { syntax: '<percentage>'; inherits: true; initial-value: 20%; }
+.mo-flare.path-sweep { animation: mo-flare-sweep var(--dur) ease-in-out infinite; }
+.mo-flare.path-float { animation: mo-flare-float var(--dur) ease-in-out infinite alternate; }
+@keyframes mo-flare-sweep { 0% { --lx: -15%; --ly: 15%; } 50% { --lx: 115%; --ly: 25%; } 100% { --lx: 115%; --ly: 25%; } }
+@keyframes mo-flare-float { 0% { --lx: 18%; --ly: 16%; } 100% { --lx: 34%; --ly: 24%; } }
