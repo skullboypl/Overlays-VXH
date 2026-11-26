@@ -452,6 +452,204 @@
      "type": "toggle",
      "default": true
     },
+    "showGamePanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "game": {
+     "type": "text",
+     "default": "Minecraft",
+     "maxLength": 40
+    },
+    "gameCover": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "gameNote": {
+     "type": "text",
+     "default": "Hardcore, dzień 1",
+     "maxLength": 60
+    },
+    "showSponsorPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "sponsorLogo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "sponsorText": {
+     "type": "text",
+     "default": "Partner streama",
+     "maxLength": 60
+    },
+    "sponsorCode": {
+     "type": "text",
+     "default": "",
+     "maxLength": 24
+    },
+    "showFactsPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "facts": {
+     "type": "text",
+     "default": "Ośmiornice mają trzy serca. | Miód nigdy się nie psuje.",
+     "maxLength": 600,
+     "list": "lines"
+    },
+    "showMusicPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "musicTitle": {
+     "type": "text",
+     "default": "Lofi beats",
+     "maxLength": 60
+    },
+    "musicArtist": {
+     "type": "text",
+     "default": "Chill Radio",
+     "maxLength": 60
+    },
+    "showPollPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "pollQuestion": {
+     "type": "text",
+     "default": "W co gramy potem?",
+     "maxLength": 60
+    },
+    "pollOptions": {
+     "type": "text",
+     "default": "Minecraft 12 | CS2 8 | Valorant 5",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "showSchedulePanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "schedule": {
+     "type": "text",
+     "default": "Pon 20:00 | Śr 20:00 | Pt 21:00 | Nd 18:00",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "showGoalPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "goalTitle": {
+     "type": "text",
+     "default": "Followy",
+     "maxLength": 30
+    },
+    "goalCurrent": {
+     "type": "range",
+     "default": 64,
+     "min": 0,
+     "max": 100000
+    },
+    "goalTarget": {
+     "type": "range",
+     "default": 100,
+     "min": 1,
+     "max": 100000
+    },
+    "showWeatherPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "weatherCity": {
+     "type": "text",
+     "default": "Warszawa",
+     "maxLength": 60
+    },
+    "showCredits": {
+     "type": "toggle",
+     "default": false
+    },
+    "credits": {
+     "type": "text",
+     "default": "Moderatorzy: kasia_gra, ziomek | Top donate: widz123 | Raid: noob_pl | Dzięki, że byliście!",
+     "maxLength": 800,
+     "list": "lines"
+    },
+    "logo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "titleFx": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "gradient",
+      "stroke",
+      "glow",
+      "shine"
+     ]
+    },
+    "effect2": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "stars",
+      "snow",
+      "fireflies",
+      "confetti",
+      "petals",
+      "embers",
+      "bubbles",
+      "bokeh",
+      "sparkles",
+      "meteors",
+      "fog",
+      "dust",
+      "lightning"
+     ]
+    },
+    "parallax": {
+     "type": "toggle",
+     "default": false
+    },
+    "bgVideo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "afterDone": {
+     "type": "select",
+     "default": "text",
+     "options": [
+      "text",
+      "late",
+      "hide"
+     ]
+    },
+    "finalCount": {
+     "type": "toggle",
+     "default": false
+    },
+    "beep": {
+     "type": "toggle",
+     "default": false
+    },
+    "showWaiting": {
+     "type": "toggle",
+     "default": false
+    },
+    "waitingChannel": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 40
+    },
     "aiLabel": {
      "type": "toggle",
      "default": false
@@ -924,6 +1122,204 @@
     "vignette": {
      "type": "toggle",
      "default": true
+    },
+    "showGamePanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "game": {
+     "type": "text",
+     "default": "Minecraft",
+     "maxLength": 40
+    },
+    "gameCover": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "gameNote": {
+     "type": "text",
+     "default": "Hardcore, dzień 1",
+     "maxLength": 60
+    },
+    "showSponsorPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "sponsorLogo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "sponsorText": {
+     "type": "text",
+     "default": "Partner streama",
+     "maxLength": 60
+    },
+    "sponsorCode": {
+     "type": "text",
+     "default": "",
+     "maxLength": 24
+    },
+    "showFactsPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "facts": {
+     "type": "text",
+     "default": "Ośmiornice mają trzy serca. | Miód nigdy się nie psuje.",
+     "maxLength": 600,
+     "list": "lines"
+    },
+    "showMusicPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "musicTitle": {
+     "type": "text",
+     "default": "Lofi beats",
+     "maxLength": 60
+    },
+    "musicArtist": {
+     "type": "text",
+     "default": "Chill Radio",
+     "maxLength": 60
+    },
+    "showPollPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "pollQuestion": {
+     "type": "text",
+     "default": "W co gramy potem?",
+     "maxLength": 60
+    },
+    "pollOptions": {
+     "type": "text",
+     "default": "Minecraft 12 | CS2 8 | Valorant 5",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "showSchedulePanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "schedule": {
+     "type": "text",
+     "default": "Pon 20:00 | Śr 20:00 | Pt 21:00 | Nd 18:00",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "showGoalPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "goalTitle": {
+     "type": "text",
+     "default": "Followy",
+     "maxLength": 30
+    },
+    "goalCurrent": {
+     "type": "range",
+     "default": 64,
+     "min": 0,
+     "max": 100000
+    },
+    "goalTarget": {
+     "type": "range",
+     "default": 100,
+     "min": 1,
+     "max": 100000
+    },
+    "showWeatherPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "weatherCity": {
+     "type": "text",
+     "default": "Warszawa",
+     "maxLength": 60
+    },
+    "showCredits": {
+     "type": "toggle",
+     "default": false
+    },
+    "credits": {
+     "type": "text",
+     "default": "Moderatorzy: kasia_gra, ziomek | Top donate: widz123 | Raid: noob_pl | Dzięki, że byliście!",
+     "maxLength": 800,
+     "list": "lines"
+    },
+    "logo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "titleFx": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "gradient",
+      "stroke",
+      "glow",
+      "shine"
+     ]
+    },
+    "effect2": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "stars",
+      "snow",
+      "fireflies",
+      "confetti",
+      "petals",
+      "embers",
+      "bubbles",
+      "bokeh",
+      "sparkles",
+      "meteors",
+      "fog",
+      "dust",
+      "lightning"
+     ]
+    },
+    "parallax": {
+     "type": "toggle",
+     "default": false
+    },
+    "bgVideo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "afterDone": {
+     "type": "select",
+     "default": "text",
+     "options": [
+      "text",
+      "late",
+      "hide"
+     ]
+    },
+    "finalCount": {
+     "type": "toggle",
+     "default": false
+    },
+    "beep": {
+     "type": "toggle",
+     "default": false
+    },
+    "showWaiting": {
+     "type": "toggle",
+     "default": false
+    },
+    "waitingChannel": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 40
     },
     "aiLabel": {
      "type": "toggle",
@@ -1406,6 +1802,204 @@
     "vignette": {
      "type": "toggle",
      "default": true
+    },
+    "showGamePanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "game": {
+     "type": "text",
+     "default": "Minecraft",
+     "maxLength": 40
+    },
+    "gameCover": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "gameNote": {
+     "type": "text",
+     "default": "Hardcore, dzień 1",
+     "maxLength": 60
+    },
+    "showSponsorPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "sponsorLogo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "sponsorText": {
+     "type": "text",
+     "default": "Partner streama",
+     "maxLength": 60
+    },
+    "sponsorCode": {
+     "type": "text",
+     "default": "",
+     "maxLength": 24
+    },
+    "showFactsPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "facts": {
+     "type": "text",
+     "default": "Ośmiornice mają trzy serca. | Miód nigdy się nie psuje.",
+     "maxLength": 600,
+     "list": "lines"
+    },
+    "showMusicPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "musicTitle": {
+     "type": "text",
+     "default": "Lofi beats",
+     "maxLength": 60
+    },
+    "musicArtist": {
+     "type": "text",
+     "default": "Chill Radio",
+     "maxLength": 60
+    },
+    "showPollPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "pollQuestion": {
+     "type": "text",
+     "default": "W co gramy potem?",
+     "maxLength": 60
+    },
+    "pollOptions": {
+     "type": "text",
+     "default": "Minecraft 12 | CS2 8 | Valorant 5",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "showSchedulePanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "schedule": {
+     "type": "text",
+     "default": "Pon 20:00 | Śr 20:00 | Pt 21:00 | Nd 18:00",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "showGoalPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "goalTitle": {
+     "type": "text",
+     "default": "Followy",
+     "maxLength": 30
+    },
+    "goalCurrent": {
+     "type": "range",
+     "default": 64,
+     "min": 0,
+     "max": 100000
+    },
+    "goalTarget": {
+     "type": "range",
+     "default": 100,
+     "min": 1,
+     "max": 100000
+    },
+    "showWeatherPanel": {
+     "type": "toggle",
+     "default": false
+    },
+    "weatherCity": {
+     "type": "text",
+     "default": "Warszawa",
+     "maxLength": 60
+    },
+    "showCredits": {
+     "type": "toggle",
+     "default": false
+    },
+    "credits": {
+     "type": "text",
+     "default": "Moderatorzy: kasia_gra, ziomek | Top donate: widz123 | Raid: noob_pl | Dzięki, że byliście!",
+     "maxLength": 800,
+     "list": "lines"
+    },
+    "logo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "titleFx": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "gradient",
+      "stroke",
+      "glow",
+      "shine"
+     ]
+    },
+    "effect2": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "stars",
+      "snow",
+      "fireflies",
+      "confetti",
+      "petals",
+      "embers",
+      "bubbles",
+      "bokeh",
+      "sparkles",
+      "meteors",
+      "fog",
+      "dust",
+      "lightning"
+     ]
+    },
+    "parallax": {
+     "type": "toggle",
+     "default": false
+    },
+    "bgVideo": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "afterDone": {
+     "type": "select",
+     "default": "text",
+     "options": [
+      "text",
+      "late",
+      "hide"
+     ]
+    },
+    "finalCount": {
+     "type": "toggle",
+     "default": false
+    },
+    "beep": {
+     "type": "toggle",
+     "default": false
+    },
+    "showWaiting": {
+     "type": "toggle",
+     "default": false
+    },
+    "waitingChannel": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 40
     },
     "aiLabel": {
      "type": "toggle",
@@ -5838,7 +6432,8 @@
      "options": [
       "tv",
       "vhs",
-      "handy"
+      "handy",
+      "pause"
      ]
     },
     "bezelColor": {
@@ -6701,6 +7296,10 @@
      "type": "toggle",
      "default": false
     },
+    "icons": {
+     "type": "toggle",
+     "default": false
+    },
     "showLabel": {
      "type": "toggle",
      "default": true
@@ -7464,7 +8063,9 @@
      "options": [
       "row",
       "column",
-      "grid"
+      "grid",
+      "calendar",
+      "today"
      ]
     },
     "style": {
@@ -8802,6 +9403,4927 @@
     "textColor": {
      "type": "color",
      "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "rays": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 7,
+     "min": 1,
+     "max": 12
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.35,
+     "min": 0.1,
+     "max": 1
+    },
+    "color": {
+     "type": "color",
+     "default": "#fff1c9"
+    },
+    "origin": {
+     "type": "select",
+     "default": "top",
+     "options": [
+      "top",
+      "left",
+      "right"
+     ]
+    },
+    "spread": {
+     "type": "range",
+     "default": 0.6,
+     "min": 0.1,
+     "max": 1.4
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "smoke": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 14,
+     "min": 1,
+     "max": 60
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.5,
+     "min": 0.1,
+     "max": 1
+    },
+    "color": {
+     "type": "color",
+     "default": "#b9bfcc"
+    },
+    "wind": {
+     "type": "range",
+     "default": 0.3,
+     "min": -3,
+     "max": 3
+    },
+    "where": {
+     "type": "select",
+     "default": "bottom",
+     "options": [
+      "bottom",
+      "corners",
+      "left",
+      "right"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "fire": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 60,
+     "min": 1,
+     "max": 200
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.9,
+     "min": 0.1,
+     "max": 1
+    },
+    "height": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 2.5
+    },
+    "wind": {
+     "type": "range",
+     "default": 0,
+     "min": -3,
+     "max": 3
+    },
+    "where": {
+     "type": "select",
+     "default": "bottom",
+     "options": [
+      "bottom",
+      "corners",
+      "left",
+      "right"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "glassrain": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 120,
+     "min": 1,
+     "max": 400
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.85,
+     "min": 0.1,
+     "max": 1
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "drift": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 160,
+     "min": 1,
+     "max": 600
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.95,
+     "min": 0.1,
+     "max": 1
+    },
+    "maxHeight": {
+     "type": "range",
+     "default": 12,
+     "min": 2,
+     "max": 30
+    },
+    "grow": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 4
+    },
+    "color": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "shade": {
+     "type": "color",
+     "default": "#cfe0ff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "flyers": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "kind": {
+     "type": "select",
+     "default": "birds",
+     "options": [
+      "birds",
+      "bats",
+      "butterflies"
+     ]
+    },
+    "count": {
+     "type": "range",
+     "default": 9,
+     "min": 1,
+     "max": 40
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.9,
+     "min": 0.1,
+     "max": 1
+    },
+    "from": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "right",
+      "both"
+     ]
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#20232b"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "wordworks": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "text": {
+     "type": "text",
+     "default": "GG!",
+     "maxLength": 16
+    },
+    "every": {
+     "type": "range",
+     "default": 6,
+     "min": 3,
+     "max": 30
+    },
+    "hold": {
+     "type": "range",
+     "default": 2.5,
+     "min": 0.5,
+     "max": 8
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 1,
+     "min": 0.1,
+     "max": 1
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#ffd23f",
+      "#ff5900",
+      "#ff2d95",
+      "#7aa2ff"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "auroralayer": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.8,
+     "min": 0.1,
+     "max": 1
+    },
+    "height": {
+     "type": "range",
+     "default": 35,
+     "min": 10,
+     "max": 70
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#3bffb0",
+      "#4fc3ff",
+      "#b26bff"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "heartbeat": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "color": {
+     "type": "color",
+     "default": "#b0001a"
+    },
+    "bpm": {
+     "type": "range",
+     "default": 70,
+     "min": 30,
+     "max": 180
+    },
+    "strength": {
+     "type": "range",
+     "default": 0.6,
+     "min": 0.1,
+     "max": 1
+    },
+    "size": {
+     "type": "range",
+     "default": 30,
+     "min": 10,
+     "max": 60
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "flare": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "color": {
+     "type": "color",
+     "default": "#ffcf7a"
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.4,
+     "max": 2.5
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.8,
+     "min": 0.1,
+     "max": 1
+    },
+    "path": {
+     "type": "select",
+     "default": "sweep",
+     "options": [
+      "sweep",
+      "float"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "glitter": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 160,
+     "min": 1,
+     "max": 500
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 1,
+     "min": 0.1,
+     "max": 1
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#ffd23f",
+      "#fff1b0",
+      "#e8b23a"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "storm": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "intensity": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 2
+    },
+    "lightning": {
+     "type": "toggle",
+     "default": true
+    },
+    "fog": {
+     "type": "toggle",
+     "default": true
+    },
+    "wind": {
+     "type": "range",
+     "default": 1,
+     "min": -3,
+     "max": 3
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "autumn": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 50,
+     "min": 1,
+     "max": 250
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1.1,
+     "min": 0.3,
+     "max": 3
+    },
+    "wind": {
+     "type": "range",
+     "default": 0.8,
+     "min": -3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.95,
+     "min": 0.1,
+     "max": 1
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#d9480f",
+      "#f08c00",
+      "#fab005",
+      "#a61e4d",
+      "#8f5b2b"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "plexus": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 70,
+     "min": 10,
+     "max": 200
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.9,
+     "min": 0.1,
+     "max": 1
+    },
+    "distance": {
+     "type": "range",
+     "default": 160,
+     "min": 60,
+     "max": 320
+    },
+    "color": {
+     "type": "color",
+     "default": "#9fd3ff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "pixelsnow": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 120,
+     "min": 1,
+     "max": 500
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.95,
+     "min": 0.1,
+     "max": 1
+    },
+    "pixel": {
+     "type": "range",
+     "default": 6,
+     "min": 2,
+     "max": 16
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#ffffff",
+      "#cfe0ff"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "waveslayer": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.75,
+     "min": 0.1,
+     "max": 1
+    },
+    "height": {
+     "type": "range",
+     "default": 18,
+     "min": 5,
+     "max": 50
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#1e90ff",
+      "#3bceac",
+      "#7aa2ff"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "imagerain": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "image": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "count": {
+     "type": "range",
+     "default": 24,
+     "min": 1,
+     "max": 120
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.95,
+     "min": 0.1,
+     "max": 1
+    },
+    "from": {
+     "type": "select",
+     "default": "down",
+     "options": [
+      "down",
+      "up"
+     ]
+    },
+    "spin": {
+     "type": "toggle",
+     "default": true
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "poll": {
+   "category": "widget",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "question": {
+     "type": "text",
+     "default": "W co gramy jutro?",
+     "maxLength": 80
+    },
+    "options": {
+     "type": "text",
+     "default": "Minecraft 12 | CS2 8 | Valorant 5",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "footer": {
+     "type": "text",
+     "default": "Głosuj na czacie: !1 !2 !3",
+     "maxLength": 60
+    },
+    "showPercent": {
+     "type": "toggle",
+     "default": true
+    },
+    "numbered": {
+     "type": "toggle",
+     "default": true
+    },
+    "highlight": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "giveaway": {
+   "category": "widget",
+   "size": {
+    "w": 720,
+    "h": 260
+   },
+   "fields": {
+    "label": {
+     "type": "text",
+     "default": "GIVEAWAY",
+     "maxLength": 24
+    },
+    "prize": {
+     "type": "text",
+     "default": "Klucz Steam do gry",
+     "maxLength": 60
+    },
+    "rules": {
+     "type": "text",
+     "default": "Follow kanału | Bądź na czacie",
+     "maxLength": 200,
+     "list": "lines"
+    },
+    "keyword": {
+     "type": "text",
+     "default": "!join",
+     "maxLength": 20
+    },
+    "showTimer": {
+     "type": "toggle",
+     "default": true
+    },
+    "at": {
+     "type": "text",
+     "default": "22:00",
+     "maxLength": 16
+    },
+    "doneText": {
+     "type": "text",
+     "default": "Losujemy!",
+     "maxLength": 24
+    },
+    "style": {
+     "type": "select",
+     "default": "gradient",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "commands": {
+   "category": "widget",
+   "size": {
+    "w": 720,
+    "h": 120
+   },
+   "fields": {
+    "items": {
+     "type": "text",
+     "default": "!discord Link do serwera | !sens Moje ustawienia | !setup Sprzęt | !socials Gdzie mnie znaleźć",
+     "maxLength": 500,
+     "list": "lines"
+    },
+    "layout": {
+     "type": "select",
+     "default": "one",
+     "options": [
+      "one",
+      "list"
+     ]
+    },
+    "title": {
+     "type": "text",
+     "default": "Komendy",
+     "maxLength": 30
+    },
+    "every": {
+     "type": "range",
+     "default": 6,
+     "min": 2,
+     "max": 30
+    },
+    "anim": {
+     "type": "select",
+     "default": "up",
+     "options": [
+      "up",
+      "fade",
+      "slide",
+      "flip"
+     ]
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "facts": {
+   "category": "widget",
+   "size": {
+    "w": 760,
+    "h": 200
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Ciekawostka",
+     "maxLength": 30
+    },
+    "icon": {
+     "type": "text",
+     "default": "💡",
+     "maxLength": 4
+    },
+    "items": {
+     "type": "text",
+     "default": "Ośmiornice mają trzy serca. | Miód nigdy się nie psuje. | Pierwsza gra wideo powstała w 1958 roku.",
+     "maxLength": 1000,
+     "list": "lines"
+    },
+    "every": {
+     "type": "range",
+     "default": 12,
+     "min": 4,
+     "max": 60
+    },
+    "shuffle": {
+     "type": "toggle",
+     "default": false
+    },
+    "anim": {
+     "type": "select",
+     "default": "fade",
+     "options": [
+      "up",
+      "fade",
+      "slide",
+      "flip"
+     ]
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "sponsors": {
+   "category": "widget",
+   "size": {
+    "w": 520,
+    "h": 220
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Partnerzy streama",
+     "maxLength": 30
+    },
+    "items": {
+     "type": "text",
+     "default": "Twój sponsor | Drugi partner",
+     "maxLength": 1000,
+     "list": "lines"
+    },
+    "every": {
+     "type": "range",
+     "default": 8,
+     "min": 3,
+     "max": 60
+    },
+    "showNames": {
+     "type": "toggle",
+     "default": true
+    },
+    "anim": {
+     "type": "select",
+     "default": "fade",
+     "options": [
+      "up",
+      "fade",
+      "slide",
+      "flip"
+     ]
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "worldclock": {
+   "category": "widget",
+   "size": {
+    "w": 960,
+    "h": 160
+   },
+   "fields": {
+    "zones": {
+     "type": "text",
+     "default": "Warszawa Europe/Warsaw | Londyn Europe/London | Nowy Jork America/New_York | Tokio Asia/Tokyo",
+     "maxLength": 400,
+     "list": "lines"
+    },
+    "layout": {
+     "type": "select",
+     "default": "row",
+     "options": [
+      "row",
+      "column"
+     ]
+    },
+    "showDay": {
+     "type": "toggle",
+     "default": true
+    },
+    "clock12": {
+     "type": "toggle",
+     "default": false
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "streamgoal": {
+   "category": "widget",
+   "size": {
+    "w": 900,
+    "h": 140
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Maraton",
+     "maxLength": 30
+    },
+    "hours": {
+     "type": "range",
+     "default": 6,
+     "min": 1,
+     "max": 48
+    },
+    "since": {
+     "type": "text",
+     "default": "",
+     "maxLength": 5
+    },
+    "showMarks": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "brbbadge": {
+   "category": "widget",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "text": {
+     "type": "text",
+     "default": "Zaraz wracam",
+     "maxLength": 30
+    },
+    "minutes": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 60
+    },
+    "position": {
+     "type": "select",
+     "default": "tr",
+     "options": [
+      "tl",
+      "tr",
+      "bl",
+      "br",
+      "c"
+     ]
+    },
+    "style": {
+     "type": "select",
+     "default": "pill",
+     "options": [
+      "pill",
+      "neon",
+      "tape"
+     ]
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "topdonors": {
+   "category": "widget",
+   "size": {
+    "w": 480,
+    "h": 360
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Top donatorzy",
+     "maxLength": 30
+    },
+    "items": {
+     "type": "text",
+     "default": "widz123 150 zł | kasia_gra 100 zł | noob_pl 50 zł | ziomek 20 zł",
+     "maxLength": 600,
+     "list": "lines"
+    },
+    "top": {
+     "type": "range",
+     "default": 5,
+     "min": 1,
+     "max": 10
+    },
+    "medals": {
+     "type": "toggle",
+     "default": true
+    },
+    "sort": {
+     "type": "select",
+     "default": "value",
+     "options": [
+      "value",
+      "none"
+     ]
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "leaderboard": {
+   "category": "widget",
+   "size": {
+    "w": 480,
+    "h": 400
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Ranking",
+     "maxLength": 30
+    },
+    "items": {
+     "type": "text",
+     "default": "skullboypl 2450 | widz123 2210 | kasia_gra 1980 | noob_pl 1500 | ziomek 1320",
+     "maxLength": 600,
+     "list": "lines"
+    },
+    "top": {
+     "type": "range",
+     "default": 5,
+     "min": 1,
+     "max": 10
+    },
+    "medals": {
+     "type": "toggle",
+     "default": true
+    },
+    "sort": {
+     "type": "select",
+     "default": "value",
+     "options": [
+      "value",
+      "none"
+     ]
+    },
+    "style": {
+     "type": "select",
+     "default": "solid",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "checklist": {
+   "category": "widget",
+   "size": {
+    "w": 480,
+    "h": 320
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Cele na dziś",
+     "maxLength": 30
+    },
+    "items": {
+     "type": "text",
+     "default": "✓ Przejść rozdział 3 | Pokonać bossa | 100 followów | Zagrać z widzami",
+     "maxLength": 600,
+     "list": "lines"
+    },
+    "bar": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "nowplaying": {
+   "category": "widget",
+   "size": {
+    "w": 640,
+    "h": 140
+   },
+   "fields": {
+    "label": {
+     "type": "text",
+     "default": "Teraz gra",
+     "maxLength": 20
+    },
+    "title": {
+     "type": "text",
+     "default": "Lofi beats to stream to",
+     "maxLength": 60
+    },
+    "artist": {
+     "type": "text",
+     "default": "Chill Radio",
+     "maxLength": 60
+    },
+    "cover": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "spin": {
+     "type": "toggle",
+     "default": false
+    },
+    "eq": {
+     "type": "toggle",
+     "default": true
+    },
+    "progress": {
+     "type": "toggle",
+     "default": true
+    },
+    "length": {
+     "type": "range",
+     "default": 180,
+     "min": 30,
+     "max": 600
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "discount": {
+   "category": "widget",
+   "size": {
+    "w": 560,
+    "h": 200
+   },
+   "fields": {
+    "sponsor": {
+     "type": "text",
+     "default": "Sklep partnera",
+     "maxLength": 40
+    },
+    "amount": {
+     "type": "text",
+     "default": "-20%",
+     "maxLength": 10
+    },
+    "label": {
+     "type": "text",
+     "default": "Kod",
+     "maxLength": 20
+    },
+    "code": {
+     "type": "text",
+     "default": "SKULL20",
+     "maxLength": 24
+    },
+    "note": {
+     "type": "text",
+     "default": "Link w opisie streama",
+     "maxLength": 60
+    },
+    "style": {
+     "type": "select",
+     "default": "gradient",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "duo": {
+   "category": "widget",
+   "size": {
+    "w": 1280,
+    "h": 160
+   },
+   "fields": {
+    "name1": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 30
+    },
+    "sub1": {
+     "type": "text",
+     "default": "twitch.tv/skullboypl",
+     "maxLength": 50
+    },
+    "name2": {
+     "type": "text",
+     "default": "gość",
+     "maxLength": 30
+    },
+    "sub2": {
+     "type": "text",
+     "default": "kick.com/gosc",
+     "maxLength": 50
+    },
+    "showVs": {
+     "type": "toggle",
+     "default": true
+    },
+    "vs": {
+     "type": "text",
+     "default": "&",
+     "maxLength": 4
+    },
+    "style": {
+     "type": "select",
+     "default": "classic",
+     "options": [
+      "classic",
+      "versus",
+      "glass"
+     ]
+    },
+    "fontSize": {
+     "type": "range",
+     "default": 34,
+     "min": 14,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "poppins",
+     "options": [
+      "poppins",
+      "bebas",
+      "russo",
+      "dm"
+     ]
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#7a5cff"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "streak": {
+   "category": "widget",
+   "size": {
+    "w": 360,
+    "h": 160
+   },
+   "fields": {
+    "days": {
+     "type": "range",
+     "default": 30,
+     "min": 0,
+     "max": 3650
+    },
+    "since": {
+     "type": "text",
+     "default": "",
+     "maxLength": 10
+    },
+    "label": {
+     "type": "text",
+     "default": "dni z rzędu",
+     "maxLength": 24
+    },
+    "icon": {
+     "type": "text",
+     "default": "🔥",
+     "maxLength": 4
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "dice": {
+   "category": "widget",
+   "size": {
+    "w": 420,
+    "h": 220
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Rzut",
+     "maxLength": 30
+    },
+    "dice": {
+     "type": "range",
+     "default": 2,
+     "min": 1,
+     "max": 4
+    },
+    "sides": {
+     "type": "range",
+     "default": 6,
+     "min": 2,
+     "max": 100
+    },
+    "every": {
+     "type": "range",
+     "default": 10,
+     "min": 2,
+     "max": 120
+    },
+    "showSum": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "solid",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "weather": {
+   "category": "widget",
+   "size": {
+    "w": 420,
+    "h": 160
+   },
+   "fields": {
+    "city": {
+     "type": "text",
+     "default": "Warszawa",
+     "maxLength": 60
+    },
+    "label": {
+     "type": "text",
+     "default": "",
+     "maxLength": 30
+    },
+    "unit": {
+     "type": "select",
+     "default": "c",
+     "options": [
+      "c",
+      "f"
+     ]
+    },
+    "showCity": {
+     "type": "toggle",
+     "default": true
+    },
+    "showDesc": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "livecount": {
+   "category": "widget",
+   "size": {
+    "w": 420,
+    "h": 160
+   },
+   "fields": {
+    "what": {
+     "type": "select",
+     "default": "followers",
+     "options": [
+      "followers",
+      "viewers"
+     ]
+    },
+    "platform": {
+     "type": "select",
+     "default": "kick",
+     "options": [
+      "kick",
+      "twitch",
+      "youtube"
+     ]
+    },
+    "channel": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 60
+    },
+    "label": {
+     "type": "text",
+     "default": "followów",
+     "maxLength": 24
+    },
+    "offlineText": {
+     "type": "text",
+     "default": "offline",
+     "maxLength": 20
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "counter": {
+   "category": "widget",
+   "size": {
+    "w": 420,
+    "h": 160
+   },
+   "fields": {
+    "counter": {
+     "type": "select",
+     "default": "deaths",
+     "options": [
+      "deaths",
+      "wins",
+      "losses",
+      "kills",
+      "count",
+      "custom"
+     ]
+    },
+    "customKey": {
+     "type": "text",
+     "default": "count2",
+     "maxLength": 16
+    },
+    "label": {
+     "type": "text",
+     "default": "śmierci",
+     "maxLength": 24
+    },
+    "icon": {
+     "type": "text",
+     "default": "💀",
+     "maxLength": 4
+    },
+    "value": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 9999
+    },
+    "showDelta": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "scoreboard": {
+   "category": "widget",
+   "size": {
+    "w": 900,
+    "h": 120
+   },
+   "fields": {
+    "nameA": {
+     "type": "text",
+     "default": "Team A",
+     "maxLength": 24
+    },
+    "nameB": {
+     "type": "text",
+     "default": "Team B",
+     "maxLength": 24
+    },
+    "scoreA": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 99
+    },
+    "scoreB": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 99
+    },
+    "title": {
+     "type": "text",
+     "default": "BO3",
+     "maxLength": 16
+    },
+    "style": {
+     "type": "select",
+     "default": "esport",
+     "options": [
+      "esport",
+      "flat",
+      "glass"
+     ]
+    },
+    "fontSize": {
+     "type": "range",
+     "default": 40,
+     "min": 16,
+     "max": 90
+    },
+    "font": {
+     "type": "select",
+     "default": "russo",
+     "options": [
+      "russo",
+      "bebas",
+      "poppins",
+      "orbitron"
+     ]
+    },
+    "colorA": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "colorB": {
+     "type": "color",
+     "default": "#3b82f6"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "subathon": {
+   "category": "widget",
+   "size": {
+    "w": 720,
+    "h": 260
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "SUBATHON",
+     "maxLength": 30
+    },
+    "hours": {
+     "type": "range",
+     "default": 4,
+     "min": 1,
+     "max": 72
+    },
+    "showRules": {
+     "type": "toggle",
+     "default": true
+    },
+    "rules": {
+     "type": "text",
+     "default": "Sub = +5 min | 10 zł = +2 min | 100 bits = +1 min",
+     "maxLength": 300,
+     "list": "lines"
+    },
+    "style": {
+     "type": "select",
+     "default": "neon",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "wheel": {
+   "category": "widget",
+   "size": {
+    "w": 600,
+    "h": 700
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Koło wyzwań",
+     "maxLength": 30
+    },
+    "items": {
+     "type": "text",
+     "default": "Bez celownika | Tylko nóż | Pompki x10 | Wybór widza | Nic | Śpiewam | Gra od nowa | Bonus",
+     "maxLength": 400,
+     "list": "lines"
+    },
+    "spin": {
+     "type": "range",
+     "default": 5,
+     "min": 2,
+     "max": 12
+    },
+    "auto": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 600
+    },
+    "showResult": {
+     "type": "toggle",
+     "default": true
+    },
+    "font": {
+     "type": "select",
+     "default": "poppins",
+     "options": [
+      "poppins",
+      "bebas",
+      "russo",
+      "dm"
+     ]
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "alertbox": {
+   "category": "widget",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "style": {
+     "type": "select",
+     "default": "pop",
+     "options": [
+      "pop",
+      "slide",
+      "banner",
+      "neon"
+     ]
+    },
+    "position": {
+     "type": "select",
+     "default": "c",
+     "options": [
+      "c",
+      "t",
+      "b"
+     ]
+    },
+    "duration": {
+     "type": "range",
+     "default": 6,
+     "min": 2,
+     "max": 20
+    },
+    "font": {
+     "type": "select",
+     "default": "poppins",
+     "options": [
+      "poppins",
+      "bebas",
+      "russo",
+      "dm"
+     ]
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "demo": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "burst": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "only": {
+     "type": "select",
+     "default": "all",
+     "options": [
+      "all",
+      "confetti",
+      "hearts",
+      "stars",
+      "money"
+     ]
+    },
+    "from": {
+     "type": "select",
+     "default": "bottom",
+     "options": [
+      "bottom",
+      "sides",
+      "center"
+     ]
+    },
+    "count": {
+     "type": "range",
+     "default": 120,
+     "min": 20,
+     "max": 400
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.5,
+     "max": 3
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#ff5900",
+      "#ff2d95",
+      "#7a5cff",
+      "#facc15",
+      "#22c55e",
+      "#3b82f6"
+     ]
+    },
+    "demo": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "kickrain": {
+   "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "channel": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 40
+    },
+    "emotes": {
+     "type": "toggle",
+     "default": true
+    },
+    "emojis": {
+     "type": "toggle",
+     "default": true
+    },
+    "perMessage": {
+     "type": "range",
+     "default": 3,
+     "min": 1,
+     "max": 10
+    },
+    "max": {
+     "type": "range",
+     "default": 40,
+     "min": 5,
+     "max": 150
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.4,
+     "max": 3
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.3,
+     "max": 3
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "shapeframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "shape": {
+     "type": "select",
+     "default": "heart",
+     "options": [
+      "heart",
+      "hexagon",
+      "star",
+      "diamond",
+      "circle",
+      "blob",
+      "shield",
+      "rect"
+     ]
+    },
+    "fillOutside": {
+     "type": "toggle",
+     "default": true
+    },
+    "radius": {
+     "type": "range",
+     "default": 24,
+     "min": 0,
+     "max": 120
+    },
+    "border": {
+     "type": "range",
+     "default": 3,
+     "min": 1,
+     "max": 12
+    },
+    "ants": {
+     "type": "toggle",
+     "default": false
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 4
+    },
+    "pulse": {
+     "type": "toggle",
+     "default": false
+    },
+    "inset": {
+     "type": "range",
+     "default": 10,
+     "min": 0,
+     "max": 60
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "lineColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "filmframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "roll": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 60
+    },
+    "showLabel": {
+     "type": "toggle",
+     "default": true
+    },
+    "label": {
+     "type": "text",
+     "default": "FILM 400",
+     "maxLength": 24
+    },
+    "timecode": {
+     "type": "toggle",
+     "default": true
+    },
+    "film": {
+     "type": "color",
+     "default": "#141414"
+    },
+    "hole": {
+     "type": "color",
+     "default": "#f4efe3"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffb000"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "postcardframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "tilt": {
+     "type": "range",
+     "default": -1.5,
+     "min": -8,
+     "max": 8
+    },
+    "inset": {
+     "type": "range",
+     "default": 12,
+     "min": 0,
+     "max": 60
+    },
+    "caption": {
+     "type": "text",
+     "default": "Pozdrowienia ze streama!",
+     "maxLength": 40
+    },
+    "stamp": {
+     "type": "text",
+     "default": "🎮",
+     "maxLength": 4
+    },
+    "stampText": {
+     "type": "text",
+     "default": "VXH",
+     "maxLength": 8
+    },
+    "postmark": {
+     "type": "toggle",
+     "default": true
+    },
+    "city": {
+     "type": "text",
+     "default": "STREAM CITY",
+     "maxLength": 16
+    },
+    "font": {
+     "type": "select",
+     "default": "pacifico",
+     "options": [
+      "pacifico",
+      "poppins",
+      "bebas"
+     ]
+    },
+    "paper": {
+     "type": "color",
+     "default": "#f7f1e3"
+    },
+    "ink": {
+     "type": "color",
+     "default": "#24305e"
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "termframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "theme": {
+     "type": "select",
+     "default": "green",
+     "options": [
+      "green",
+      "amber",
+      "dark",
+      "light"
+     ]
+    },
+    "scan": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 10,
+     "min": 0,
+     "max": 60
+    },
+    "title": {
+     "type": "text",
+     "default": "webcam.exe",
+     "maxLength": 24
+    },
+    "showPrompt": {
+     "type": "toggle",
+     "default": true
+    },
+    "user": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 16
+    },
+    "command": {
+     "type": "text",
+     "default": "sudo ./stream --hype",
+     "maxLength": 40
+    },
+    "typeSpeed": {
+     "type": "range",
+     "default": 12,
+     "min": 3,
+     "max": 40
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "winframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "look": {
+     "type": "select",
+     "default": "gray",
+     "options": [
+      "gray",
+      "mono",
+      "candy"
+     ]
+    },
+    "inset": {
+     "type": "range",
+     "default": 10,
+     "min": 0,
+     "max": 60
+    },
+    "icon": {
+     "type": "text",
+     "default": "📷",
+     "maxLength": 4
+    },
+    "title": {
+     "type": "text",
+     "default": "Kamerka.exe",
+     "maxLength": 30
+    },
+    "status": {
+     "type": "toggle",
+     "default": true
+    },
+    "statusText": {
+     "type": "text",
+     "default": "Gotowy",
+     "maxLength": 30
+    },
+    "titleColor": {
+     "type": "color",
+     "default": "#0a246a"
+    },
+    "titleColor2": {
+     "type": "color",
+     "default": "#3a6ea5"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "wantedframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "inset": {
+     "type": "range",
+     "default": 8,
+     "min": 0,
+     "max": 60
+    },
+    "top": {
+     "type": "text",
+     "default": "WANTED",
+     "maxLength": 16
+    },
+    "name": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 24
+    },
+    "reward": {
+     "type": "text",
+     "default": "REWARD: 1000 subów",
+     "maxLength": 30
+    },
+    "paper": {
+     "type": "color",
+     "default": "#e9d3a5"
+    },
+    "ink": {
+     "type": "color",
+     "default": "#3b2312"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "speedframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "count": {
+     "type": "range",
+     "default": 70,
+     "min": 20,
+     "max": 160
+    },
+    "hole": {
+     "type": "range",
+     "default": 62,
+     "min": 30,
+     "max": 90
+    },
+    "fps": {
+     "type": "range",
+     "default": 8,
+     "min": 1,
+     "max": 24
+    },
+    "text": {
+     "type": "text",
+     "default": "",
+     "maxLength": 20
+    },
+    "font": {
+     "type": "select",
+     "default": "bebas",
+     "options": [
+      "bebas",
+      "russo",
+      "poppins"
+     ]
+    },
+    "lineColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "neonsign": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "flicker": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 12,
+     "min": 0,
+     "max": 60
+    },
+    "text": {
+     "type": "text",
+     "default": "On Air",
+     "maxLength": 20
+    },
+    "signPos": {
+     "type": "select",
+     "default": "top",
+     "options": [
+      "top",
+      "bottom"
+     ]
+    },
+    "font": {
+     "type": "select",
+     "default": "pacifico",
+     "options": [
+      "pacifico",
+      "bebas",
+      "poppins"
+     ]
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#00e5ff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "statframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "platform": {
+     "type": "select",
+     "default": "kick",
+     "options": [
+      "kick",
+      "twitch",
+      "youtube"
+     ]
+    },
+    "channel": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 60
+    },
+    "label": {
+     "type": "text",
+     "default": "followów",
+     "maxLength": 20
+    },
+    "fallback": {
+     "type": "text",
+     "default": "—",
+     "maxLength": 10
+    },
+    "badgePos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "tl",
+      "tr",
+      "bl",
+      "br"
+     ]
+    },
+    "name": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 24
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "inset": {
+     "type": "range",
+     "default": 10,
+     "min": 0,
+     "max": 60
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "aquaframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "bubbles": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 40
+    },
+    "weedOn": {
+     "type": "toggle",
+     "default": true
+    },
+    "fish": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 8,
+     "min": 0,
+     "max": 60
+    },
+    "water": {
+     "type": "color",
+     "default": "#18a6d9"
+    },
+    "weed": {
+     "type": "color",
+     "default": "#22a35a"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "boxframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "depth": {
+     "type": "range",
+     "default": 18,
+     "min": 4,
+     "max": 60
+    },
+    "spin": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 14,
+     "min": 0,
+     "max": 60
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#7a5cff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "consoleframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "look": {
+     "type": "select",
+     "default": "wide",
+     "options": [
+      "wide",
+      "retro"
+     ]
+    },
+    "brand": {
+     "type": "text",
+     "default": "VXH BOY",
+     "maxLength": 16
+    },
+    "inset": {
+     "type": "range",
+     "default": 6,
+     "min": 0,
+     "max": 60
+    },
+    "body": {
+     "type": "color",
+     "default": "#7a5cff"
+    },
+    "buttons": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "ekgframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "bpm": {
+     "type": "range",
+     "default": 82,
+     "min": 40,
+     "max": 200
+    },
+    "wander": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 10,
+     "min": 0,
+     "max": 60
+    },
+    "accent": {
+     "type": "color",
+     "default": "#22e07a"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "stickerframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "stickers": {
+     "type": "text",
+     "default": "⭐💖🎮🔥✨😎🍕👾",
+     "maxLength": 40
+    },
+    "count": {
+     "type": "range",
+     "default": 14,
+     "min": 4,
+     "max": 32
+    },
+    "size": {
+     "type": "range",
+     "default": 1,
+     "min": 0.5,
+     "max": 2.5
+    },
+    "outline": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "lineColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "aviaframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "callsign": {
+     "type": "text",
+     "default": "VXH-01",
+     "maxLength": 12
+    },
+    "alt": {
+     "type": "range",
+     "default": 12000,
+     "min": 0,
+     "max": 40000
+    },
+    "speedKt": {
+     "type": "range",
+     "default": 280,
+     "min": 60,
+     "max": 900
+    },
+    "inset": {
+     "type": "range",
+     "default": 10,
+     "min": 0,
+     "max": 60
+    },
+    "accent": {
+     "type": "color",
+     "default": "#3cff8f"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "artframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "style": {
+     "type": "select",
+     "default": "watercolor",
+     "options": [
+      "watercolor",
+      "paper",
+      "chalk"
+     ]
+    },
+    "colors": {
+     "type": "colors",
+     "default": [
+      "#ff8fab",
+      "#7ad7f0",
+      "#ffd166",
+      "#b8f2a0"
+     ]
+    },
+    "caption": {
+     "type": "text",
+     "default": "",
+     "maxLength": 30
+    },
+    "inset": {
+     "type": "range",
+     "default": 12,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "pacifico",
+     "options": [
+      "pacifico",
+      "poppins",
+      "bebas"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "seasonframe": {
+   "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
+   "fields": {
+    "theme": {
+     "type": "select",
+     "default": "mikolajki",
+     "options": [
+      "mikolajki",
+      "kids",
+      "women",
+      "blackfriday",
+      "lunar",
+      "autumn",
+      "spring",
+      "summer"
+     ]
+    },
+    "showLabel": {
+     "type": "toggle",
+     "default": true
+    },
+    "label": {
+     "type": "text",
+     "default": "auto",
+     "maxLength": 30
+    },
+    "fall": {
+     "type": "toggle",
+     "default": true
+    },
+    "inset": {
+     "type": "range",
+     "default": 14,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "poppins",
+     "options": [
+      "poppins",
+      "pacifico",
+      "bebas"
+     ]
     },
     "aiLabel": {
      "type": "toggle",
