@@ -4,6 +4,7 @@
 // GET  /api/presence  {"live": n, "byType": {"snow": 3, ...}, "peakToday": n, "updated": <ms>}
 // GET  /api/followers?platform=twitch|kick|youtube&channel=...  follower count for the goal bar (followers.mjs)
 // /api/panel/...  the OBS panel (panel.mjs)
+// /api/connect/..., /api/eventsub/twitch, /api/webhooks/kick  linked Twitch / Kick channels (connect.mjs)
 //
 // Nothing personal is kept: a random id the page makes up on load, the overlay type and the time of the last ping.
 // The client address only lives in memory, to stop one address from inflating the counter.
@@ -11,6 +12,8 @@ import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { followers } from './followers.mjs';
 import { loadRooms, panelGet, panelMaintenance, panelPost } from './panel.mjs';
+import { configured, connectCallback, connectDisconnect, connectStart, kickWebhook, twitchWebhook } from './connect.mjs';
+import { openStore, storeKind } from './store.mjs';
 
 const PORT = Number(process.env.STATS_PORT ?? 3001);
 const HOST = process.env.STATS_HOST ?? '127.0.0.1';
@@ -86,6 +89,15 @@ const send = (res, status, body) => {
   res.end(body === undefined ? '' : JSON.stringify(body));
 };
 
+/** Collects a request body up to `max` bytes; null when it is bigger. */
+const readBody = (req, max, done) => {
+  let raw = '';
+  let over = false;
+  req.setEncoding('utf8');
+  req.on('data', (chunk) => { if (over) return; raw += chunk; if (raw.length > max) { over = true; raw = ''; } });
+  req.on('end', () => done(over ? null : raw));
+};
+
 export const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://x');
   if (url.pathname === '/api/followers' && req.method === 'GET') {
@@ -93,6 +105,36 @@ export const server = http.createServer((req, res) => {
     followers(url.searchParams.get('platform'), url.searchParams.get('channel'))
       .then(({ status, body }) => send(res, status, body))
       .catch(() => send(res, 500, { error: 'internal' }));
+    return;
+  }
+  // ---- linked Twitch / Kick channels ----
+  if (url.pathname === '/api/connect/status' && req.method === 'GET') return send(res, 200, { ...configured(), store: storeKind() });
+  if ((url.pathname === '/api/connect/twitch/callback' || url.pathname === '/api/connect/kick/callback') && req.method === 'GET') {
+    const platform = url.pathname.includes('/twitch/') ? 'twitch' : 'kick';
+    connectCallback(platform, url.searchParams)
+      .then((to) => { res.writeHead(302, { location: to, 'cache-control': 'no-store' }); res.end(); })
+      .catch(() => send(res, 500, { error: 'internal' }));
+    return;
+  }
+  const hooks = { '/api/eventsub/twitch': twitchWebhook, '/api/webhooks/kick': kickWebhook };
+  if (hooks[url.pathname] && req.method === 'POST') {
+    readBody(req, 65_536, (raw) => {
+      if (raw === null) return send(res, 413);
+      hooks[url.pathname](raw, req.headers)
+        .then(({ status, body, type }) => { res.writeHead(status, { 'content-type': type ?? 'text/plain' }); res.end(body ?? ''); })
+        .catch(() => send(res, 500, { error: 'internal' }));
+    });
+    return;
+  }
+  if ((url.pathname === '/api/connect/start' || url.pathname === '/api/connect/disconnect') && req.method === 'POST') {
+    if (limited(clientIp(req), Date.now())) return send(res, 429);
+    readBody(req, 2048, (raw) => {
+      let body;
+      try { body = JSON.parse(raw ?? ''); } catch { return send(res, 400, { error: 'bad_json' }); }
+      (url.pathname.endsWith('/start') ? connectStart(body) : connectDisconnect(body))
+        .then(({ status, body: out }) => { res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(JSON.stringify(out)); })
+        .catch(() => send(res, 500, { error: 'internal' }));
+    });
     return;
   }
   if (url.pathname.startsWith('/api/panel/')) {
@@ -132,7 +174,8 @@ export const server = http.createServer((req, res) => {
 });
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  loadRooms();
+  await openStore();
+  await loadRooms();
   server.listen(PORT, HOST, () => console.log(`stats on ${HOST}:${PORT}`));
   setInterval(() => { prune(Date.now()); panelMaintenance(); }, 30_000).unref();
 }

@@ -1,0 +1,10 @@
+{
+  "name": "vxh-overlays-server",
+  "private": true,
+  "description": "Runtime dependencies of the small Node server in the container (deploy/*.mjs). Only loaded when DATABASE_URL / REDIS_URL are set.",
+  "type": "module",
+  "dependencies": {
+    "pg": "8.13.1",
+    "redis": "4.7.1"
+  }
+}

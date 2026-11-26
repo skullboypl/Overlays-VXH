@@ -12,7 +12,7 @@
 .pn-danger { border-color: rgba(255, 70, 70, 0.3); }
 .pn-error { color: #ff8a8a; font-size: 13px; }
 .pn-copy { display: flex; gap: 6px; }
-.pn-copy input, .pn-dock input {
+.pn-copy input, .pn-dock input, .pn-card .pn-row input, .pn-card .pn-row select {
   flex: 1;
   min-width: 0;
   height: 36px;
@@ -112,3 +112,17 @@ html.is-dock body { background: #101012; }
 .pn-score { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; }
 .pn-score b { display: block; font-size: 30px; font-variant-numeric: tabular-nums; }
 .pn-seg.pn-wrap { grid-template-columns: repeat(3, 1fr); }
+/* Linked channels (added later). */
+.pn-connect { display: flex; flex-direction: column; gap: 8px; margin: 10px 0; }
+.pn-connect-row { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--input); }
+.pn-connect-row > b { min-width: 64px; }
+.pn-connect-row.is-twitch > b { color: #a970ff; }
+.pn-connect-row.is-kick > b { color: #53fc18; }
+.pn-connect-row .pn-linked { flex: 1; font-weight: 600; }
+.pn-connect-row .pn-primary { margin-left: auto; }
+.pn-card p.pn-ok, .pn-ok { color: #4ade80; font-weight: 600; }
+.pn-sub { margin: 16px 0 4px; font-size: 15px; }
+.pn-fx-row { align-items: center; }
+.pn-fx-row > span { flex: 1 1 auto; font-weight: 600; }
+.pn-fx-row > b { flex: 0 0 auto; }
+.pn-fx-row > button { flex: 0 0 auto; }

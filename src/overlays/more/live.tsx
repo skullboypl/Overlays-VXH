@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { OverlayDef, Params } from '../schema';
 import { timerValue, usePanel } from '../../panel/panel';
-import { isLang, translate } from '../../i18n';
+import { isLang, translate, tx } from '../../i18n';
 import { Card, fontOf, lines, look, num, rangeF, str, useNow, type Renderer, type Vars } from './common';
 
 const langOf = (p: Params) => (isLang(p._lang) ? p._lang : 'pl');
@@ -146,42 +146,84 @@ const Wheel: Renderer = ({ params: p }) => {
 };
 
 /* ---------------- 49 manual alerts ---------------- */
-const ALERT_ICONS: Record<string, string> = { follow: '❤️', sub: '⭐', donate: '💰', raid: '🚀', bits: '💎', host: '📺', custom: '📣' };
-const ALERT_TITLES: Record<string, string> = { follow: 'Nowy follow!', sub: 'Nowy sub!', donate: 'Donacja!', raid: 'Raid!', bits: 'Bitsy!', host: 'Host!', custom: '' };
+const ALERT_ICONS: Record<string, string> = { follow: '❤️', sub: '⭐', donate: '💰', raid: '🚀', bits: '💎', host: '📺', custom: '📣', gift: '🎁', reward: '🎯' };
+const ALERT_TITLES: Record<string, string> = {
+  follow: tx('Nowy follow!'), sub: tx('Nowy sub!'), donate: tx('Donacja!'), raid: tx('Raid!'), bits: tx('Bitsy!'), host: tx('Host!'), custom: '', gift: tx('Gift suby!'), reward: tx('Nagroda kanału'),
+};
+/** One alert: typed by hand in the dock, or sent by Twitch / Kick through the server (with numbers and a note). */
+type Alert = { id?: string; text: string; kind: string; at: number; amount?: number; months?: number; reward?: string; note?: string; platform?: string };
+/** The line under the nick: "12 mies.", "500 bitów", "5× sub", "42 widzów", reward name, Kicks. */
+const alertDetail = (a: Alert, lang: Parameters<typeof translate>[0]) => {
+  const n = Number(a.amount) || 0;
+  if (a.kind === 'sub' && (a.months ?? 0) > 1) return translate(lang, tx('{0} mies.'), [a.months ?? 0]);
+  if (a.kind === 'bits' && n) return translate(lang, tx('{0} bitów'), [n]);
+  if (a.kind === 'gift' && n) return translate(lang, tx('{0}× sub'), [n]);
+  if (a.kind === 'raid' && n) return translate(lang, tx('{0} widzów'), [n]);
+  if (a.kind === 'donate' && n && a.platform === 'kick') return `${n} Kicks`;
+  if (a.kind === 'reward') return a.reward ?? '';
+  return '';
+};
 const AlertBox: Renderer = ({ params: p }) => {
   const panel = usePanel();
-  const live = panel?.state.alert ?? null;
-  const [shown, setShown] = useState<{ text: string; kind: string; at: number } | null>(null);
+  const list = panel?.state.alerts;
+  const single = panel?.state.alert ?? null;
+  const [queue, setQueue] = useState<Alert[]>([]);
+  const seen = useRef<Set<string> | null>(null);
   const first = useRef(true);
+  const serverNow = () => (panel ? panel.serverNow() : Date.now());
+  // New servers send a list (bursts play one by one); older ones only the last alert.
   useEffect(() => {
-    // Skip an alert that was already on the server when OBS opened the source.
-    if (first.current) { first.current = false; if (live && Date.now() - live.at > 3000) return; }
-    if (live) setShown(live);
-  }, [live?.at]); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!Array.isArray(list)) return;
+    if (!seen.current) {
+      seen.current = new Set(list.map((a) => a.id ?? String(a.at)));
+      // Skip alerts that were already on the server when OBS opened the source, except the last few seconds.
+      const recent = list.filter((a) => serverNow() - a.at < 3000);
+      if (recent.length) setQueue((q) => [...q, ...recent]);
+      return;
+    }
+    const fresh = list.filter((a) => !seen.current!.has(a.id ?? String(a.at)));
+    fresh.forEach((a) => seen.current!.add(a.id ?? String(a.at)));
+    if (fresh.length) setQueue((q) => [...q, ...fresh].slice(-30));
+  }, [list]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (Array.isArray(list)) return;
+    if (first.current) { first.current = false; if (single && Date.now() - single.at > 3000) return; }
+    if (single) setQueue((q) => [...q, single]);
+  }, [single?.at]); // eslint-disable-line react-hooks/exhaustive-deps
   const demo = demoOf(p, 7000);
   useEffect(() => {
     if (!demo) return undefined;
-    const kinds = ['follow', 'sub', 'donate', 'raid'];
+    const samples: Alert[] = [
+      { kind: 'follow', text: 'widz123', at: 0 }, { kind: 'sub', text: 'kasia_gra', months: 12, at: 0 }, { kind: 'bits', text: 'noob_pl', amount: 500, at: 0 },
+      { kind: 'raid', text: 'ziomek', amount: 42, at: 0 }, { kind: 'reward', text: 'widz123', reward: 'Nawodnij się', at: 0 }, { kind: 'donate', text: 'widz123 · 20 zł', at: 0 },
+    ];
     let k = 0;
-    const go = () => { const kind = kinds[k++ % kinds.length]; setShown({ text: kind === 'donate' ? 'widz123 · 20 zł' : 'widz123', kind, at: Date.now() }); };
+    const go = () => setQueue((q) => [...q, { ...samples[k++ % samples.length], at: Date.now() }]);
     const t0 = window.setTimeout(go, 500);
     const id = window.setInterval(go, demo);
     return () => { window.clearTimeout(t0); window.clearInterval(id); };
   }, [demo]);
   const dur = num(p.duration, 6) * 1000;
+  const shown = queue[0] ?? null;
   useEffect(() => {
     if (!shown) return undefined;
-    const id = window.setTimeout(() => setShown(null), dur);
+    const id = window.setTimeout(() => setQueue((q) => q.slice(1)), dur);
     return () => window.clearTimeout(id);
   }, [shown, dur]);
   if (!shown) return null;
   const lang = langOf(p);
   const title = shown.kind === 'custom' ? '' : translate(lang, ALERT_TITLES[shown.kind] ?? '');
+  const detail = alertDetail(shown, lang);
   return (
     <div className={`ov-fill mo-alert style-${p.style ?? 'pop'} pos-${p.position ?? 'c'}`} style={{ '--accent': str(p.accent, '#ff5900'), '--accent2': str(p.accent2, '#ff2d95'), '--bg': str(p.bg, '#111114'), '--fg': str(p.textColor, '#ffffff'), '--font': fontOf(p, 'poppins'), '--dur': `${dur}ms` } as Vars}>
-      <div key={shown.at} className="mo-alert-card">
+      <div key={`${shown.id ?? ''}${shown.at}`} className="mo-alert-card">
         <span className="mo-alert-icon" aria-hidden>{ALERT_ICONS[shown.kind] ?? '📣'}</span>
-        <div>{title && <small>{title}</small>}<b>{shown.text}</b></div>
+        <div>
+          {title && <small>{title}</small>}
+          <b>{shown.text}</b>
+          {detail && <em className="mo-alert-detail">{detail}</em>}
+          {shown.note && p.showMessage !== false && <q className="mo-alert-note">{shown.note}</q>}
+        </div>
         <i className="mo-alert-bar" />
       </div>
     </div>
@@ -375,10 +417,11 @@ export const LIVE_DEFS: OverlayDef[] = [
     { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
     { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
   ]),
-  W('alertbox', 'Alerty z panelu', '🔔', { w: 1920, h: 1080 }, 'Własne alerty (follow, sub, donacja, raid albo dowolny tekst) wysyłane ręcznie z Panelu OBS.', [
+  W('alertbox', 'Alerty z panelu', '🔔', { w: 1920, h: 1080 }, 'Alerty z Twitcha i Kicka (follow, sub, gift, bitsy, raid, nagrody za punkty) po połączeniu kanału w Panelu OBS, plus ręczne z docka.', [
     { group: 'Alert', key: 'style', label: 'Styl', type: 'select', default: 'pop', options: [{ value: 'pop', label: 'Wyskok' }, { value: 'slide', label: 'Wjazd z boku' }, { value: 'banner', label: 'Baner u góry' }, { value: 'neon', label: 'Neon' }] },
     { group: 'Alert', key: 'position', label: 'Miejsce', type: 'select', default: 'c', options: [{ value: 'c', label: 'Środek' }, { value: 't', label: 'Góra' }, { value: 'b', label: 'Dół' }] },
     rangeF('duration', 'Czas na ekranie', 2, 20, 1, 6, 's', 'Alert'),
+    { group: 'Alert', key: 'showMessage', label: 'Wiadomość od widza', type: 'toggle', default: true, hint: 'Tekst z resuba, cheera albo nagrody kanału' },
     { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [{ value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'dm', label: 'DM Sans' }] },
     { group: 'Kolory', key: 'accent', label: 'Akcent', type: 'color', default: '#ff5900' },
     { group: 'Kolory', key: 'accent2', label: 'Drugi kolor', type: 'color', default: '#ff2d95' },

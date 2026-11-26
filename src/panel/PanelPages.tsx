@@ -126,8 +126,9 @@ export const PanelSetup = () => {
                 ))}
               </div>
             </section>
+            <ConnectCard panelKey={key} links={snap?.state.links ?? {}} rewardFx={snap?.state.rewardFx ?? {}} />
             <section className="pn-card">
-              <h2><span className="pn-step">3</span>{t('Sprawdź')}</h2>
+              <h2><span className="pn-step">4</span>{t('Sprawdź')}</h2>
               <p>{t('Otwórz panel tutaj w przeglądarce i pokliknij: zmiany od razu widać w OBS.')}</p>
               <a className="pn-ghost" href={dockUrl} target="_blank" rel="noreferrer">{t('Otwórz panel w nowej karcie')} ↗</a>
             </section>
@@ -141,6 +142,79 @@ export const PanelSetup = () => {
         )}
       </main>
     </div>
+  );
+};
+
+/* ===================== linked Twitch / Kick channels ===================== */
+const FX_OPTIONS: [string, string][] = [['confetti', tx('Konfetti')], ['hearts', tx('Serca')], ['stars', tx('Gwiazdki')], ['money', tx('Kasa')], ['wheel', tx('Zakręć kołem')]];
+const ConnectCard = ({ panelKey, links, rewardFx }: { panelKey: string; links: Partial<Record<'twitch' | 'kick', string>>; rewardFx: Record<string, string> }) => {
+  const { t } = useT();
+  const [ready, setReady] = useState<{ twitch: boolean; kick: boolean } | null>(null);
+  const [busy, setBusy] = useState('');
+  const [error, setError] = useState('');
+  const [reward, setReward] = useState('');
+  const [fx, setFx] = useState('confetti');
+  const notice = useMemo(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('connected')) return { ok: true, text: `${t('Połączono')}: ${q.get('connected') === 'kick' ? 'Kick' : 'Twitch'}` };
+    if (q.get('connect_error')) return { ok: false, text: t('Nie udało się połączyć konta. Spróbuj jeszcze raz.') };
+    return null;
+  }, [t]);
+  useEffect(() => { fetch('/api/connect/status').then((r) => r.json()).then(setReady).catch(() => setReady({ twitch: false, kick: false })); }, []);
+  const start = async (platform: 'twitch' | 'kick') => {
+    setBusy(platform); setError('');
+    try {
+      const r = await fetch('/api/connect/start', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: panelKey, platform }) });
+      const b = await r.json().catch(() => ({}));
+      if (r.ok && b.url) { window.location.href = b.url; return; }
+      setError(b.error === 'not_configured' ? t('To połączenie nie jest jeszcze włączone na serwerze.') : t('Nie udało się połączyć konta. Spróbuj jeszcze raz.'));
+    } catch { setError(t('Nie udało się połączyć konta. Spróbuj jeszcze raz.')); }
+    setBusy('');
+  };
+  const disconnect = async (platform: 'twitch' | 'kick') => {
+    setBusy(platform);
+    await fetch('/api/connect/disconnect', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: panelKey, platform }) }).catch(() => {});
+    setBusy('');
+  };
+  const setRewardFx = (title: string, value: string | null) => void update(panelKey, { rewardFx: { [title]: value } });
+  return (
+    <section className="pn-card">
+      <h2><span className="pn-step">3</span>{t('Połącz Twitch i Kick')}</h2>
+      <p>{t('Po połączeniu „Alerty z panelu” same pokazują follow, suby, gifty, bitsy, raidy i nagrody za punkty kanału. Twoje hasło ani token nie trafiają do linku OBS.')}</p>
+      {notice && <p className={notice.ok ? 'pn-ok' : 'pn-error'}>{notice.text}</p>}
+      <div className="pn-connect">
+        {(['twitch', 'kick'] as const).map((pl) => (
+          <div key={pl} className={`pn-connect-row is-${pl}`}>
+            <b>{pl === 'twitch' ? 'Twitch' : 'Kick'}</b>
+            {links[pl] ? (
+              <>
+                <span className="pn-linked">✓ {links[pl]}</span>
+                <button type="button" className="pn-ghost" disabled={busy === pl} onClick={() => disconnect(pl)}>{t('Odłącz')}</button>
+              </>
+            ) : (
+              <button type="button" className="pn-primary" disabled={busy === pl || ready?.[pl] === false} onClick={() => start(pl)}>
+                {busy === pl ? '…' : t('Połącz')}
+              </button>
+            )}
+          </div>
+        ))}
+      </div>
+      {ready && !ready.twitch && !ready.kick && <p className="pn-note">{t('To połączenie nie jest jeszcze włączone na serwerze.')}</p>}
+      {error && <p className="pn-error">{error}</p>}
+      <h3 className="pn-sub">{t('Nagroda kanału → efekt')}</h3>
+      <p className="pn-note">{t('Wpisz nazwę nagrody dokładnie jak na Twitchu lub Kicku. Gdy ktoś ją odbierze, odpali się wybrany efekt.')}</p>
+      {Object.entries(rewardFx).map(([title, f]) => (
+        <div key={title} className="pn-row pn-fx-row">
+          <span>{title}</span><b>→ {t(FX_OPTIONS.find((o) => o[0] === f)?.[1] ?? f)}</b>
+          <button type="button" className="pn-ghost" onClick={() => setRewardFx(title, null)}>✕</button>
+        </div>
+      ))}
+      <div className="pn-row">
+        <input value={reward} maxLength={60} onChange={(e) => setReward(e.currentTarget.value)} placeholder={t('Nazwa nagrody')} />
+        <select value={fx} onChange={(e) => setFx(e.currentTarget.value)}>{FX_OPTIONS.map(([v, l]) => <option key={v} value={v}>{t(l)}</option>)}</select>
+        <button type="button" className="pn-ghost" disabled={!reward.trim()} onClick={() => { setRewardFx(reward.trim(), fx); setReward(''); }}>{t('Dodaj')}</button>
+      </div>
+    </section>
   );
 };
 

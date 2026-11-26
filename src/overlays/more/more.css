@@ -558,3 +558,5 @@
 @keyframes mo-shine { from { background-position: 150% 0; } to { background-position: -150% 0; } }
 .mo-parallax .pr-layers { animation: mo-parallax 30s ease-in-out infinite alternate; }
 @keyframes mo-parallax { from { transform: scale(1.06) translate(-1.2%, -0.8%); } to { transform: scale(1.08) translate(1.2%, 0.8%); } }
+.mo-alert-detail { font-style: normal; font-size: 0.55em; font-weight: 800; opacity: 0.95; }
+.mo-alert-note { display: block; max-width: 22em; margin-top: 0.15em; font-size: 0.45em; font-weight: 500; opacity: 0.9; quotes: '„' '”'; white-space: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }

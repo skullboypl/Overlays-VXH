@@ -312,6 +312,16 @@ Opcjonalne zmienne (CapRover → aplikacja → **App Configs → Environmental V
 |---|---|
 | `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` | Followy z Twitcha (aplikacja z [dev.twitch.tv](https://dev.twitch.tv/console/apps), token aplikacji, bez logowania streamera) |
 | `YOUTUBE_API_KEY` | Subskrypcje z YouTube (klucz YouTube Data API v3) |
+| `PUBLIC_ORIGIN` | Adres strony do linków OAuth i webhooków (domyślnie `https://overlays.vxh.pl`) |
+| `TWITCH_EVENTSUB_SECRET` | Sekret podpisu webhooków Twitch EventSub (alerty po „Połącz Twitch” w Panelu OBS); redirect w aplikacji Twitch: `/api/connect/twitch/callback` |
+| `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET` | Aplikacja Kick do „Połącz Kick”; redirect `/api/connect/kick/callback`, webhook `/api/webhooks/kick` |
+| `DATABASE_URL` | Opcjonalnie PostgreSQL na pokoje panelu i połączone kanały (bez niej: plik `PANEL_FILE`) |
+| `REDIS_URL` | Opcjonalnie Redis: kilka instancji aplikacji naraz (zmiany panelu i stan OAuth przez Redis) |
+| `PUBLIC_ORIGIN` | Adres strony do linków OAuth i webhooków (domyślnie `https://overlays.vxh.pl`) |
+| `TWITCH_EVENTSUB_SECRET` | Sekret podpisu webhooków Twitch EventSub (alerty po „Połącz Twitch” w Panelu OBS); redirect w aplikacji Twitch: `/api/connect/twitch/callback` |
+| `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET` | Aplikacja Kick do „Połącz Kick”; redirect `/api/connect/kick/callback`, webhook `/api/webhooks/kick` |
+| `DATABASE_URL` | Opcjonalnie PostgreSQL na pokoje panelu i połączone kanały (bez niej: plik `PANEL_FILE`) |
+| `REDIS_URL` | Opcjonalnie Redis: kilka instancji aplikacji naraz (zmiany panelu i stan OAuth przez Redis) |
 
 Kick nie potrzebuje klucza: liczbę followów bierzemy z publicznego endpointu kick.com (oficjalne API Kicka jej nie podaje). Jeśli Cloudflare zablokuje adres serwera, pasek pokaże „Wkrótce”.
 

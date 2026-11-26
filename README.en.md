@@ -265,6 +265,19 @@ CapRover: [`captain-definition`](captain-definition) points at the `Dockerfile`,
 
 Deploying from GitHub over SSH: in CapRover open **Deployment → Method 3: Deploy from Github/Bitbucket/Gitlab**, set the repo `git@github.com:skullboypl/Overlays-VXH.git`, branch `main` and the private key. Add the matching public key in GitHub under **Settings → Deploy keys** (read-only). Key files (`deploy-key*`, `*.pem`, `*.key`) are in `.gitignore` and `.dockerignore`: never commit them or paste them anywhere public. The app needs no environment variables.
 
+Optional environment variables (the site works without any of them):
+
+| Variable | Used for |
+|---|---|
+| `TWITCH_CLIENT_ID`, `TWITCH_CLIENT_SECRET` | Twitch follower counts (app token) and "Connect Twitch" in the OBS panel |
+| `YOUTUBE_API_KEY` | YouTube subscriber counts |
+| `PANEL_FILE` | JSON file on a persistent directory for OBS panel rooms (without a database) |
+| `PUBLIC_ORIGIN` | Site address used in OAuth and webhook links (default `https://overlays.vxh.pl`) |
+| `TWITCH_EVENTSUB_SECRET` | Signing secret for Twitch EventSub webhooks (alerts after "Connect Twitch"); Twitch app redirect: `/api/connect/twitch/callback` |
+| `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET` | Kick app for "Connect Kick"; redirect `/api/connect/kick/callback`, webhook `/api/webhooks/kick` |
+| `DATABASE_URL` | Optional PostgreSQL for panel rooms and linked channels (without it: the `PANEL_FILE` file) |
+| `REDIS_URL` | Optional Redis: several app instances at once (panel changes and OAuth state go through Redis) |
+
 ## Contributing
 
 Bug reports and new overlay ideas: [Issues](https://github.com/skullboypl/Overlays-VXH/issues). Rules and the local check before a PR: [CONTRIBUTING.md](./CONTRIBUTING.md). Security issues: [SECURITY.md](./SECURITY.md).

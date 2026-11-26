@@ -10,8 +10,15 @@ export type PanelState = {
   /** Added later; a server or dock from before sends none of these. */
   counters?: Record<string, number>;
   fire?: Record<string, number>;
-  alert?: { text: string; kind: string; at: number } | null;
+  alert?: PanelAlert | null;
+  /** Last alerts, newest last (manual and from Twitch / Kick). */
+  alerts?: PanelAlert[];
+  /** Linked channels: platform -> channel name. */
+  links?: Partial<Record<'twitch' | 'kick', string>>;
+  /** Channel point reward title (lower case) -> effect trigger name. */
+  rewardFx?: Record<string, string>;
 };
+export type PanelAlert = { id?: string; text: string; kind: string; at: number; amount?: number; months?: number; reward?: string; note?: string; platform?: string };
 export type PanelSnapshot = { room: string; version: number; now: number; sources: number; state: PanelState };
 
 const KEY_STORE = 'vxh-overlays:panel-key';

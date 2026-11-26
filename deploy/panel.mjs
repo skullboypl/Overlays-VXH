@@ -11,7 +11,8 @@
 // GET  /api/panel/<room>          current state (fallback for overlays that cannot use EventSource)
 // GET  /api/panel/<room>/events   Server-Sent Events: the state on connect and after every change
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync, renameSync } from 'node:fs';
+import { randomBytes } from 'node:crypto';
+import { loadAllRooms, onRemoteRoom, publishRoom, saveRooms as storeRooms } from './store.mjs';
 
 const KEY = /^[A-Za-z0-9_-]{43}$/;
 const ROOM = /^[a-f0-9]{32}$/;
@@ -20,16 +21,23 @@ const MAX_LISTENERS_PER_ROOM = 60;
 const MAX_LISTENERS = 8_000;
 const IDLE_MS = 30 * 86_400_000;
 const PING_MS = 25_000;
-const SAVE_FILE = process.env.PANEL_FILE ?? '';
 
 export const roomOf = (key) => createHash('sha256').update(key).digest('hex').slice(0, 32);
 
 /** room → { state, version, touched, listeners: Set<res> } */
 const rooms = new Map();
 let listeners = 0;
-let dirty = false;
+/** Rooms to write on the next save, and rooms to forget. */
+const changed = new Set();
+const deleted = new Set();
 
-const fresh = () => ({ hidden: {}, timer: null, goal: { current: null, target: null }, reminder: { fire: 0, paused: false }, counters: {}, fire: {}, alert: null });
+const fresh = () => ({ hidden: {}, timer: null, goal: { current: null, target: null }, reminder: { fire: 0, paused: false }, counters: {}, fire: {}, alert: null, alerts: [], links: {}, rewardFx: {} });
+const MAX_ALERTS = 12;
+/** Every alert (manual or from Twitch / Kick) also goes on a short list, so overlays can play bursts one by one. */
+const pushAlert = (s, a) => {
+  s.alert = a;
+  s.alerts = [...(Array.isArray(s.alerts) ? s.alerts : []), a].slice(-MAX_ALERTS);
+};
 
 // ---------- state validation: only known fields with sane values get in ----------
 const isNum = (v) => typeof v === 'number' && Number.isFinite(v);
@@ -107,7 +115,17 @@ export const applyPatch = (state, patch, now = Date.now()) => {
     if (patch.alert && typeof patch.alert === 'object') {
       const text = String(patch.alert.text ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 140);
       const kind = ALERT_KIND.test(String(patch.alert.kind)) ? String(patch.alert.kind) : 'custom';
-      s.alert = text ? { text, kind, at: now } : null;
+      if (text) pushAlert(s, { id: randomBytes(6).toString('hex'), text, kind, at: now }); else s.alert = null;
+    }
+    // Channel point reward (exact title, any case) -> effect button; set from the setup page.
+    if (patch.rewardFx && typeof patch.rewardFx === 'object') {
+      s.rewardFx ??= {};
+      for (const [title, fx] of Object.entries(patch.rewardFx).slice(0, 30)) {
+        const t = String(title).trim().toLowerCase().slice(0, 60);
+        if (!t) continue;
+        if (fx === null || fx === '') delete s.rewardFx[t];
+        else if (FIRE.test(String(fx)) && (t in s.rewardFx || Object.keys(s.rewardFx).length < 30)) s.rewardFx[t] = String(fx);
+      }
     }
   }
   return s;
@@ -123,7 +141,7 @@ const broadcast = (room, r) => {
 };
 
 const prune = (now = Date.now()) => {
-  for (const [room, r] of rooms) if (!r.listeners.size && !r.watchers.size && now - r.touched > IDLE_MS) { rooms.delete(room); dirty = true; }
+  for (const [room, r] of rooms) if (!r.listeners.size && !r.watchers.size && now - r.touched > IDLE_MS) { rooms.delete(room); changed.delete(room); deleted.add(room); }
 };
 
 const open = (room, create) => {
@@ -133,7 +151,7 @@ const open = (room, create) => {
     if (rooms.size >= MAX_ROOMS) return null;
     r = { state: fresh(), version: 0, touched: Date.now(), listeners: new Set(), watchers: new Set() };
     rooms.set(room, r);
-    dirty = true;
+    changed.add(room);
   }
   return r ?? null;
 };
@@ -157,13 +175,14 @@ export const panelPost = (action, body) => {
     r.state = applyPatch(r.state, body.patch);
     r.version += 1;
     r.touched = Date.now();
-    dirty = true;
+    changed.add(room);
     broadcast(room, r);
+    publishRoom(room, r.version, r.state);
     return { status: 200, body: JSON.parse(payload(room, r)) };
   }
   if (action === 'drop') {
     const r = rooms.get(room);
-    if (r) { for (const res of everyone(r)) res.end(); rooms.delete(room); dirty = true; }
+    if (r) { for (const res of everyone(r)) res.end(); rooms.delete(room); changed.delete(room); deleted.add(room); }
     return { status: 200, body: { ok: true } };
   }
   return { status: 404, body: { error: 'not_found' } };
@@ -210,19 +229,57 @@ export const panelGet = (path, req, res, watch = false) => {
   return true;
 };
 
-// ---------- optional persistence (PANEL_FILE on a CapRover persistent directory) ----------
-export const loadRooms = () => {
-  if (!SAVE_FILE) return;
+// ---------- persistence (store.mjs: PostgreSQL, or a JSON file in PANEL_FILE) ----------
+export const loadRooms = async () => {
   try {
-    const saved = JSON.parse(readFileSync(SAVE_FILE, 'utf8'));
-    for (const [room, v] of Object.entries(saved)) if (ROOM.test(room)) rooms.set(room, { state: { ...fresh(), ...v.state }, version: v.version ?? 0, touched: v.touched ?? Date.now(), listeners: new Set(), watchers: new Set() });
-  } catch { /* first start */ }
+    for (const v of await loadAllRooms()) {
+      if (ROOM.test(v.room)) rooms.set(v.room, { state: { ...fresh(), ...v.state }, version: v.version ?? 0, touched: v.touched ?? Date.now(), listeners: new Set(), watchers: new Set() });
+    }
+  } catch (err) { console.error('panel: load failed', err?.message ?? err); }
+  // Another instance changed a room (Redis): take its newer state and tell our own listeners.
+  await onRemoteRoom((room, version, state) => {
+    const r = open(room, true);
+    if (!r || version <= r.version) return;
+    r.state = { ...fresh(), ...state };
+    r.version = version;
+    r.touched = Date.now();
+    broadcast(room, r);
+  });
 };
-export const saveRooms = () => {
-  if (!SAVE_FILE || !dirty) return;
-  dirty = false;
-  const out = {};
-  for (const [room, r] of rooms) out[room] = { state: r.state, version: r.version, touched: r.touched };
-  try { writeFileSync(`${SAVE_FILE}.tmp`, JSON.stringify(out)); renameSync(`${SAVE_FILE}.tmp`, SAVE_FILE); } catch { dirty = true; }
+let saving = false;
+export const saveRooms = async () => {
+  if (saving || (!changed.size && !deleted.size)) return;
+  saving = true;
+  const ch = [...changed].map((room) => [room, rooms.get(room)]).filter(([, r]) => r);
+  const del = [...deleted];
+  changed.clear(); deleted.clear();
+  try { await storeRooms(ch, del, rooms); } catch (err) {
+    console.error('panel: save failed', err?.message ?? err);
+    for (const [room] of ch) changed.add(room);
+    for (const room of del) deleted.add(room);
+  }
+  saving = false;
 };
-export const panelMaintenance = () => { prune(); saveRooms(); };
+export const panelMaintenance = () => { prune(); void saveRooms(); };
+
+/**
+ * A change that comes from the server, not the dock: an alert from Twitch / Kick, an effect for a channel point
+ * reward, or the list of linked channels. Same path as a dock update: new version, live push, saved later.
+ */
+export const pushEvent = (room, { alert, fire, links } = {}, now = Date.now()) => {
+  const r = rooms.get(room) ?? open(room, true);
+  if (!r) return false;
+  const s = structuredClone(r.state);
+  s.alerts ??= []; s.fire ??= {}; s.links ??= {};
+  if (alert) pushAlert(s, { id: randomBytes(6).toString('hex'), at: now, ...alert, text: String(alert.text ?? '').slice(0, 140) });
+  if (fire && FIRE.test(fire)) s.fire[fire] = now;
+  if (links) s.links = links;
+  r.state = s;
+  r.version += 1;
+  r.touched = now;
+  changed.add(room);
+  broadcast(room, r);
+  publishRoom(room, r.version, r.state);
+  return true;
+};
+export const roomState = (room) => rooms.get(room)?.state ?? null;
