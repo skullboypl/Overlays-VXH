@@ -37,10 +37,13 @@
   },
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build && pnpm run prerender",
+    "build": "tsc --noEmit && pnpm run compat:check && vite build && pnpm run prerender",
     "preview": "vite preview",
     "prerender": "vite build --ssr src/seo/prerender.tsx --outDir .ssr --emptyOutDir && node .ssr/prerender.js",
-    "i18n:extract": "vite build --ssr src/i18n/extract.ts --outDir .ssr/extract --emptyOutDir && node .ssr/extract/extract.js"
+    "i18n:extract": "vite build --ssr src/i18n/extract.ts --outDir .ssr/extract --emptyOutDir && node .ssr/extract/extract.js",
+    "compat:check": "vite build --ssr src/compat/check.ts --outDir .ssr/compat --emptyOutDir --logLevel warn && node .ssr/compat/check.js",
+    "compat:update": "vite build --ssr src/compat/check.ts --outDir .ssr/compat --emptyOutDir --logLevel warn && node .ssr/compat/check.js --update",
+    "compat:visual": "bash scripts/compat/visual-vs.sh"
   },
   "dependencies": {
     "qrcode-generator": "1.4.4",

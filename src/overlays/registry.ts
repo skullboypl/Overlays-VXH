@@ -662,7 +662,8 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'videobg', name: 'Tło wideo', icon: '🎬', category: 'scene', size: FULL_HD,
     description: 'Realistyczne zapętlone wideo na całą scenę: pokój nocą z deszczem, miasto neon, zimowy las, kominek i inne.',
     fields: [
-      { group: 'Wideo', key: 'bg', label: 'Wybierz wideo', type: 'select', default: VIDEO_IDS[0] ?? 'v-cozy',
+      // Pinned: "the first file" would change with every new video whose name sorts earlier, and with it every old link.
+      { group: 'Wideo', key: 'bg', label: 'Wybierz wideo', type: 'select', default: VIDEO_IDS.includes('v-city') ? 'v-city' : VIDEO_IDS[0] ?? 'v-cozy',
         options: BG_OPTIONS.filter((o) => o.value.startsWith('v-')), swatches: BG_SWATCHES },
       { group: 'Wideo', key: 'bgSpeed', label: 'Prędkość wideo', type: 'range', min: 0.25, max: 2, step: 0.05, default: 1, unit: '×' },
       { group: 'Wideo', key: 'bgBlur', label: 'Rozmycie wideo', type: 'range', min: 0, max: 20, step: 1, default: 0, unit: 'px' },
@@ -858,7 +859,8 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Postać', key: 'charStyle', label: 'Styl postaci', type: 'select', default: 'all', options: [
         { value: 'all', label: 'Wszystkie' }, { value: 'game', label: 'Gra 3D' }, { value: 'real', label: 'Realistyczne' },
       ].filter((o) => o.value === 'all' || Object.keys(CHARACTERS).some((id) => id.endsWith(`-${o.value}`))) },
-      { group: 'Postać', key: 'char', label: 'Postać', type: 'select', default: Object.keys(CHARACTERS)[0] ?? 'santa-game',
+      // Pinned for the same reason as the video default: a new clip named e.g. "astronaut-game" must not become the default.
+      { group: 'Postać', key: 'char', label: 'Postać', type: 'select', default: CHARACTERS['bunny-game'] ? 'bunny-game' : Object.keys(CHARACTERS)[0] ?? 'santa-game',
         optionFilter: (p) => (v) => !p.charStyle || p.charStyle === 'all' || v.endsWith(`-${p.charStyle}`),
         options: Object.keys(CHARACTERS).map((id) => ({ value: id, label: CHARACTER_LABELS[id] ?? id })),
         swatches: Object.fromEntries(Object.entries(CHARACTERS).map(([id, c]) => [id, `url(${c.poster}) center / contain no-repeat, #1a1a1c`])) },

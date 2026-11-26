@@ -217,6 +217,62 @@ captain-definition      CapRover
 
 Overlay musi mieć przezroczyste tło (poza ekranami, które mają własne) i wyglądać tak samo w podglądzie i w OBS: rozmiary licz względem wymiarów źródła, nie okna studia.
 
+## Zgodność wsteczna linków
+
+Link do OBS zawiera tylko te ustawienia, które różnią się od domyślnych (`paramsToQuery` w `schema.ts`). Wszystko inne
+dopowiada rejestr w chwili wczytania. Dlatego stary link pokazuje to samo tylko wtedy, gdy rejestr i renderer odczytają
+go tak samo jak w dniu, w którym streamer go skopiował. Overlaye są już w OBS-ach widzów, więc **dodajemy, nigdy nie zmieniamy**.
+
+**Wolno (bez wpływu na stare linki):**
+- nowy overlay (nowe `id`),
+- nowe pole w starym overlayu, ale z wartością domyślną, która **odtwarza dotychczasowy wygląd** (np. `qrGradient: false`, `frame: 'none'`),
+- nowa opcja w `select` (nowa wartość, stare zostają),
+- szerszy zakres suwaka (niższe `min`, wyższe `max`), dłuższy `maxLength`,
+- nowe tło, wideo, ramka świąteczna, postać: zawsze pod **nowym** id pliku,
+- nowy CSS, jeśli każdy selektor zawiera klasę, której stary kod nie używał (np. prefiks `pr-`, `qrr-`, `hd-`).
+
+**Nie wolno (zmienia stare linki):**
+- zmiana wartości domyślnej pola, także tekstu po polsku w polu z `i18n: true`,
+- usunięcie lub zmiana nazwy overlayu, pola, opcji; zmiana typu pola albo formatu listy,
+- węższy zakres suwaka (stare wartości zostaną przycięte), krótszy `maxLength`,
+- nadpisanie lub usunięcie pliku tła / wideo / ramki / postaci (link z `bg=v-city` pokaże inny klip),
+- wartość domyślna zależna od kolejności plików (`VIDEO_IDS[0]`, „pierwsza postać”): nowy plik o nazwie wcześniejszej
+  alfabetycznie zmieni domyślny wybór. Domyślne `videobg` i `character` są przypięte na stałe (`v-city`, `bunny-game`),
+- zmiana zachowania renderera dla istniejących wartości (np. inny układ, kolor, czas animacji) bez nowej opcji,
+- zmiana tłumaczenia tekstu, który komponent tłumaczy sam (`translate(lang, …)`, np. zachęty w ekranach Pro).
+
+Gdy coś trzeba poprawić w wyglądzie, dodaj nową wersję jako opcję (np. `style: 'neon2'`) albo nowe pole, a stara zostaje
+domyślna.
+
+**Strażnicy:**
+- `pnpm compat:check` (uruchamia się też w `pnpm build`, więc i w Dockerze) porównuje rejestr z
+  [`src/compat/baseline.json`](src/compat/baseline.json), czyli kontraktem wszystkiego, co już opublikowano. Usunięte pole,
+  zmieniona wartość domyślna, zabrana opcja albo węższy zakres zatrzymują build z listą problemów.
+- `pnpm compat:update` po dodaniu nowych overlayów / pól / opcji: dopisuje je do baseline, żeby od teraz też były chronione.
+  Działa tylko, gdy `compat:check` przechodzi.
+- `pnpm compat:visual [ref]` (domyślnie `origin/main`): buduje starą wersję i bieżącą, renderuje każdy stary link
+  (wartości domyślne oraz każdą opcję każdego pola po kolei, ok. 1300 linków) z zamrożonym czasem i losowością, i porównuje
+  piksele. Różnice ze zrzutami trafiają do `.compat/report/`. Potrzebuje Playwrighta (`npx playwright install chromium`).
+  Uruchom przed wypuszczeniem zmian w rendererach albo CSS starych overlayów.
+
+## Nagrania z Higgsfield jako tła wideo
+
+Higgsfield robi ruch (5–10 s, 720p/1080p), a lokalny ComfyUI tylko podbija rozdzielczość. Skrypt
+[`tools/ai/import_higgsfield.py`](tools/ai/import_higgsfield.py) robi resztę: klatki 24 fps, RealESRGAN z modelu w ComfyUI
+(ten sam co w `gen_videos_h3.py`), płynna pętla (koniec przenika w początek), H.264 1920×1080, plakat i miniatura.
+
+```bash
+python tools/ai/import_higgsfield.py pobrany-klip.mp4 neon-arcade --label="Salon gier neon"
+# klip już w 1080p: --no-upscale; tylko fragment: --start=1.5 --dur=6; 720p z x4: --scale=4
+# klip z Seedance z tym samym zdjęciem jako pierwszą i ostatnią klatką: --seamless (bez przenikania)
+```
+
+Skrypt odmawia nadpisania istniejącego id. Potem dopisz wypisaną linię do `PHOTO_LABELS` w `registry.ts`, uruchom
+`pnpm i18n:extract`, przetłumacz etykietę i zrób `pnpm compat:update`. Wideo pojawia się samo w „Tło wideo” i jako tło ekranów.
+W Higgsfield prompt powinien zawierać statyczną kamerę, ciągły ruch (ogień, deszcz, neony, śnieg) i brak ludzi oraz napisów,
+bez dźwięku (`generate_audio: false`, i tak go wycinamy). Najlepsza pętla: Seedance 2.0 / 2.5 z jednym z naszych zdjęć
+4K z `public/bg/` jako `start_image` i `end_image`, potem `--seamless`.
+
 ## Deploy
 
 Obraz Dockera ([`Dockerfile`](Dockerfile)) buduje projekt na `node:22-alpine` z pnpm 10.33.0, a potem kopiuje `dist/` do `nginx:1.27-alpine` z [`deploy/nginx.conf`](deploy/nginx.conf):

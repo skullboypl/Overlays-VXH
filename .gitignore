@@ -21,3 +21,6 @@ brag-output/
 # AI asset generation scratch
 tools/ai/.work/
 src/i18n/missing.json
+
+# backward-compat check output (pnpm compat:visual)
+.compat/

@@ -217,6 +217,21 @@ captain-definition      CapRover
 
 An overlay needs a transparent background (except screens, which have their own) and should look the same in the preview and in OBS: size things relative to the source, not the studio window.
 
+## Backward compatibility of links
+
+A link only carries settings that differ from the defaults; the registry fills in the rest when it loads. An old link keeps
+looking the same only while ids, keys, types, defaults and accepted values stay as they were, so **add, never change**:
+new overlays, new fields whose default reproduces the old look, new select options, wider ranges, new asset files under
+new ids. Never change a default, remove or rename anything, narrow a range, overwrite an asset file, or derive a default
+from file order (the `videobg` and `character` defaults are pinned to `v-city` and `bunny-game`).
+
+- `pnpm compat:check` (also part of `pnpm build`) compares the registry with `src/compat/baseline.json` and fails the build on
+  anything that would change existing links. `pnpm compat:update` records newly added overlays / fields / options.
+- `pnpm compat:visual [ref]` renders every published link (defaults plus each option of each field) on an older commit and on
+  the working tree with time and randomness frozen, and reports pixel differences in `.compat/report/`.
+- `tools/ai/import_higgsfield.py <clip.mp4> <new-id>` turns a Higgsfield clip into a looping 1920×1080 background (ComfyUI
+  RealESRGAN upscale, crossfade loop, poster, thumbnail) and refuses to overwrite an existing id.
+
 ## Deploy
 
 The [`Dockerfile`](Dockerfile) builds on `node:22-alpine` with pnpm 10.33.0, then copies `dist/` into `nginx:1.27-alpine` with [`deploy/nginx.conf`](deploy/nginx.conf):
