@@ -33,12 +33,13 @@ const loadCollapsed = (id: string): string[] => {
 
 export type History = { canUndo: boolean; canRedo: boolean; undo: () => void; redo: () => void };
 
-export const SettingsPanel = ({ def, params, defaults, onChange, onReset, history, searchRef }: {
+export const SettingsPanel = ({ def, params, defaults, onChange, onReset, onRandom, history, searchRef }: {
   def: OverlayDef;
   params: Params;
   defaults: Params;
   onChange: (key: string, v: Params[string], continuous?: boolean) => void;
   onReset: () => void;
+  onRandom: () => void;
   history: History;
   searchRef: React.RefObject<HTMLInputElement>;
 }) => {
@@ -80,6 +81,7 @@ export const SettingsPanel = ({ def, params, defaults, onChange, onReset, histor
       <div className="st-settings-head">
         <h2>{t('Ustawienia')}</h2>
         <div className="st-settings-actions">
+          <button type="button" className="st-icon-btn st-dice" onClick={onRandom} title={t('Losuj wygląd: kolory i style, teksty zostają')} aria-label={t('Losuj wygląd')}>🎲</button>
           <button type="button" className="st-icon-btn" onClick={history.undo} disabled={!history.canUndo} title={`${t('Cofnij')} (Ctrl+Z)`} aria-label={t('Cofnij')}>↶</button>
           <button type="button" className="st-icon-btn" onClick={history.redo} disabled={!history.canRedo} title={`${t('Ponów')} (Ctrl+Shift+Z)`} aria-label={t('Ponów')}>↷</button>
           <button type="button" className="st-btn ghost small" onClick={onReset} disabled={!changedCount} title={t('Wszystkie ustawienia wracają do domyślnych')}>{t('Resetuj')}</button>

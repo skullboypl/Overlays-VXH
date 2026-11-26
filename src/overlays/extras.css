@@ -1,0 +1,73 @@
+/* Extras (extras.tsx): logo / watermark and animated headline. Sizes follow the OBS source. */
+
+/* ---------- logo ---------- */
+.lg-root { container-type: size; display: flex; padding: var(--m); }
+.lg-root.pos-tl { align-items: flex-start; justify-content: flex-start; }
+.lg-root.pos-tr { align-items: flex-start; justify-content: flex-end; }
+.lg-root.pos-bl { align-items: flex-end; justify-content: flex-start; }
+.lg-root.pos-br { align-items: flex-end; justify-content: flex-end; }
+.lg-root.pos-c { align-items: center; justify-content: center; }
+.lg { width: var(--size); opacity: var(--op); display: grid; place-items: center; font-family: var(--font); }
+.lg img { width: 100%; height: auto; display: block; border-radius: var(--radius); }
+.lg { width: auto; min-width: var(--size); }
+.lg:has(img) { width: var(--size); }
+.lg-text { font-size: calc(var(--sz) * 0.2cqw); font-weight: 800; color: #fff; letter-spacing: 0.04em; white-space: nowrap; }
+.lg.has-shadow img, .lg.has-shadow .lg-text { filter: drop-shadow(0 0.4cqh 1.2cqh rgba(0, 0, 0, 0.55)); }
+.lg.has-glow img, .lg.has-glow .lg-text { filter: drop-shadow(0 0 1.5cqh var(--accent)) drop-shadow(0 0 0.5cqh var(--accent)); }
+.lg.anim-pulse { animation: lg-pulse var(--speed) ease-in-out infinite; }
+.lg.anim-float { animation: lg-float var(--speed) ease-in-out infinite; }
+.lg.anim-spin { animation: lg-spin calc(var(--speed) * 2) linear infinite; }
+.lg.anim-swing { animation: lg-swing var(--speed) ease-in-out infinite; transform-origin: 50% 0; }
+.lg.anim-flip { animation: lg-flip calc(var(--speed) * 1.5) ease-in-out infinite; }
+.lg.anim-breathe { animation: lg-breathe var(--speed) ease-in-out infinite; }
+@keyframes lg-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+@keyframes lg-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6%); } }
+@keyframes lg-spin { to { transform: rotate(360deg); } }
+@keyframes lg-swing { 0%, 100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+@keyframes lg-flip { 0%, 40% { transform: perspective(800px) rotateY(0); } 60%, 100% { transform: perspective(800px) rotateY(360deg); } }
+@keyframes lg-breathe { 0%, 100% { opacity: var(--op); } 50% { opacity: calc(var(--op) * 0.45); } }
+
+/* ---------- animated headline ---------- */
+.tf-root { container-type: size; display: flex; align-items: center; padding: 0 3cqw; }
+.tf-root.align-left { justify-content: flex-start; }
+.tf-root.align-center { justify-content: center; text-align: center; }
+.tf-root.align-right { justify-content: flex-end; text-align: right; }
+.tf {
+  position: relative;
+  font-family: var(--font);
+  font-size: min(var(--fs), 80cqh);
+  font-weight: 800;
+  line-height: 1.05;
+  color: var(--c1);
+  white-space: nowrap;
+  -webkit-text-stroke: var(--stroke) var(--c2);
+  paint-order: stroke fill;
+}
+.tf.is-upper { text-transform: uppercase; }
+.tf.has-shadow { text-shadow: 0 0.04em 0.12em rgba(0, 0, 0, 0.6); }
+.tf span { display: inline-block; }
+/* wave / bounce / rainbow / type / drop work per letter */
+.tf.fx-wave span { animation: tf-wave var(--speed) ease-in-out calc(var(--i) * -0.08s) infinite; }
+@keyframes tf-wave { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-0.18em); } }
+.tf.fx-bounce span { animation: tf-bounce calc(var(--speed) * 1.2) cubic-bezier(0.3, 1.6, 0.5, 1) calc(var(--i) * 0.07s) infinite; }
+@keyframes tf-bounce { 0%, 60%, 100% { transform: translateY(0) scale(1); } 20% { transform: translateY(-0.3em) scale(1.08, 0.94); } 35% { transform: translateY(0) scale(0.96, 1.05); } }
+.tf.fx-rainbow span { animation: tf-rainbow calc(var(--speed) * 2) linear calc(var(--i) * -0.12s) infinite; }
+@keyframes tf-rainbow { 0% { color: var(--c1); } 33% { color: var(--c2); } 66% { color: var(--c3); } 100% { color: var(--c1); } }
+.tf.fx-type span { animation: tf-type calc(var(--speed) * 3) steps(1) infinite; animation-delay: calc(var(--i) * var(--speed) * 3 / (var(--n) * 2.2)); opacity: 0; }
+@keyframes tf-type { 0% { opacity: 0; } 1%, 90% { opacity: 1; } 100% { opacity: 0; } }
+.tf.fx-drop span { animation: tf-drop calc(var(--speed) * 2) cubic-bezier(0.3, 1.5, 0.5, 1) calc(var(--i) * 0.06s) infinite both; }
+@keyframes tf-drop { 0% { transform: translateY(-1.2em); opacity: 0; } 25%, 85% { transform: none; opacity: 1; } 100% { transform: translateY(0.4em); opacity: 0; } }
+/* whole-text effects */
+.tf.fx-neon { color: #fff; text-shadow: 0 0 0.05em #fff, 0 0 0.2em var(--c2), 0 0 0.5em var(--c2), 0 0 1em var(--c3); animation: tf-flicker 4s steps(1) infinite; }
+@keyframes tf-flicker { 0%, 100% { opacity: 1; } 31% { opacity: 0.75; } 32% { opacity: 1; } 67% { opacity: 0.85; } 68% { opacity: 1; } }
+.tf.fx-gradient { background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c1)); background-size: 300% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: tf-grad calc(var(--speed) * 3) linear infinite; text-shadow: none; }
+@keyframes tf-grad { to { background-position: 300% 0; } }
+.tf.fx-shine { background: linear-gradient(110deg, var(--c1) 40%, #fff 50%, var(--c1) 60%); background-size: 250% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: tf-shine calc(var(--speed) * 1.6) ease-in-out infinite; text-shadow: none; }
+@keyframes tf-shine { from { background-position: 150% 0; } to { background-position: -50% 0; } }
+.tf.fx-glitch { animation: sc-shake 3.5s steps(1) infinite; }
+.tf.fx-glitch::before, .tf.fx-glitch::after { content: attr(data-text); position: absolute; inset: 0; pointer-events: none; -webkit-text-stroke: 0; }
+.tf.fx-glitch::before { color: var(--c2); mix-blend-mode: screen; animation: sc-glitch-a 2.6s steps(1) infinite; }
+.tf.fx-glitch::after { color: var(--c3); mix-blend-mode: screen; animation: sc-glitch-b 2.1s steps(1) infinite; }
+.tf.fx-pulse { animation: tf-pulse var(--speed) ease-in-out infinite; }
+@keyframes tf-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .tf, .tf span, .lg { animation: none !important; opacity: 1 !important; } }

@@ -1332,3 +1332,6 @@ a { color: inherit; text-decoration: none; }
   /* The page scrolls, not the column: without this the sticky tools would stick inside a box that never scrolls. */
   .st-settings { overflow: visible; }
 }
+
+.st-dice { font-size: 15px !important; }
+.st-dice:hover { transform: rotate(-12deg) scale(1.1); }

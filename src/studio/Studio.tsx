@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { OVERLAYS, findOverlay } from '../overlays/registry';
-import { defaultParams, normalizeParams, paramsToQuery, queryToParams, type OverlayDef, type Params } from '../overlays/schema';
+import { defaultParams, normalizeParams, paramsToQuery, queryToParams, visibleOptions, type OverlayDef, type Params } from '../overlays/schema';
 import { Overlay } from '../overlays/Overlay';
 import { SettingsPanel } from './SettingsPanel';
 import { OutputPanel } from './OutputPanel';
@@ -127,6 +127,40 @@ const useHistory = (params: Params, setParams: (p: Params) => void) => {
     bump((n) => n + 1);
   }, [setParams]);
   return { commit, undo, redo, canUndo: ref.current.past.length > 0, canRedo: ref.current.future.length > 0 };
+};
+
+/** Look-only settings the dice may change; texts, sizes, timers and toggles stay as the streamer set them. */
+const DICE_KEYS = new Set(['style', 'theme', 'anim', 'font', 'titleAnim', 'effect', 'bg', 'border', 'look', 'iconShape', 'labelStyle',
+  'panelAnim', 'introStyle', 'timerStyle', 'transition', 'modules', 'frame', 'metal', 'tape', 'variant', 'flakes', 'shape', 'eyes', 'face']);
+const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)];
+/** Colours that go together: one random hue, its neighbours and a complement. */
+const harmony = () => {
+  const h = Math.floor(Math.random() * 360);
+  const hsl = (hh: number, s: number, l: number) => {
+    const a = (s / 100) * Math.min(l / 100, 1 - l / 100);
+    const f = (n: number) => { const k = (n + hh / 30) % 12; return Math.round(255 * (l / 100 - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)))); };
+    return `#${[f(0), f(8), f(4)].map((x) => x.toString(16).padStart(2, '0')).join('')}`;
+  };
+  return [hsl(h, 95, 55), hsl((h + 35) % 360, 90, 58), hsl((h + 180) % 360, 85, 62), hsl((h + 330) % 360, 90, 60)];
+};
+export const randomLook = (def: OverlayDef, params: Params): Params => {
+  const pal = harmony();
+  const next: Params = { ...params };
+  let ci = 0;
+  for (const f of def.fields) {
+    if (f.group === 'Oznaczenie AI') continue;
+    if (f.type === 'colors') next[f.key] = pal.slice(0, Math.max(2, Math.min(f.max ?? 3, (params[f.key] as string[]).length)));
+    else if (f.type === 'color') {
+      // Backgrounds and text stay readable: dark stays dark, white stays white.
+      const cur = String(params[f.key]).toLowerCase();
+      const dark = /^#[0-2][0-9a-f][0-2]/.test(cur);
+      if (!dark && cur !== '#ffffff') next[f.key] = pal[ci++ % pal.length];
+    } else if (f.type === 'select' && DICE_KEYS.has(f.key)) {
+      const opts = visibleOptions(f, next).map((o) => o.value).filter((v) => v !== 'custom' && v !== 'none');
+      if (opts.length) next[f.key] = pick(opts);
+    }
+  }
+  return normalizeParams(def.fields, next);
 };
 
 const isTyping = (el: EventTarget | null) => el instanceof HTMLElement && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
@@ -318,7 +352,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
 
         <aside className="st-settings" aria-label={t('Ustawienia')}>
           <SettingsPanel def={def} params={params} defaults={defaults} onChange={set}
-            onReset={() => history.commit(defaults)} history={history} searchRef={settingsSearch} />
+            onReset={() => history.commit(defaults)} onRandom={() => history.commit(randomLook(def, params))} history={history} searchRef={settingsSearch} />
         </aside>
       </div>
 

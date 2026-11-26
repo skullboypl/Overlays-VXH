@@ -241,3 +241,17 @@
 }
 @keyframes tl-soon { 50% { opacity: 0.55; } }
 .tl-goal.is-soon .tl-goal-bar { background: repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.08) 0 0.25em, rgba(255, 255, 255, 0.14) 0.25em 0.5em); }
+
+/* ---------- analog clock face ---------- */
+.tl-clock.face-analog .tl-card { --base: min(16cqh, 16cqw); gap: 0.25em; }
+.tl-analog { width: min(var(--s) * 78cqmin, 100%); aspect-ratio: 1; display: block; }
+.tl-an-face { fill: color-mix(in srgb, var(--bg) 40%, transparent); stroke: var(--accent); stroke-width: 2.2; }
+.tl-card.style-none .tl-an-face { fill: rgba(0, 0, 0, 0.35); }
+.tl-an-hour { stroke: var(--fg); stroke-width: 2; stroke-linecap: round; transform-origin: 50px 50px; }
+.tl-an-min { stroke: var(--fg); stroke-width: 0.8; opacity: 0.5; transform-origin: 50px 50px; }
+.tl-an-h, .tl-an-m, .tl-an-s { transform-origin: 50px 50px; stroke-linecap: round; transition: transform 0.35s cubic-bezier(0.3, 1.6, 0.5, 1); }
+.tl-an-h { stroke: var(--fg); stroke-width: 4; }
+.tl-an-m { stroke: var(--fg); stroke-width: 2.6; }
+.tl-an-s { stroke: var(--accent2); stroke-width: 1.2; }
+.tl-an-pin { fill: var(--accent); }
+.tl-clock.face-analog .tl-sub { font-size: 0.5em; }

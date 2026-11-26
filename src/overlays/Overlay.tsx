@@ -13,6 +13,7 @@ import { ClockWidget, GoalWidget, QrWidget, ReminderWidget, TimerWidget } from '
 import { LowerThirdWidget, QrRotatorWidget, ScheduleWidget, SingleSocialWidget } from './bars';
 import { ComicFrame, DoodleFrame, GlitchFrame, HudFrame, OrnateFrame, PixelFrame, PolaroidFrame, RetroFrame } from './frames2';
 import { ProScene } from './ProScene';
+import { LogoWidget, TextFxWidget } from './extras';
 import { EFFECT_KINDS, ParticleLayer, type EffectKind } from './ParticleLayer';
 
 /** Overlay plus the optional "made with AI" label (EU AI Act), drawn only when the streamer turns it on. */
@@ -62,6 +63,8 @@ const OverlayBody = ({ id, params }: { id: string; params: Params }) => {
     case 'comicframe': return <ComicFrame params={params} />;
     case 'doodleframe': return <DoodleFrame params={params} />;
     case 'ornateframe': return <OrnateFrame params={params} />;
+    case 'logo': return <LogoWidget params={params} />;
+    case 'textfx': return <TextFxWidget params={params} />;
     case 'startpro': return <ProScene kind="starting" params={params} />;
     case 'brbpro': return <ProScene kind="brb" params={params} />;
     case 'endpro': return <ProScene kind="ending" params={params} />;

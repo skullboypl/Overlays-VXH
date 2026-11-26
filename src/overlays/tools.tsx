@@ -53,6 +53,32 @@ const hms = (ms: number, alwaysHours = false) => {
 };
 
 /* ---------------- clock ---------------- */
+/** Hours, minutes, seconds in the chosen time zone (for the analog face). */
+const timeParts = (now: number, tz?: string) => {
+  const parts = new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false, timeZone: tz }).formatToParts(now);
+  const get = (t: string) => Number(parts.find((x) => x.type === t)?.value ?? 0);
+  return { h: get('hour') % 24, m: get('minute'), s: get('second') };
+};
+
+const AnalogFace = ({ now, tz, seconds, ticks }: { now: number; tz?: string; seconds: boolean; ticks: string }) => {
+  const { h, m, s } = timeParts(now, tz);
+  const hand = (deg: number, len: number, cls: string) => (
+    <line x1="50" y1="50" x2="50" y2={50 - len} className={cls} style={{ transform: `rotate(${deg}deg)` }} />
+  );
+  return (
+    <svg className="tl-analog" viewBox="0 0 100 100" aria-hidden>
+      <circle cx="50" cy="50" r="46" className="tl-an-face" />
+      {ticks !== 'none' && Array.from({ length: 60 }, (_, i) => (i % 5 === 0 || ticks === 'all') && (
+        <line key={i} x1="50" y1={i % 5 === 0 ? 8 : 9.5} x2="50" y2={i % 5 === 0 ? 14 : 11.5} className={i % 5 === 0 ? 'tl-an-hour' : 'tl-an-min'} style={{ transform: `rotate(${i * 6}deg)` }} />
+      ))}
+      {hand((h % 12) * 30 + m * 0.5, 22, 'tl-an-h')}
+      {hand(m * 6 + s * 0.1, 32, 'tl-an-m')}
+      {seconds && hand(s * 6, 36, 'tl-an-s')}
+      <circle cx="50" cy="50" r="2.6" className="tl-an-pin" />
+    </svg>
+  );
+};
+
 export const ClockWidget = ({ params: p }: { params: Params }) => {
   const now = useNow(1000);
   const lang = langOf(p);
@@ -65,6 +91,15 @@ export const ClockWidget = ({ params: p }: { params: Params }) => {
     weekday: p.dateFormat === 'short' ? 'short' : 'long', day: 'numeric', month: p.dateFormat === 'numeric' ? '2-digit' : 'long',
     year: p.dateFormat === 'numeric' ? 'numeric' : undefined, timeZone: tz,
   }).format(now);
+  if (p.face === 'analog') {
+    return (
+      <Shell p={p} kind="clock" className="face-analog">
+        {p.showLabel && p.label && <div className="tl-label">{String(p.label)}</div>}
+        <AnalogFace now={now} tz={tz} seconds={p.seconds === true} ticks={String(p.ticks ?? 'hours')} />
+        {p.showDate !== false && <div className="tl-sub">{date}</div>}
+      </Shell>
+    );
+  }
   return (
     <Shell p={p} kind="clock" className={`layout-${p.layout ?? 'stack'}`}>
       {p.showLabel && p.label && <div className="tl-label">{String(p.label)}</div>}
@@ -95,6 +130,17 @@ const lastAt = (hhmm: string, from: number) => {
   const next = nextAt(hhmm, from);
   return next === null ? null : next - 86_400_000;
 };
+/** "2026-12-24 18:00" (also with "T", "." or "/" separators) in local time; null when it does not parse. */
+const parseDate = (raw: string) => {
+  const m = /^(\d{4})[-./](\d{1,2})[-./](\d{1,2})(?:[ T](\d{1,2})[:.](\d{2}))?$/.exec(raw.trim());
+  if (!m) return null;
+  return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]), Number(m[4] ?? 0), Number(m[5] ?? 0)).getTime();
+};
+/** "3 d 04:12:09" once more than a day is left. */
+const dhms = (ms: number, dayLabel: string) => {
+  const days = Math.floor(Math.max(0, ms) / 86_400_000);
+  return days > 0 ? `${days} ${dayLabel} ${hms(ms - days * 86_400_000, true)}` : hms(ms, true);
+};
 
 export const TimerWidget = ({ params: p }: { params: Params }) => {
   const now = useNow(250);
@@ -115,6 +161,10 @@ export const TimerWidget = ({ params: p }: { params: Params }) => {
     const cycle = p.loop && total > 0 ? passed % total : passed;
     left = total - cycle;
     frac = total ? Math.min(1, cycle / total) : 1;
+  } else if (mode === 'date') {
+    const end = parseDate(String(p.date ?? '')) ?? start;
+    left = end - now;
+    frac = Math.min(1, (now - start) / Math.max(1, end - start));
   } else if (mode === 'until') {
     const end = nextAt(String(p.at ?? '20:00'), start) ?? start;
     left = end - now;
@@ -126,7 +176,8 @@ export const TimerWidget = ({ params: p }: { params: Params }) => {
   }
   const done = counting && left <= 0;
   if (done && p.onDone === 'hide') return null;
-  const value = counting ? hms(left, p.alwaysHours === true) : hms(up, p.alwaysHours === true);
+  const value = mode === 'date' && counting ? dhms(left, translate(langOf(p), 'd'))
+    : counting ? hms(left, p.alwaysHours === true) : hms(up, p.alwaysHours === true);
   const urgent = counting && !done && p.urgent !== false && left <= 10_000;
 
   return (

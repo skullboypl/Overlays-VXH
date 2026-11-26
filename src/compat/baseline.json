@@ -7565,6 +7565,230 @@
     }
    }
   },
+  "textfx": {
+   "category": "widget",
+   "size": {
+    "w": 1280,
+    "h": 200
+   },
+   "fields": {
+    "text": {
+     "type": "text",
+     "default": "Dzięki za follow!",
+     "maxLength": 60
+    },
+    "effect": {
+     "type": "select",
+     "default": "wave",
+     "options": [
+      "wave",
+      "bounce",
+      "neon",
+      "glitch",
+      "gradient",
+      "shine",
+      "rainbow",
+      "type",
+      "drop",
+      "pulse",
+      "none"
+     ]
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "fontSize": {
+     "type": "range",
+     "default": 96,
+     "min": 24,
+     "max": 220
+    },
+    "font": {
+     "type": "select",
+     "default": "poppins",
+     "options": [
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico",
+      "dm"
+     ]
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "uppercase": {
+     "type": "toggle",
+     "default": false
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "stroke": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 12
+    },
+    "color": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "color2": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "color3": {
+     "type": "color",
+     "default": "#7a5cff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "logo": {
+   "category": "widget",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
+   "fields": {
+    "image": {
+     "type": "text",
+     "default": "",
+     "maxLength": 300
+    },
+    "text": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 30
+    },
+    "position": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "tl",
+      "tr",
+      "bl",
+      "br",
+      "c"
+     ]
+    },
+    "size": {
+     "type": "range",
+     "default": 12,
+     "min": 3,
+     "max": 80
+    },
+    "margin": {
+     "type": "range",
+     "default": 3,
+     "min": 0,
+     "max": 15
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.85,
+     "min": 0.1,
+     "max": 1
+    },
+    "radius": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 50
+    },
+    "anim": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "pulse",
+      "float",
+      "breathe",
+      "swing",
+      "flip",
+      "spin"
+     ]
+    },
+    "speed": {
+     "type": "range",
+     "default": 1,
+     "min": 0.2,
+     "max": 3
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "glow": {
+     "type": "toggle",
+     "default": false
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "font": {
+     "type": "select",
+     "default": "poppins",
+     "options": [
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
   "timer": {
    "category": "widget",
    "size": {
@@ -7579,7 +7803,8 @@
       "countdown",
       "until",
       "stopwatch",
-      "uptime"
+      "uptime",
+      "date"
      ]
     },
     "minutes": {
@@ -7607,6 +7832,11 @@
      "type": "text",
      "default": "20:00",
      "maxLength": 5
+    },
+    "date": {
+     "type": "text",
+     "default": "2026-12-24 18:00",
+     "maxLength": 16
     },
     "alwaysHours": {
      "type": "toggle",
@@ -7735,6 +7965,23 @@
     "h": 150
    },
    "fields": {
+    "face": {
+     "type": "select",
+     "default": "digital",
+     "options": [
+      "digital",
+      "analog"
+     ]
+    },
+    "ticks": {
+     "type": "select",
+     "default": "hours",
+     "options": [
+      "hours",
+      "all",
+      "none"
+     ]
+    },
     "seconds": {
      "type": "toggle",
      "default": false

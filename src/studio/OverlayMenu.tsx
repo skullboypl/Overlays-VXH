@@ -10,7 +10,7 @@ export const MENU_GROUPS: { id: string; title: string; note: string; items?: str
   { id: 'screens', title: tx('Ekrany na stream'), note: tx('Start, przerwa, koniec'), items: ['startpro', 'brbpro', 'endpro', 'starting', 'brb', 'ending', 'videobg'] },
   { id: 'scenes', title: tx('Sceny z kamerką'), note: tx('Gotowy układ sceny'), items: ['camscene', 'fullcam'] },
   { id: 'frames', title: tx('Ramki na kamerkę'), note: tx('Na źródło kamerki'), items: ['proframe', 'faceitcam', 'holiday', 'neon', 'nametag', 'corners', 'glitchframe', 'retroframe', 'polaroid', 'pixelframe', 'hudframe', 'comicframe', 'doodleframe', 'ornateframe'] },
-  { id: 'bars', title: tx('Paski i sociale'), note: tx('Info dla widzów'), items: ['socials', 'social', 'ticker', 'lowerthird', 'schedule'] },
+  { id: 'bars', title: tx('Paski i sociale'), note: tx('Info dla widzów'), items: ['socials', 'social', 'ticker', 'lowerthird', 'schedule', 'textfx', 'logo'] },
   { id: 'tools', title: tx('Narzędzia streamera'), note: tx('Licznik, zegar, cel, QR'), items: ['timer', 'clock', 'goal', 'reminder', 'qr', 'qrrotator'] },
   {
     id: 'effects', title: tx('Efekty'), note: tx('Na całą scenę'), compact: true, sub: [
@@ -25,7 +25,7 @@ export const MENU_GROUPS: { id: string; title: string; note: string; items?: str
 
 /** Shown with a "new" badge in the menu. */
 const NEW_IDS = new Set(['startpro', 'brbpro', 'endpro', 'hudframe', 'comicframe', 'doodleframe', 'ornateframe', 'glitchframe', 'retroframe',
-  'polaroid', 'pixelframe', 'social', 'lowerthird', 'schedule', 'qrrotator', 'fog', 'dust', 'lightning', 'glitch']);
+  'polaroid', 'pixelframe', 'logo', 'textfx', 'social', 'lowerthird', 'schedule', 'qrrotator', 'fog', 'dust', 'lightning', 'glitch']);
 
 const BY_ID = new Map(OVERLAYS.map((o) => [o.id, o]));
 const pick = (ids: string[]) => ids.map((id) => BY_ID.get(id)).filter((o): o is OverlayDef => Boolean(o));

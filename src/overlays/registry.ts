@@ -1429,6 +1429,58 @@ const ALL_OVERLAYS: OverlayDef[] = [
       ...barLook({ fontSize: 26, radius: 999 }),
     ],
   },
+  {
+    id: 'textfx', name: 'Animowany napis', icon: '✒️', category: 'widget', size: { w: 1280, h: 200 },
+    description: 'Dowolny napis z efektem: fala, neon, glitch, gradient, połysk, pisanie, podskoki i inne.',
+    fields: [
+      { group: 'Napis', key: 'text', i18n: true, label: 'Tekst', type: 'text', default: 'Dzięki za follow!', maxLength: 60 },
+      { group: 'Napis', key: 'effect', label: 'Efekt', type: 'select', default: 'wave', options: [
+        { value: 'wave', label: 'Fala' }, { value: 'bounce', label: 'Podskoki' }, { value: 'neon', label: 'Neon' }, { value: 'glitch', label: 'Glitch' },
+        { value: 'gradient', label: 'Płynący gradient' }, { value: 'shine', label: 'Połysk' }, { value: 'rainbow', label: 'Tęczowe litery' },
+        { value: 'type', label: 'Pisanie w pętli' }, { value: 'drop', label: 'Spadające litery' }, { value: 'pulse', label: 'Puls' }, { value: 'none', label: 'Bez animacji' },
+      ] },
+      { group: 'Napis', key: 'speed', label: 'Tempo', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×' },
+      { group: 'Wygląd', key: 'fontSize', label: 'Wielkość', type: 'range', min: 24, max: 220, step: 2, default: 96, unit: 'px', hint: 'Napis zmniejsza się sam, gdy źródło w OBS jest niższe' },
+      { group: 'Wygląd', key: 'font', label: 'Czcionka', type: 'select', default: 'poppins', options: [
+        { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' }, { value: 'dm', label: 'DM Sans' },
+      ] },
+      { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'center', options: [
+        { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },
+      ] },
+      { group: 'Wygląd', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
+      { group: 'Wygląd', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+      { group: 'Wygląd', key: 'stroke', label: 'Obrys', type: 'range', min: 0, max: 12, step: 1, default: 0, unit: 'px' },
+      { group: 'Kolory', key: 'color', label: 'Kolor tekstu', type: 'color', default: '#ffffff' },
+      { group: 'Kolory', key: 'color2', label: 'Drugi kolor (obrys, poświata)', type: 'color', default: '#ff5900' },
+      { group: 'Kolory', key: 'color3', label: 'Trzeci kolor', type: 'color', default: '#7a5cff' },
+    ],
+  },
+  {
+    id: 'logo', name: 'Logo / znak wodny', icon: '🖼️', category: 'widget', size: FULL_HD,
+    description: 'Twoje logo albo napis w rogu sceny: przezroczystość, poświata i delikatna animacja.',
+    fields: [
+      { group: 'Logo', key: 'image', label: 'Adres obrazka', type: 'text', default: '', maxLength: 300, placeholder: 'https://...png', hint: 'PNG z przezroczystym tłem wygląda najlepiej. Bez obrazka pokazuje się napis' },
+      { group: 'Logo', key: 'text', label: 'Napis zamiast obrazka', type: 'text', default: 'skullboypl', maxLength: 30 },
+      { group: 'Logo', key: 'position', label: 'Miejsce', type: 'select', default: 'br', options: [
+        { value: 'tl', label: 'Góra, lewo' }, { value: 'tr', label: 'Góra, prawo' }, { value: 'bl', label: 'Dół, lewo' }, { value: 'br', label: 'Dół, prawo' }, { value: 'c', label: 'Środek' },
+      ] },
+      { group: 'Logo', key: 'size', label: 'Wielkość', type: 'range', min: 3, max: 80, step: 1, default: 12, unit: '%', hint: 'Procent szerokości źródła' },
+      { group: 'Logo', key: 'margin', label: 'Odsunięcie od krawędzi', type: 'range', min: 0, max: 15, step: 0.5, default: 3, unit: '%' },
+      { group: 'Logo', key: 'opacity', label: 'Krycie', type: 'range', min: 0.1, max: 1, step: 0.05, default: 0.85 },
+      { group: 'Logo', key: 'radius', label: 'Zaokrąglenie obrazka', type: 'range', min: 0, max: 50, step: 1, default: 0, unit: '%' },
+      { group: 'Animacja', key: 'anim', label: 'Animacja', type: 'select', default: 'none', options: [
+        { value: 'none', label: 'Brak' }, { value: 'pulse', label: 'Puls' }, { value: 'float', label: 'Unoszenie' }, { value: 'breathe', label: 'Oddech (przezroczystość)' },
+        { value: 'swing', label: 'Kołysanie' }, { value: 'flip', label: 'Obrót co kilka sekund' }, { value: 'spin', label: 'Ciągły obrót' },
+      ] },
+      { group: 'Animacja', key: 'speed', label: 'Tempo', type: 'range', min: 0.2, max: 3, step: 0.1, default: 1, unit: '×', when: { key: 'anim', is: ['pulse', 'float', 'breathe', 'swing', 'flip', 'spin'] } },
+      { group: 'Wygląd', key: 'shadow', label: 'Cień', type: 'toggle', default: true },
+      { group: 'Wygląd', key: 'glow', label: 'Poświata', type: 'toggle', default: false },
+      { group: 'Wygląd', key: 'accent', label: 'Kolor poświaty', type: 'color', default: '#ff5900', when: { key: 'glow', is: [true] } },
+      { group: 'Wygląd', key: 'font', label: 'Czcionka napisu', type: 'select', default: 'poppins', options: [
+        { value: 'poppins', label: 'Poppins' }, { value: 'bebas', label: 'Bebas' }, { value: 'russo', label: 'Russo' }, { value: 'orbitron', label: 'Orbitron' }, { value: 'pacifico', label: 'Pacifico' },
+      ] },
+    ],
+  },
   // ---------- streamer tools ----------
   {
     id: 'timer', name: 'Odliczanie i stoper', icon: '⏱️', category: 'widget', size: { w: 520, h: 180 },
@@ -1437,12 +1489,14 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Licznik', key: 'mode', label: 'Tryb', type: 'select', default: 'countdown', options: [
         { value: 'countdown', label: 'Odliczanie (minuty)' }, { value: 'until', label: 'Do godziny' },
         { value: 'stopwatch', label: 'Stoper' }, { value: 'uptime', label: 'Czas streama od godziny' },
+        { value: 'date', label: 'Do daty (dni, godziny)' },
       ], hint: 'Odliczanie i stoper startują, gdy OBS wczyta źródło. W OBS zaznacz „Odśwież przeglądarkę, gdy scena staje się aktywna”, żeby liczyć od nowa przy każdym wejściu na scenę.' },
       { group: 'Licznik', key: 'minutes', label: 'Minuty', type: 'range', min: 0, max: 180, step: 1, default: 5, unit: ' min', when: { key: 'mode', is: ['countdown'] } },
       { group: 'Licznik', key: 'secs', label: 'Sekundy', type: 'range', min: 0, max: 59, step: 1, default: 0, unit: ' s', when: { key: 'mode', is: ['countdown'] } },
       { group: 'Licznik', key: 'loop', label: 'Zapętl', type: 'toggle', default: false, when: { key: 'mode', is: ['countdown'] } },
       { group: 'Licznik', key: 'at', label: 'Godzina końca', type: 'text', default: '20:00', maxLength: 5, placeholder: '20:00', when: { key: 'mode', is: ['until'] }, hint: 'Jeśli ta godzina już minęła, liczy do jutra' },
       { group: 'Licznik', key: 'since', label: 'Stream wystartował o', type: 'text', default: '20:00', maxLength: 5, placeholder: '20:00', when: { key: 'mode', is: ['uptime'] } },
+      { group: 'Licznik', key: 'date', label: 'Data i godzina', type: 'text', default: '2026-12-24 18:00', maxLength: 16, placeholder: 'RRRR-MM-DD GG:MM', when: { key: 'mode', is: ['date'] }, hint: 'Np. premiera gry, urodziny kanału, subathon. Powyżej doby pokazuje dni' },
       { group: 'Licznik', key: 'alwaysHours', label: 'Zawsze pokazuj godziny', type: 'toggle', default: false },
       { group: 'Teksty', key: 'showLabel', label: 'Pokaż napis nad licznikiem', type: 'toggle', default: true },
       { group: 'Teksty', key: 'label', i18n: true, label: 'Napis', type: 'text', default: 'Startujemy za', maxLength: 40, when: { key: 'showLabel', is: [true] } },
@@ -1459,9 +1513,15 @@ const ALL_OVERLAYS: OverlayDef[] = [
     id: 'clock', name: 'Zegar', icon: '🕒', category: 'widget', size: { w: 420, h: 150 },
     description: 'Aktualna godzina i data, także w innej strefie czasowej.',
     fields: [
+      { group: 'Zegar', key: 'face', label: 'Tarcza', type: 'select', default: 'digital', options: [
+        { value: 'digital', label: 'Cyfrowa' }, { value: 'analog', label: 'Analogowa ze wskazówkami' },
+      ] },
+      { group: 'Zegar', key: 'ticks', label: 'Kreski na tarczy', type: 'select', default: 'hours', when: { key: 'face', is: ['analog'] }, options: [
+        { value: 'hours', label: 'Co godzinę' }, { value: 'all', label: 'Co minutę' }, { value: 'none', label: 'Bez kresek' },
+      ] },
       { group: 'Zegar', key: 'seconds', label: 'Pokaż sekundy', type: 'toggle', default: false },
       { group: 'Zegar', key: 'clock12', label: 'Zegar 12-godzinny (AM/PM)', type: 'toggle', default: false },
-      { group: 'Zegar', key: 'blink', label: 'Migający dwukropek', type: 'toggle', default: true },
+      { group: 'Zegar', key: 'blink', label: 'Migający dwukropek', type: 'toggle', default: true, when: { key: 'face', is: ['digital'] } },
       { group: 'Zegar', key: 'tz', label: 'Strefa czasowa', type: 'select', default: 'local', options: [
         { value: 'local', label: 'Jak na komputerze' }, { value: 'Europe/Warsaw', label: 'Polska' }, { value: 'Europe/London', label: 'Londyn' },
         { value: 'Europe/Berlin', label: 'Berlin' }, { value: 'America/New_York', label: 'Nowy Jork' }, { value: 'America/Los_Angeles', label: 'Los Angeles' },
@@ -1471,7 +1531,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Zegar', key: 'dateFormat', label: 'Format daty', type: 'select', default: 'long', when: { key: 'showDate', is: [true] }, options: [
         { value: 'long', label: 'Pełna nazwa dnia' }, { value: 'short', label: 'Skrót dnia' }, { value: 'numeric', label: 'Liczbowo z rokiem' },
       ] },
-      { group: 'Zegar', key: 'layout', label: 'Układ', type: 'select', default: 'stack', when: { key: 'showDate', is: [true] }, options: [
+      { group: 'Zegar', key: 'layout', label: 'Układ', type: 'select', default: 'stack', when: [{ key: 'showDate', is: [true] }, { key: 'face', is: ['digital'] }], options: [
         { value: 'stack', label: 'Data pod godziną' }, { value: 'inline', label: 'Data obok' },
       ] },
       { group: 'Zegar', key: 'showLabel', label: 'Pokaż napis', type: 'toggle', default: false },
