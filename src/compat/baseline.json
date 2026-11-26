@@ -13029,6 +13029,10 @@
      "min": 2,
      "max": 20
     },
+    "showMessage": {
+     "type": "toggle",
+     "default": true
+    },
     "font": {
      "type": "select",
      "default": "poppins",
