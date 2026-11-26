@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { OVERLAYS } from '../overlays/registry';
 import type { OverlayDef } from '../overlays/schema';
@@ -23,13 +23,28 @@ export const MENU_GROUPS: { id: string; title: string; note: string; items?: str
   { id: 'characters', title: tx('Postacie'), note: tx('Animowane w pętli'), items: ['character'] },
 ];
 
+/** Shown with a "new" badge in the menu. */
+const NEW_IDS = new Set(['startpro', 'brbpro', 'endpro', 'hudframe', 'comicframe', 'doodleframe', 'ornateframe', 'glitchframe', 'retroframe',
+  'polaroid', 'pixelframe', 'social', 'lowerthird', 'schedule', 'qrrotator', 'fog', 'dust', 'lightning', 'glitch']);
+
 const BY_ID = new Map(OVERLAYS.map((o) => [o.id, o]));
 const pick = (ids: string[]) => ids.map((id) => BY_ID.get(id)).filter((o): o is OverlayDef => Boolean(o));
 const LISTED = new Set(MENU_GROUPS.flatMap((g) => [...(g.items ?? []), ...(g.sub ?? []).flatMap((s) => s.items)]));
 
 const STORE = 'vxh-overlays:menu-closed';
-const loadClosed = (): string[] => {
-  try { return JSON.parse(localStorage.getItem(STORE) ?? '[]'); } catch { return []; }
+const FAVS = 'vxh-overlays:favs';
+const RECENT = 'vxh-overlays:recent';
+const DENSE = 'vxh-overlays:menu-dense';
+const loadList = (key: string): string[] => {
+  try { const v = JSON.parse(localStorage.getItem(key) ?? '[]'); return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : []; } catch { return []; }
+};
+const saveList = (key: string, v: unknown) => { try { localStorage.setItem(key, JSON.stringify(v)); } catch { /* ignore */ } };
+const loadClosed = () => loadList(STORE);
+
+/** Called by the editor when an overlay opens; the menu lists the last few. */
+export const rememberRecent = (id: string) => {
+  saveList(RECENT, [id, ...loadList(RECENT).filter((x) => x !== id)].slice(0, 8));
+  window.dispatchEvent(new Event('vxh-recent'));
 };
 
 /** Diacritics-free, lower-case text for the search box. */
@@ -40,6 +55,20 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
   const stats = useLiveStats();
   const [query, setQuery] = useState('');
   const [closed, setClosed] = useState<string[]>(loadClosed);
+  const [favs, setFavs] = useState<string[]>(() => loadList(FAVS));
+  const [recent, setRecent] = useState<string[]>(() => loadList(RECENT));
+  const [dense, setDense] = useState(() => { try { return localStorage.getItem(DENSE) === '1'; } catch { return false; } });
+  useEffect(() => {
+    const on = () => setRecent(loadList(RECENT));
+    window.addEventListener('vxh-recent', on);
+    return () => window.removeEventListener('vxh-recent', on);
+  }, []);
+  const toggleFav = (id: string) => setFavs((f) => {
+    const next = f.includes(id) ? f.filter((x) => x !== id) : [...f, id];
+    saveList(FAVS, next);
+    return next;
+  });
+  const toggleDense = () => setDense((d) => { try { localStorage.setItem(DENSE, d ? '0' : '1'); } catch { /* ignore */ } return !d; });
   const q = fold(query.trim());
 
   const toggle = (id: string) => setClosed((c) => {
@@ -54,15 +83,19 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
   }, [q, t]);
 
   const live = (id: string) => stats?.byType[id] ?? 0;
-  const item = (o: OverlayDef, compact = false) => (
-    <Link key={o.id} to={`/${o.id}`} onClick={onPick} title={compact ? t(o.description) : undefined}
-      className={`st-item ${compact ? 'is-compact' : ''} ${o.id === active ? 'is-active' : ''}`}>
+  const item = (o: OverlayDef, compact = false, keyPrefix = '') => (
+    <Link key={keyPrefix + o.id} to={`/${o.id}`} onClick={onPick} title={compact || dense ? t(o.description) : undefined}
+      className={`st-item ${compact ? 'is-compact' : ''} ${dense ? 'is-dense' : ''} ${o.id === active ? 'is-active' : ''}`}>
       <span className="st-item-icon" aria-hidden>{o.icon}</span>
       <span className="st-item-text">
-        <b>{t(o.name)}</b>
-        {!compact && <small>{t(o.description)}</small>}
+        <b>{t(o.name)}{NEW_IDS.has(o.id) && <span className="st-new">{t('Nowe')}</span>}</b>
+        {!compact && !dense && <small>{t(o.description)}</small>}
       </span>
       {live(o.id) > 0 && <span className="st-live-badge" title={t('Teraz w OBS')}><i />{live(o.id)}</span>}
+      <button type="button" className={`st-fav ${favs.includes(o.id) ? 'is-on' : ''}`}
+        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFav(o.id); }}
+        aria-pressed={favs.includes(o.id)} aria-label={favs.includes(o.id) ? t('Usuń z ulubionych') : t('Dodaj do ulubionych')}
+        title={favs.includes(o.id) ? t('Usuń z ulubionych') : t('Dodaj do ulubionych')}>★</button>
     </Link>
   );
 
@@ -75,6 +108,8 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
         <span aria-hidden>⌕</span>
         <input type="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder={t('Szukaj: śnieg, ramka, BRB...')} aria-label={t('Szukaj overlayu')} />
         {query && <button type="button" onClick={() => setQuery('')} aria-label={t('Wyczyść')}>✕</button>}
+        <button type="button" className={`st-dense ${dense ? 'is-active' : ''}`} onClick={toggleDense} aria-pressed={dense}
+          title={dense ? t('Pokaż opisy') : t('Ukryj opisy (lista kompaktowa)')} aria-label={t('Lista kompaktowa')}>☰</button>
       </div>
 
       {!q && (
@@ -90,6 +125,22 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
         </section>
       ) : (
         <>
+          {(favs.length > 0 || recent.filter((id) => id !== active).length > 0) && (
+            <section className="st-mgroup is-open st-quick">
+              {favs.length > 0 && (
+                <div className="st-sub">
+                  <h3>★ {t('Ulubione')}</h3>
+                  <div className="st-tiles">{pick(favs).map((o) => item(o, true, 'fav-'))}</div>
+                </div>
+              )}
+              {recent.filter((id) => id !== active && !favs.includes(id)).length > 0 && (
+                <div className="st-sub">
+                  <h3>🕘 {t('Ostatnio otwierane')}</h3>
+                  <div className="st-tiles">{pick(recent.filter((id) => id !== active && !favs.includes(id)).slice(0, 4)).map((o) => item(o, true, 'rec-'))}</div>
+                </div>
+              )}
+            </section>
+          )}
           {MENU_GROUPS.map((g) => {
             const all = pick([...(g.items ?? []), ...(g.sub ?? []).flatMap((s) => s.items)]);
             const isOpen = !closed.includes(g.id) || all.some((o) => o.id === active);

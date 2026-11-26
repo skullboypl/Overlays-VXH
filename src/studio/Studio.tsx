@@ -1,14 +1,14 @@
-import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { OVERLAYS, findOverlay } from '../overlays/registry';
-import { defaultParams, isFieldVisible, normalizeParams, paramsToQuery, queryToParams, type OverlayDef, type Params } from '../overlays/schema';
+import { defaultParams, normalizeParams, paramsToQuery, queryToParams, type OverlayDef, type Params } from '../overlays/schema';
 import { Overlay } from '../overlays/Overlay';
-import { FieldControl } from './Fields';
+import { SettingsPanel } from './SettingsPanel';
 import { OutputPanel } from './OutputPanel';
 import { docsPath, seoFor } from '../seo/content';
 import { translate, tx, useT } from '../i18n';
 import { LangSelect } from './LangSelect';
-import { OverlayMenu } from './OverlayMenu';
+import { OverlayMenu, rememberRecent } from './OverlayMenu';
 import { LivePill } from './LivePill';
 import { AiNotice } from '../seo/AiNotice';
 import './studio.css';
@@ -66,8 +66,8 @@ const useFitScale = (w: number, h: number, maxScale: number) => {
   return { ref, scale };
 };
 
-const Preview = ({ def, params, backdrop, camera, size }: {
-  def: OverlayDef; params: Params; backdrop: Backdrop; camera: boolean; size: { w: number; h: number };
+const Preview = ({ def, params, backdrop, camera, size, replay, guides }: {
+  def: OverlayDef; params: Params; backdrop: Backdrop; camera: boolean; size: { w: number; h: number }; replay: number; guides: boolean;
 }) => {
   const isCam = def.category === 'camera';
   const { lang } = useT();
@@ -80,11 +80,57 @@ const Preview = ({ def, params, backdrop, camera, size }: {
         style={{ width: size.w, height: size.h, transform: `translate(-50%, -50%) scale(${scale})` }}
       >
         {isCam && camera && <div className="st-cam" aria-hidden><span /></div>}
-        <Overlay id={def.id} params={{ ...params, _lang: lang, _preview: true }} />
+        {/* A new key mounts the overlay again: intros and enter animations play from the start. */}
+        <Overlay key={replay} id={def.id} params={{ ...params, _lang: lang, _preview: true }} />
+        {guides && <div className="st-guides" aria-hidden><i /><i /></div>}
       </div>
+      <span className="st-scale" aria-hidden>{size.w}×{size.h} · {Math.round(scale * 100)}%</span>
     </div>
   );
 };
+
+/** Undo / redo over the settings. Continuous edits of one field (a drag, typing; < 1.2 s apart) count as one step. */
+const useHistory = (params: Params, setParams: (p: Params) => void) => {
+  const ref = useRef({ past: [] as Params[], future: [] as Params[], key: '', at: 0 });
+  const current = useRef(params);
+  current.current = params;
+  const [, bump] = useState(0);
+  const commit = useCallback((next: Params, key = '*') => {
+    const h = ref.current;
+    const now = Date.now();
+    if (!(key !== '*' && h.key === key && now - h.at < 1200)) {
+      h.past.push(current.current);
+      if (h.past.length > 120) h.past.shift();
+    }
+    h.key = key;
+    h.at = now;
+    h.future = [];
+    setParams(next);
+    bump((n) => n + 1);
+  }, [setParams]);
+  const undo = useCallback(() => {
+    const h = ref.current;
+    const prev = h.past.pop();
+    if (!prev) return;
+    h.future.push(current.current);
+    h.key = '';
+    setParams(prev);
+    bump((n) => n + 1);
+  }, [setParams]);
+  const redo = useCallback(() => {
+    const h = ref.current;
+    const next = h.future.pop();
+    if (!next) return;
+    h.past.push(current.current);
+    h.key = '';
+    setParams(next);
+    bump((n) => n + 1);
+  }, [setParams]);
+  return { commit, undo, redo, canUndo: ref.current.past.length > 0, canRedo: ref.current.future.length > 0 };
+};
+
+const isTyping = (el: EventTarget | null) => el instanceof HTMLElement && (el.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))
+  && !(el instanceof HTMLInputElement && ['checkbox', 'range', 'color', 'button'].includes(el.type));
 
 export const Studio = () => {
   const { id } = useParams();
@@ -121,6 +167,32 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
   const [camera, setCamera] = useState(true);
   const [size, setSize] = useState(def.size);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [replay, setReplay] = useState(0);
+  const [guides, setGuides] = useState(false);
+  const previewWrap = useRef<HTMLDivElement>(null);
+  const settingsSearch = useRef<HTMLInputElement>(null);
+  const history = useHistory(params, setParams);
+  const defaults = useMemo(() => localizedDefaults(def, t), [def, t]);
+  useEffect(() => rememberRecent(def.id), [def.id]);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const mod = e.ctrlKey || e.metaKey;
+      if (mod && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setMenuOpen(true);
+        document.querySelector<HTMLInputElement>('.st-search input')?.focus();
+        return;
+      }
+      if (isTyping(e.target)) return;
+      if (mod && e.key.toLowerCase() === 'z') { e.preventDefault(); if (e.shiftKey) history.redo(); else history.undo(); }
+      else if (mod && e.key.toLowerCase() === 'y') { e.preventDefault(); history.redo(); }
+      else if (e.key === '/' && !mod) { e.preventDefault(); settingsSearch.current?.focus(); }
+      else if (e.key.toLowerCase() === 'r' && !mod && !e.altKey) setReplay((n) => n + 1);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [history]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -164,14 +236,19 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
   const apply = (overlay: string, q: string) => {
     const target = findOverlay(overlay);
     if (!target) return;
-    if (overlay === def.id) setParams(queryToParams(def, new URLSearchParams(q)));
+    if (overlay === def.id) history.commit(queryToParams(def, new URLSearchParams(q)));
     else navigate(`/${overlay}${q ? `?${q}` : ''}`);
   };
 
-  const visible = def.fields.filter((f) => isFieldVisible(f, params));
-  let currentGroup: string | undefined;
-
-  const set = (key: string, v: Params[string]) => setParams((p) => normalizeParams(def.fields, { ...p, [key]: v }));
+  // A drag, a colour pick or typing in one field is one undo step; a click (option, toggle, reset) is its own step.
+  const set = (key: string, v: Params[string], continuous = false) =>
+    history.commit(normalizeParams(def.fields, { ...params, [key]: v }), continuous ? key : '*');
+  const chips = def.category !== 'scene';
+  const fullscreen = () => {
+    const el = previewWrap.current?.querySelector('.st-preview');
+    if (document.fullscreenElement) void document.exitFullscreen();
+    else void el?.requestFullscreen?.();
+  };
 
   return (
     <div className="studio">
@@ -210,43 +287,38 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
               <h1>{def.icon} {t(def.name)}</h1>
               <p>{t(def.description)}</p>
             </div>
-            <div className="st-chips" role="group" aria-label={t('Tło podglądu')}>
-              {def.category === 'camera' && (
-                <button type="button" className={camera ? 'is-active' : ''} onClick={() => setCamera((c) => !c)}>
-                  📷 {t('Kamera')}
-                </button>
-              )}
-              {def.category !== 'scene' && BACKDROPS.map((b) => (
-                <button key={b.id} type="button" className={b.id === backdrop ? 'is-active' : ''} onClick={() => setBackdrop(b.id)}>
-                  {t(b.label)}
-                </button>
-              ))}
-            </div>
+            {chips && (
+              <div className="st-chips" role="group" aria-label={t('Tło podglądu')}>
+                {def.category === 'camera' && (
+                  <button type="button" className={camera ? 'is-active' : ''} onClick={() => setCamera((c) => !c)}>
+                    📷 {t('Kamera')}
+                  </button>
+                )}
+                {def.category !== 'scene' && BACKDROPS.map((b) => (
+                  <button key={b.id} type="button" className={b.id === backdrop ? 'is-active' : ''} onClick={() => setBackdrop(b.id)}>
+                    {t(b.label)}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
-          <Preview def={def} params={params} backdrop={backdrop} camera={camera} size={size} />
+          <div className="st-preview-wrap" ref={previewWrap}>
+            <Preview def={def} params={params} backdrop={backdrop} camera={camera} size={size} replay={replay} guides={guides} />
+            <div className="st-ptools" role="toolbar" aria-label={t('Podgląd')}>
+              <button type="button" onClick={() => setReplay((n) => n + 1)} title={`${t('Odtwórz od nowa')} (R)`}>↻ <span>{t('Od nowa')}</span></button>
+              <button type="button" className={guides ? 'is-active' : ''} onClick={() => setGuides((v) => !v)} aria-pressed={guides} title={t('Linie bezpiecznego obszaru i środka')}>⌗ <span>{t('Linie')}</span></button>
+              <button type="button" onClick={fullscreen} title={t('Pełny ekran')}>⛶ <span>{t('Pełny ekran')}</span></button>
+            </div>
+          </div>
 
           <OutputPanel def={def} query={query} size={size} setSize={setSize} onApply={apply} />
           <AiNotice lang={lang} compact />
         </main>
 
         <aside className="st-settings" aria-label={t('Ustawienia')}>
-          <div className="st-settings-head">
-            <h2>{t('Ustawienia')}</h2>
-            <button type="button" className="st-btn ghost small" onClick={() => setParams(localizedDefaults(def, t))}>{t('Resetuj')}</button>
-          </div>
-          <div className="st-fields">
-            {visible.map((f) => {
-              const heading = f.group && f.group !== currentGroup ? f.group : null;
-              if (f.group) currentGroup = f.group;
-              return (
-                <Fragment key={f.key}>
-                  {heading && <h3 className="st-group">{t(heading)}</h3>}
-                  <FieldControl field={f} value={params[f.key]} params={params} onChange={(v) => set(f.key, v)} />
-                </Fragment>
-              );
-            })}
-          </div>
+          <SettingsPanel def={def} params={params} defaults={defaults} onChange={set}
+            onReset={() => history.commit(defaults)} history={history} searchRef={settingsSearch} />
         </aside>
       </div>
 

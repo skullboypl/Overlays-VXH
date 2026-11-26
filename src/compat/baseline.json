@@ -2,6 +2,10 @@
  "overlays": {
   "startpro": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "theme": {
      "type": "select",
@@ -11,7 +15,10 @@
       "esport",
       "neon",
       "clean",
-      "cozy"
+      "cozy",
+      "retro",
+      "minimal",
+      "glass"
      ]
     },
     "layout": {
@@ -32,6 +39,17 @@
      "type": "text",
      "default": "Stream zaraz się zacznie",
      "maxLength": 40
+    },
+    "introStyle": {
+     "type": "select",
+     "default": "letters",
+     "options": [
+      "letters",
+      "glitch",
+      "type",
+      "zoom",
+      "split"
+     ]
     },
     "flourishEvery": {
      "type": "range",
@@ -103,6 +121,16 @@
      "type": "text",
      "default": "Już startujemy!",
      "maxLength": 30
+    },
+    "timerStyle": {
+     "type": "select",
+     "default": "digits",
+     "options": [
+      "digits",
+      "flip",
+      "ring",
+      "minimal"
+     ]
     },
     "progress": {
      "type": "toggle",
@@ -215,6 +243,14 @@
      "default": "twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl",
      "maxLength": 300,
      "list": "socials"
+    },
+    "textMode": {
+     "type": "select",
+     "default": "full",
+     "options": [
+      "full",
+      "handle"
+     ]
     },
     "showSocialsRow": {
      "type": "toggle",
@@ -439,6 +475,10 @@
   },
   "brbpro": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "theme": {
      "type": "select",
@@ -448,7 +488,10 @@
       "esport",
       "neon",
       "clean",
-      "cozy"
+      "cozy",
+      "retro",
+      "minimal",
+      "glass"
      ]
     },
     "layout": {
@@ -469,6 +512,17 @@
      "type": "text",
      "default": "Chwila przerwy",
      "maxLength": 40
+    },
+    "introStyle": {
+     "type": "select",
+     "default": "letters",
+     "options": [
+      "letters",
+      "glitch",
+      "type",
+      "zoom",
+      "split"
+     ]
     },
     "flourishEvery": {
      "type": "range",
@@ -540,6 +594,16 @@
      "type": "text",
      "default": "Już jestem!",
      "maxLength": 30
+    },
+    "timerStyle": {
+     "type": "select",
+     "default": "digits",
+     "options": [
+      "digits",
+      "flip",
+      "ring",
+      "minimal"
+     ]
     },
     "progress": {
      "type": "toggle",
@@ -652,6 +716,14 @@
      "default": "twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl",
      "maxLength": 300,
      "list": "socials"
+    },
+    "textMode": {
+     "type": "select",
+     "default": "full",
+     "options": [
+      "full",
+      "handle"
+     ]
     },
     "showSocialsRow": {
      "type": "toggle",
@@ -876,6 +948,10 @@
   },
   "endpro": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "theme": {
      "type": "select",
@@ -885,7 +961,10 @@
       "esport",
       "neon",
       "clean",
-      "cozy"
+      "cozy",
+      "retro",
+      "minimal",
+      "glass"
      ]
     },
     "layout": {
@@ -906,6 +985,17 @@
      "type": "text",
      "default": "To już koniec na dziś",
      "maxLength": 40
+    },
+    "introStyle": {
+     "type": "select",
+     "default": "letters",
+     "options": [
+      "letters",
+      "glitch",
+      "type",
+      "zoom",
+      "split"
+     ]
     },
     "flourishEvery": {
      "type": "range",
@@ -986,6 +1076,16 @@
      "type": "text",
      "default": "Pa pa!",
      "maxLength": 30
+    },
+    "timerStyle": {
+     "type": "select",
+     "default": "digits",
+     "options": [
+      "digits",
+      "flip",
+      "ring",
+      "minimal"
+     ]
     },
     "progress": {
      "type": "toggle",
@@ -1098,6 +1198,14 @@
      "default": "twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl",
      "maxLength": 300,
      "list": "socials"
+    },
+    "textMode": {
+     "type": "select",
+     "default": "full",
+     "options": [
+      "full",
+      "handle"
+     ]
     },
     "showSocialsRow": {
      "type": "toggle",
@@ -1322,6 +1430,10 @@
   },
   "starting": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "layout": {
      "type": "select",
@@ -1652,6 +1764,10 @@
   },
   "brb": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "layout": {
      "type": "select",
@@ -1982,6 +2098,10 @@
   },
   "ending": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "layout": {
      "type": "select",
@@ -2321,6 +2441,10 @@
   },
   "snow": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2402,6 +2526,10 @@
   },
   "rain": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2474,6 +2602,10 @@
   },
   "confetti": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2552,6 +2684,10 @@
   },
   "emoji": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2629,6 +2765,10 @@
   },
   "fireflies": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2697,6 +2837,10 @@
   },
   "petals": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2767,6 +2911,10 @@
   },
   "embers": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2845,6 +2993,10 @@
   },
   "bubbles": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2917,6 +3069,10 @@
   },
   "bokeh": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -2973,6 +3129,10 @@
   },
   "sparkles": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -3039,6 +3199,10 @@
   },
   "balloons": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -3113,6 +3277,10 @@
   },
   "meteors": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -3182,6 +3350,10 @@
   },
   "digital": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -3236,6 +3408,10 @@
   },
   "fog": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -3303,6 +3479,10 @@
   },
   "dust": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -3377,6 +3557,10 @@
   },
   "lightning": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "every": {
      "type": "range",
@@ -3448,6 +3632,10 @@
   },
   "glitch": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "every": {
      "type": "range",
@@ -3509,6 +3697,10 @@
   },
   "videobg": {
    "category": "scene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "bg": {
      "type": "select",
@@ -3605,6 +3797,10 @@
   },
   "fullcam": {
    "category": "camscene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "shape": {
      "type": "select",
@@ -3959,6 +4155,10 @@
   },
   "camscene": {
    "category": "camscene",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "layout": {
      "type": "select",
@@ -4440,6 +4640,10 @@
   },
   "fireworks": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "count": {
      "type": "range",
@@ -4511,6 +4715,10 @@
   },
   "stars": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "mode": {
      "type": "select",
@@ -4575,6 +4783,10 @@
   },
   "grain": {
    "category": "screen",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "grain": {
      "type": "range",
@@ -4619,6 +4831,10 @@
   },
   "character": {
    "category": "character",
+   "size": {
+    "w": 1920,
+    "h": 1080
+   },
    "fields": {
     "charStyle": {
      "type": "select",
@@ -4719,6 +4935,10 @@
   },
   "neon": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "colors": {
      "type": "colors",
@@ -4782,6 +5002,10 @@
   },
   "corners": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "showCorners": {
      "type": "toggle",
@@ -4850,6 +5074,10 @@
   },
   "nametag": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "showTag": {
      "type": "toggle",
@@ -4941,6 +5169,10 @@
   },
   "holiday": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "theme": {
      "type": "select",
@@ -5089,6 +5321,10 @@
   },
   "proframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "shape": {
      "type": "select",
@@ -5212,6 +5448,10 @@
   },
   "faceitcam": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "source": {
      "type": "select",
@@ -5474,6 +5714,10 @@
   },
   "glitchframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "color": {
      "type": "color",
@@ -5583,6 +5827,10 @@
   },
   "retroframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "look": {
      "type": "select",
@@ -5702,6 +5950,10 @@
   },
   "polaroid": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "paper": {
      "type": "color",
@@ -5818,6 +6070,10 @@
   },
   "pixelframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "color": {
      "type": "color",
@@ -5951,6 +6207,10 @@
   },
   "hudframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "color": {
      "type": "color",
@@ -6054,6 +6314,10 @@
   },
   "comicframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "ink": {
      "type": "color",
@@ -6179,6 +6443,10 @@
   },
   "doodleframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "color": {
      "type": "color",
@@ -6284,6 +6552,10 @@
   },
   "ornateframe": {
    "category": "camera",
+   "size": {
+    "w": 640,
+    "h": 360
+   },
    "fields": {
     "metal": {
      "type": "select",
@@ -6367,6 +6639,10 @@
   },
   "ticker": {
    "category": "widget",
+   "size": {
+    "w": 1920,
+    "h": 64
+   },
    "fields": {
     "text": {
      "type": "text",
@@ -6540,6 +6816,10 @@
   },
   "socials": {
    "category": "widget",
+   "size": {
+    "w": 560,
+    "h": 100
+   },
    "fields": {
     "items": {
      "type": "text",
@@ -6735,6 +7015,10 @@
   },
   "social": {
    "category": "widget",
+   "size": {
+    "w": 520,
+    "h": 110
+   },
    "fields": {
     "item": {
      "type": "text",
@@ -6937,6 +7221,10 @@
   },
   "lowerthird": {
    "category": "widget",
+   "size": {
+    "w": 900,
+    "h": 160
+   },
    "fields": {
     "title": {
      "type": "text",
@@ -7030,7 +7318,10 @@
       "minimal",
       "gradient",
       "news",
-      "cyber"
+      "cyber",
+      "pill",
+      "outline",
+      "stack"
      ]
     },
     "align": {
@@ -7117,6 +7408,10 @@
   },
   "schedule": {
    "category": "widget",
+   "size": {
+    "w": 1200,
+    "h": 120
+   },
    "fields": {
     "items": {
      "type": "text",
@@ -7272,6 +7567,10 @@
   },
   "timer": {
    "category": "widget",
+   "size": {
+    "w": 520,
+    "h": 180
+   },
    "fields": {
     "mode": {
      "type": "select",
@@ -7431,6 +7730,10 @@
   },
   "clock": {
    "category": "widget",
+   "size": {
+    "w": 420,
+    "h": 150
+   },
    "fields": {
     "seconds": {
      "type": "toggle",
@@ -7575,6 +7878,10 @@
   },
   "goal": {
    "category": "widget",
+   "size": {
+    "w": 640,
+    "h": 130
+   },
    "fields": {
     "source": {
      "type": "select",
@@ -7741,6 +8048,10 @@
   },
   "reminder": {
    "category": "widget",
+   "size": {
+    "w": 720,
+    "h": 150
+   },
    "fields": {
     "messages": {
      "type": "text",
@@ -7897,6 +8208,10 @@
   },
   "qr": {
    "category": "widget",
+   "size": {
+    "w": 320,
+    "h": 400
+   },
    "fields": {
     "url": {
      "type": "text",
@@ -8072,6 +8387,10 @@
   },
   "qrrotator": {
    "category": "widget",
+   "size": {
+    "w": 320,
+    "h": 400
+   },
    "fields": {
     "items": {
      "type": "text",

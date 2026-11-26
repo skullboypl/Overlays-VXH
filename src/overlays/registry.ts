@@ -319,6 +319,7 @@ type ProDefaults = {
 const PRO_THEMES = [
   { value: 'cinematic', label: 'Kinowy' }, { value: 'esport', label: 'Esport' }, { value: 'neon', label: 'Neon' },
   { value: 'clean', label: 'Czysty (jasne karty)' }, { value: 'cozy', label: 'Przytulny' },
+  { value: 'retro', label: 'Retro synthwave' }, { value: 'minimal', label: 'Minimalistyczny' }, { value: 'glass', label: 'Matowe szkło' },
 ];
 const PRO_LAYOUTS: Record<string, { label: string; thumb: string }> = {
   split: { label: 'Tytuł z lewej, panel z prawej', thumb: layoutThumb([[8, 30, 42, 12, T], [8, 48, 20, 9, K], [60, 26, 32, 40, P], [30, 88, 40, 5, S]]) },
@@ -333,6 +334,10 @@ const proFieldsScene = (d: ProDefaults, kind: 'starting' | 'brb' | 'ending'): Fi
     swatches: Object.fromEntries(Object.entries(PRO_LAYOUTS).map(([value, l]) => [value, l.thumb])) },
   { group: 'Układ', key: 'intro', label: 'Intro z nickiem na starcie', type: 'toggle', default: true, hint: 'Przez 3 sekundy po wczytaniu źródła: nick literka po literce, potem wjeżdża scena' },
   { group: 'Układ', key: 'introText', i18n: true, label: 'Napis pod nickiem w intro', type: 'text', default: d.introText, maxLength: 40, when: { key: 'intro', is: [true] } },
+  { group: 'Układ', key: 'introStyle', label: 'Animacja intro', type: 'select', default: 'letters', when: { key: 'intro', is: [true] }, options: [
+    { value: 'letters', label: 'Litery z rozmyciem' }, { value: 'glitch', label: 'Glitch' }, { value: 'type', label: 'Pisanie z kursorem' },
+    { value: 'zoom', label: 'Najazd z rozmyciem' }, { value: 'split', label: 'Litery z góry i z dołu' },
+  ] },
   { group: 'Układ', key: 'flourishEvery', label: 'Błysk światła co', type: 'range', min: 5, max: 120, step: 1, default: 18, unit: 's' },
 
   { group: 'Teksty', key: 'showKicker', label: 'Pokaż nick nad tytułem', type: 'toggle', default: true },
@@ -355,6 +360,9 @@ const proFieldsScene = (d: ProDefaults, kind: 'starting' | 'brb' | 'ending'): Fi
   { group: 'Odliczanie', key: 'showTimerLabel', label: 'Pokaż napis nad licznikiem', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
   { group: 'Odliczanie', key: 'timerLabel', i18n: true, label: 'Napis nad licznikiem', type: 'text', default: d.timerLabel, maxLength: 30, when: [{ key: 'timer', is: ['countdown', 'clock'] }, { key: 'showTimerLabel', is: [true] }] },
   { group: 'Odliczanie', key: 'doneText', i18n: true, label: 'Napis po odliczeniu', type: 'text', default: d.doneText, maxLength: 30, when: { key: 'timer', is: ['countdown', 'clock'] } },
+  { group: 'Odliczanie', key: 'timerStyle', label: 'Wygląd licznika', type: 'select', default: 'digits', when: { key: 'timer', is: ['countdown', 'clock'] }, options: [
+    { value: 'digits', label: 'Duże cyfry' }, { value: 'flip', label: 'Klapki (flip clock)' }, { value: 'ring', label: 'Pierścień postępu' }, { value: 'minimal', label: 'Cienkie cyfry' },
+  ] },
   { group: 'Odliczanie', key: 'progress', label: 'Pasek postępu', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
   { group: 'Odliczanie', key: 'celebrate', label: 'Konfetti po odliczeniu', type: 'toggle', default: true, when: { key: 'timer', is: ['countdown', 'clock'] } },
 
@@ -383,6 +391,9 @@ const proFieldsScene = (d: ProDefaults, kind: 'starting' | 'brb' | 'ending'): Fi
   { group: 'Panele', key: 'nextNote', i18n: true, label: 'Dopisek', type: 'text', default: 'Kontynuujemy kampanię', maxLength: 60, when: { key: 'showNextPanel', is: [true] } },
 
   { group: 'Sociale', key: 'socials', label: 'Twoje kanały', type: 'text', list: 'socials', default: 'twitch.tv/skullboypl | discord.skullmedia.pl | youtube.com/@skullboypl | tiktok.com/@skullboypl', maxLength: 300, hint: 'Każdy kanał dostaje swój panel ze spotlightem i podświetla się w rzędzie na dole, gdy jest jego kolej' },
+  { group: 'Sociale', key: 'textMode', label: 'Tekst', type: 'select', default: 'full', options: [
+    { value: 'full', label: 'Cały adres' }, { value: 'handle', label: 'Sam nick' },
+  ], hint: 'Sam nick zamienia twitch.tv/skullboypl na skullboypl' },
   { group: 'Sociale', key: 'showSocialsRow', label: 'Rząd sociali na dole', type: 'toggle', default: true },
   { group: 'Sociale', key: 'showTicker', label: 'Przewijany pasek na samym dole', type: 'toggle', default: false },
   { group: 'Sociale', key: 'ticker', i18n: true, label: 'Teksty paska', type: 'text', list: 'lines', default: 'Dzięki za każdy follow ❤️ | Streamy pon-pt od 20:00 | !discord po link do serwera', maxLength: 400, placeholder: 'Komunikat', when: { key: 'showTicker', is: [true] } },
@@ -1381,6 +1392,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'classic', options: [
         { value: 'classic', label: 'Klasyczna' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' }, { value: 'cut', label: 'Ścięta (esport)' },
         { value: 'minimal', label: 'Minimal' }, { value: 'gradient', label: 'Gradient' }, { value: 'news', label: 'Wiadomości' }, { value: 'cyber', label: 'Cyber' },
+        { value: 'pill', label: 'Pigułka' }, { value: 'outline', label: 'Kontur' }, { value: 'stack', label: 'Dwa bloki' },
       ] },
       { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [
         { value: 'left', label: 'Lewo' }, { value: 'center', label: 'Środek' }, { value: 'right', label: 'Prawo' },

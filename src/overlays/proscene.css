@@ -341,3 +341,80 @@
 @media (prefers-reduced-motion: reduce) {
   .pr-root *, .pr-root *::before, .pr-root *::after { animation-duration: 0.01s !important; animation-iteration-count: 1 !important; }
 }
+
+/* ---------- intro styles (default "letters" is the rule above) ---------- */
+.pr-intro.intro-glitch .pr-intro-nick .pr-letters span { animation: pr-letter-glitch 0.9s steps(1) calc(0.3s + var(--i) * 0.04s) both; }
+.pr-intro.intro-glitch .pr-intro-nick { text-shadow: 0.04em 0 0 rgba(0, 240, 255, 0.7), -0.04em 0 0 rgba(255, 0, 168, 0.7); }
+@keyframes pr-letter-glitch {
+  0% { opacity: 0; transform: translateX(-0.3em) skewX(20deg); }
+  20% { opacity: 1; transform: translateX(0.15em); filter: hue-rotate(90deg); }
+  40% { opacity: 0.4; transform: translateX(-0.08em) skewX(-10deg); }
+  60% { opacity: 1; transform: none; filter: none; }
+}
+.pr-intro.intro-type .pr-intro-nick .pr-letters span { animation: pr-type 0.01s linear calc(0.3s + var(--i) * 0.11s) both; }
+.pr-intro.intro-type .pr-intro-nick::after { content: '▌'; margin-left: 0.05em; color: var(--c1); animation: ov-blink 0.8s steps(1) infinite; }
+@keyframes pr-type { from { opacity: 0; } to { opacity: 1; } }
+.pr-intro.intro-zoom .pr-intro-nick { animation: pr-intro-zoom 2.2s cubic-bezier(0.2, 0.9, 0.2, 1) 0.2s both; }
+.pr-intro.intro-zoom .pr-intro-nick .pr-letters span { animation: none; }
+@keyframes pr-intro-zoom { from { opacity: 0; transform: scale(2.6); filter: blur(0.15em); letter-spacing: 0.6em; } to { opacity: 1; transform: none; filter: none; } }
+.pr-intro.intro-split .pr-intro-nick .pr-letters span { animation: pr-split 1s var(--ease) calc(0.3s + var(--i) * 0.03s) both; }
+.pr-intro.intro-split .pr-intro-nick .pr-letters span:nth-child(odd) { --dir: -1; }
+@keyframes pr-split { from { opacity: 0; transform: translateY(calc(var(--dir, 1) * 1.2em)); } }
+
+/* ---------- timer styles ---------- */
+.pr-timer.tstyle-flip strong { text-shadow: none; }
+.pr-timer.tstyle-flip .pr-digits { gap: 0.08em; }
+.pr-timer.tstyle-flip .pr-digits b {
+  width: 0.78em;
+  padding: 0.08em 0;
+  border-radius: 0.12em;
+  background: linear-gradient(180deg, #24242b 0 49.5%, #1a1a20 50.5% 100%);
+  box-shadow: 0 0.08em 0.2em rgba(0, 0, 0, 0.5), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+  font-size: 0.86em;
+}
+.pr-timer.tstyle-flip .pr-digits i { width: 0.3em; }
+.pr-ring { position: relative; width: 12em; aspect-ratio: 1; display: grid; place-items: center; }
+.pr-ring svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.pr-ring-bg { fill: none; stroke: rgba(255, 255, 255, 0.12); stroke-width: 4; }
+.pr-ring-fg { fill: none; stroke: var(--c1); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 283; filter: drop-shadow(0 0 0.4em var(--c1)); transition: stroke-dashoffset 0.3s linear; }
+.pr-ring strong { font-size: 3.6em !important; }
+.pr-timer.tstyle-ring { align-items: center; }
+.lay-split .pr-timer.tstyle-ring, .lay-bottom .pr-timer.tstyle-ring { align-items: flex-start; }
+.pr-timer.tstyle-minimal strong { font-size: 3.4em; font-weight: 500; letter-spacing: 0.06em; text-shadow: none; opacity: 0.92; }
+
+/* ---------- extra themes ---------- */
+/* Retro: synthwave sun, chrome title. */
+.theme-retro .pr-retro-sun {
+  position: absolute;
+  left: 50%;
+  bottom: 38%;
+  width: 34cqh;
+  aspect-ratio: 1;
+  translate: -50% 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #ffd23f, #ff2d95 70%);
+  -webkit-mask: linear-gradient(#000 0 55%, transparent 55% 60%, #000 60% 68%, transparent 68% 72%, #000 72% 79%, transparent 79% 82%, #000 82%);
+  mask: linear-gradient(#000 0 55%, transparent 55% 60%, #000 60% 68%, transparent 68% 72%, #000 72% 79%, transparent 79% 82%, #000 82%);
+  opacity: 0.55;
+  filter: blur(0.5px);
+}
+/* The chrome gradient sits on every letter: the letters animate on their own, so a clip on the title would not follow them. */
+.theme-retro .pr-title { text-shadow: none; filter: drop-shadow(0 0.04em 0 #2a0b3a) drop-shadow(0 0 0.25em rgba(255, 45, 149, 0.5)); font-style: italic; }
+.theme-retro .pr-title .pr-letters span { background: linear-gradient(180deg, #ffffff 0%, #c9e6ff 45%, #ff7ad9 52%, #ffd23f 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-right: 0.04em; }
+.theme-retro .pr-panel { background: rgba(20, 6, 34, 0.75); border: 2px solid #ff2d95; box-shadow: 0.35em 0.35em 0 rgba(0, 240, 255, 0.55); border-radius: 0.4em; }
+.theme-retro .pr-kicker { background: #ff2d95; border-color: #ff2d95; color: #fff; border-radius: 0.3em; }
+.theme-retro .pr-soc { border-radius: 0.3em; border-color: rgba(255, 45, 149, 0.6); }
+/* Minimal: no boxes, thin rules, lots of air. */
+.theme-minimal .pr-panel { background: transparent; border: 0; border-left: 1px solid rgba(255, 255, 255, 0.35); border-radius: 0; box-shadow: none; backdrop-filter: none; padding-left: 1.6em; }
+.theme-minimal .pr-title { font-weight: 600; letter-spacing: 0.04em; text-shadow: 0 0.04em 0.3em rgba(0, 0, 0, 0.5); }
+.theme-minimal .pr-kicker { background: none; border: 0; padding: 0; letter-spacing: 0.5em; opacity: 0.8; }
+.theme-minimal .pr-soc { background: none; border: 0; border-bottom: 1px solid rgba(255, 255, 255, 0.25); border-radius: 0; }
+.theme-minimal .pr-soc.is-live { background: none; color: var(--fg); border-bottom-color: var(--brand); box-shadow: none; }
+.theme-minimal .pr-soc.is-live svg { color: var(--brand); }
+.theme-minimal .pr-social { border-top: 0; }
+/* Glass: bright frosted cards. */
+.theme-glass { --panel-bg: rgba(255, 255, 255, 0.14); --panel-border: 1px solid rgba(255, 255, 255, 0.35); --panel-radius: 1.8em; }
+.theme-glass .pr-panel { backdrop-filter: blur(22px) saturate(1.4); box-shadow: 0 1.2em 3em rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+.theme-glass .pr-kicker { background: rgba(255, 255, 255, 0.18); border-color: rgba(255, 255, 255, 0.4); }
+.theme-glass .pr-soc { background: rgba(255, 255, 255, 0.14); border-color: rgba(255, 255, 255, 0.3); backdrop-filter: blur(12px); }
+.theme-glass .pr-chat { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(22px); }

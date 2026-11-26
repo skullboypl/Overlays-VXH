@@ -45,6 +45,12 @@ const CTA: Record<Brand, string> = {
   twitch: 'Obserwuj na Twitchu', youtube: 'Subskrybuj na YouTube', discord: 'Wbijaj na Discorda', tiktok: 'Obserwuj na TikToku',
   kick: 'Obserwuj na Kicku', instagram: 'Obserwuj na Instagramie', x: 'Śledź na X', facebook: 'Polub na Facebooku', link: 'Odwiedź stronę',
 };
+/** "twitch.tv/skullboypl" -> "skullboypl" (option "Sam nick"). */
+const handleOf = (label: string) => {
+  const clean = label.replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/+$/, '');
+  const i = clean.lastIndexOf('/');
+  return i >= 0 ? clean.slice(i + 1) : clean;
+};
 const urlOf = (label: string) => (/^https?:\/\//i.test(label) ? label : `https://${label.replace(/^\/+/, '')}`);
 
 /** Letters with a stagger index, for the per-letter reveals. */
@@ -103,6 +109,8 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
   const t = (s: string) => translate(lang, s);
   const colors = (p.colors as string[]) ?? ['#ff5900', '#ff2d6f', '#7a5cff'];
   const theme = String(p.theme ?? 'cinematic');
+  const nameOf = (label: string) => (p.textMode === 'handle' ? handleOf(label) : label);
+  const timerStyle = String(p.timerStyle ?? 'digits');
   const timer = String(p.timer ?? 'off');
   const { start, end } = useDeadline(timer, num(p.minutes, 5), String(p.at ?? '20:00'));
   const now = useNow(true);
@@ -143,7 +151,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
                 <span className="pr-social-icon"><BrandIcon brand={s.brand} size="1em" /></span>
                 <div className="pr-social-text">
                   <small>{cta}</small>
-                  <b>{s.label}</b>
+                  <b>{nameOf(s.label)}</b>
                 </div>
               </div>
               {p.socialQr !== false && (
@@ -194,7 +202,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
       });
     }
     return out;
-  }, [p.socials, p.infos, p.rewards, p.next, p.nextLabel, p.nextNote, p.infoTitle, p.rewardsTitle, p.showSocialsPanel, p.showInfoPanel, p.showRewardsPanel, p.showNextPanel, p.socialQr, p.socialCta, p.socialCtaText, p.rewardsBar, lang]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [p.socials, p.infos, p.rewards, p.next, p.nextLabel, p.nextNote, p.infoTitle, p.rewardsTitle, p.showSocialsPanel, p.showInfoPanel, p.showRewardsPanel, p.showNextPanel, p.socialQr, p.socialCta, p.socialCtaText, p.rewardsBar, p.textMode, lang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const every = Math.max(3, num(p.panelEvery, 9)) * 1000;
   const [panelIndex, setPanelIndex] = useState(0);
@@ -218,7 +226,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
   };
   const chat = p.chat === true;
   const chatSide = String(p.chatSide ?? 'right');
-  const panelAnim = p.panelAnim && p.panelAnim !== 'auto' ? String(p.panelAnim) : { cinematic: 'fade', esport: 'cut', neon: 'glitch', clean: 'rise', cozy: 'bounce' }[theme] ?? 'rise';
+  const panelAnim = p.panelAnim && p.panelAnim !== 'auto' ? String(p.panelAnim) : { cinematic: 'fade', esport: 'cut', neon: 'glitch', clean: 'rise', cozy: 'bounce', retro: 'glitch', minimal: 'wipe', glass: 'rise' }[theme] ?? 'rise';
   const ticker = p.showTicker !== false ? lines(p.ticker) : [];
   const titleRef = useRef<HTMLHeadingElement>(null);
   const titleFit = useFitWidth(titleRef, [p.title, p.titleSize, p.font, p.layout, p.chat, p.chatWidth, theme, phase]);
@@ -235,12 +243,13 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
         {done && p.celebrate !== false && <ParticleLayer kind="confetti" params={{ ...EFFECT_DEFAULTS.confetti, colors, mode: 'burst', every: 6, count: 160 }} />}
         {p.vignette !== false && <div className="pr-vignette" />}
         {theme === 'esport' && <div className="pr-scan" />}
-        {theme === 'neon' && <div className="pr-neon-grid" />}
+        {(theme === 'neon' || theme === 'retro') && <div className="pr-neon-grid" />}
+        {theme === 'retro' && <div className="pr-retro-sun" />}
         <div key={sweep} className="pr-sweep" />
       </div>
 
       {introOn && (
-        <div className={`pr-intro ${phase === 'main' ? 'is-leaving' : ''}`} aria-hidden={phase === 'main'}>
+        <div className={`pr-intro intro-${p.introStyle ?? 'letters'} ${phase === 'main' ? 'is-leaving' : ''}`} aria-hidden={phase === 'main'}>
           <div className="pr-intro-line" />
           <div className="pr-intro-nick"><Letters text={String(p.kicker || ' ')} /></div>
           {p.introText && <div className="pr-intro-sub">{String(p.introText)}</div>}
@@ -272,14 +281,22 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
             )}
             {p.showSubtitle !== false && p.subtitle && <p className="pr-sub">{String(p.subtitle)}</p>}
             {timer !== 'off' && (
-              <div className="pr-timer">
+              <div className={`pr-timer tstyle-${timerStyle}`}>
                 {done ? <strong className="pr-done">{String(p.doneText ?? '')}</strong> : (
                   <>
                     {p.showTimerLabel !== false && p.timerLabel && <span>{String(p.timerLabel)}</span>}
-                    <strong><Digits ms={left} /></strong>
+                    {timerStyle === 'ring' ? (
+                      <div className="pr-ring">
+                        <svg viewBox="0 0 100 100" aria-hidden>
+                          <circle cx="50" cy="50" r="45" className="pr-ring-bg" />
+                          <circle cx="50" cy="50" r="45" className="pr-ring-fg" style={{ strokeDashoffset: 283 * Math.min(1, (now - start) / Math.max(1, end - start)) }} />
+                        </svg>
+                        <strong><Digits ms={left} /></strong>
+                      </div>
+                    ) : <strong><Digits ms={left} /></strong>}
                   </>
                 )}
-                {p.progress !== false && !done && (
+                {p.progress !== false && !done && timerStyle !== 'ring' && (
                   <div className="pr-progress"><i style={{ width: `${Math.min(100, ((now - start) / Math.max(1, end - start)) * 100)}%` }} /></div>
                 )}
               </div>
@@ -304,7 +321,7 @@ export const ProScene = ({ kind, params: p }: { kind: Kind; params: Params }) =>
           <div className="pr-socials">
             {socials.map((s, i) => (
               <span key={i} className={`pr-soc ${panel?.id === `social-${i}` ? 'is-live' : ''}`} style={{ '--brand': BRAND_COLORS[s.brand], '--ink': BRAND_INK[s.brand], '--i': i } as Vars}>
-                <BrandIcon brand={s.brand} />{s.label}
+                <BrandIcon brand={s.brand} />{nameOf(s.label)}
               </span>
             ))}
           </div>

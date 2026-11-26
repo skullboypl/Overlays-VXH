@@ -315,3 +315,14 @@
 }
 @keyframes qrr-drop-in { from { opacity: 0; transform: translateY(-80%); } }
 @keyframes qrr-drop-out { to { opacity: 0; transform: translateY(80%); } }
+
+/* Lower third: extra looks (added; the old ones are unchanged). */
+.lt.style-pill { border-radius: 999px; padding: var(--pad) 1.4em var(--pad) var(--pad); }
+.lt.style-pill .lt-icon { border-radius: 50%; }
+.lt.style-outline { background: color-mix(in srgb, var(--bg) 35%, transparent); border: 0.08em solid var(--accent); text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8); }
+.lt.style-stack { flex-direction: row; align-items: stretch; padding: 0; gap: 0; background: none; border-radius: calc(var(--radius) * 0.6); overflow: visible; }
+.lt.style-stack .lt-icon { height: auto; width: 2.1em; border-radius: calc(var(--radius) * 0.6) 0 0 calc(var(--radius) * 0.6); }
+.lt.style-stack .lt-text { gap: 0; }
+.lt.style-stack .lt-kicker { align-self: flex-start; padding: 0.25em 0.8em; background: var(--accent2); color: #fff; border-radius: 0.3em 0.3em 0 0; }
+.lt.style-stack .lt-title { padding: 0.2em 0.7em; background: var(--accent); color: #fff; }
+.lt.style-stack .lt-sub { padding: 0.3em 0.9em 0.35em; background: var(--bg); opacity: 1; }
