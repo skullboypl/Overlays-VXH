@@ -5,8 +5,8 @@ import { tx, useT } from '../i18n';
 import { LangSelect } from '../studio/LangSelect';
 import { MENU_GROUPS } from '../studio/OverlayMenu';
 import {
-  claim, createKey, drop, forgetKey, isKey, roomOf, saveKey, saveState, savedKey, savedState, timerValue, update, useRoom,
-  type PanelState,
+  claim, claimPanel, createKey, drop, fetchMe, forgetKey, isKey, loginWith, logout, rememberRoom, roomFor, rotateKey, saveKey, saveState, savedKey,
+  savedState, timerValue, unlinkChannel, update, useRoom, type Me, type PanelState,
 } from './panel';
 import '../studio/studio.css';
 import './panel.css';
@@ -19,7 +19,7 @@ const copy = async (text: string) => {
 
 const useRoomId = (key: string | null) => {
   const [room, setRoom] = useState<string | null>(null);
-  useEffect(() => { setRoom(null); if (key) void roomOf(key).then(setRoom); }, [key]);
+  useEffect(() => { setRoom(null); if (key) void roomFor(key).then(setRoom); }, [key]);
   return room;
 };
 
@@ -37,38 +37,120 @@ const CopyField = ({ value, secret }: { value: string; secret?: boolean }) => {
 };
 
 /* ===================== setup page: /panel ===================== */
+const PLATFORM_NAME = { twitch: 'Twitch', kick: 'Kick' } as const;
+
+/** Who is logged in, what the server can do, and the messages after a login round trip. */
+const useAccount = () => {
+  const [me, setMe] = useState<Me | null>(null);
+  const refresh = () => fetchMe().then(setMe);
+  useEffect(() => { void refresh(); }, []);
+  return { me, refresh };
+};
+
+const AccountCard = ({ me, panelKey, onLogout }: { me: Me | null; panelKey: string | null; onLogout: () => void }) => {
+  const { t } = useT();
+  const [error, setError] = useState('');
+  const notice = useMemo(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('claim') === 'not_owner') return { ok: false, text: t('Ten panel należy do innego konta. Zaloguj się kontem, które go utworzyło.') };
+    if (q.get('login')) return { ok: true, text: `${t('Zalogowano przez')} ${q.get('login') === 'kick' ? 'Kick' : 'Twitch'}` };
+    if (q.get('login_error')) return { ok: false, text: t('Logowanie się nie udało. Spróbuj jeszcze raz.') };
+    return null;
+  }, [t]);
+  const login = async (platform: 'twitch' | 'kick') => {
+    setError('');
+    const err = await loginWith(platform, panelKey);
+    if (err) setError(err === 'not_configured' ? t('Logowanie przez ten serwis nie jest jeszcze włączone na serwerze.') : t('Logowanie się nie udało. Spróbuj jeszcze raz.'));
+  };
+  const accounts = me?.accounts ?? [];
+  return (
+    <section className="pn-card pn-account">
+      <h2>👤 {t('Konto')}</h2>
+      {accounts.length ? (
+        <p>{t('Zalogowano')}: {accounts.map((a) => <b key={a.platform} className={`pn-acc is-${a.platform}`}>{PLATFORM_NAME[a.platform]}: {a.login}</b>)}</p>
+      ) : (
+        <p>{t('Zaloguj się przez Twitch albo Kick. Konto zostaje właścicielem panelu: tylko ono podepnie albo odłączy kanał, zmieni klucz i usunie panel. Sam link docka wystarcza wyłącznie do sterowania overlayami.')}</p>
+      )}
+      {notice && <p className={notice.ok ? 'pn-ok' : 'pn-error'}>{notice.text}</p>}
+      <div className="pn-row">
+        {(['twitch', 'kick'] as const).filter((pl) => !accounts.some((a) => a.platform === pl)).map((pl) => (
+          <button key={pl} type="button" className={`pn-login is-${pl}`} disabled={me ? !me[pl] : true} onClick={() => login(pl)}>
+            {accounts.length ? `${t('Dodaj')} ${PLATFORM_NAME[pl]}` : `${t('Zaloguj przez')} ${PLATFORM_NAME[pl]}`}
+          </button>
+        ))}
+        {accounts.length > 0 && <button type="button" className="pn-ghost" onClick={onLogout}>{t('Wyloguj')}</button>}
+      </div>
+      {me && !me.twitch && !me.kick && <p className="pn-note">{t('Logowanie nie jest jeszcze włączone na serwerze.')}</p>}
+      {!me && <p className="pn-note">{t('Serwer nie odpowiada. Spróbuj za chwilę.')}</p>}
+      {error && <p className="pn-error">{error}</p>}
+    </section>
+  );
+};
+
 export const PanelSetup = () => {
   const { t } = useT();
   const [key, setKey] = useState<string | null>(savedKey);
   const room = useRoomId(key);
   const { snap } = useRoom(room, true);
+  const { me, refresh } = useAccount();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [importText, setImportText] = useState('');
+  const [claimState, setClaimState] = useState<'' | 'mine' | 'other' | 'unowned'>('');
   const dockUrl = key ? `${window.location.origin}/panel/dock#k=${key}` : '';
+  const loggedIn = (me?.accounts.length ?? 0) > 0;
+  const owns = Boolean(room && me?.panels.some((p) => p.room === room));
 
   useEffect(() => { document.title = `${t('Panel OBS')} | VXH Overlays`; }, [t]);
 
+  // Logged in with this device's key: make the account the panel's owner (or find out it belongs to someone else).
+  useEffect(() => {
+    if (!key || !room || !me) return;
+    if (owns) { setClaimState('mine'); return; }
+    if (!loggedIn) { setClaimState('unowned'); return; }
+    void claimPanel(key).then((r) => {
+      if (r.ok) { setClaimState('mine'); void refresh(); } else setClaimState(r.status === 403 ? 'other' : 'unowned');
+    });
+  }, [key, room, me, owns, loggedIn]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const create = async () => {
     setBusy(true); setError('');
-    try { setKey(await createKey()); } catch { setError(t('Nie udało się utworzyć panelu. Spróbuj za chwilę.')); }
+    try {
+      const k = await createKey();
+      setKey(k);
+      await claimPanel(k);
+      await refresh();
+    } catch { setError(t('Nie udało się utworzyć panelu. Spróbuj za chwilę.')); }
+    setBusy(false);
+  };
+  /** Logged-in owner on a device without the key (or after a leak): new key for the same panel. */
+  const newKeyFor = async (target: string) => {
+    if (!window.confirm(t('Stary link docka przestanie działać, linki overlayów w OBS zostają bez zmian. Utworzyć nowy klucz?'))) return;
+    setBusy(true); setError('');
+    const k = await rotateKey(target);
+    if (k) setKey(k); else setError(t('Nie udało się utworzyć nowego klucza. Zaloguj się kontem właściciela.'));
     setBusy(false);
   };
   const regenerate = async () => {
-    if (!key || !window.confirm(t('Stary link docka i połączone overlaye przestaną działać. Utworzyć nowy klucz?'))) return;
+    if (!key) return;
+    if (owns && room) { await newKeyFor(room); return; }
+    if (!window.confirm(t('Stary link docka i połączone overlaye przestaną działać. Utworzyć nowy klucz?'))) return;
     setBusy(true);
-    await drop(key).catch(() => {});
+    const r = await drop(key).catch(() => null);
+    if (r && !r.ok) { setError(t('Ten panel ma właściciela. Zaloguj się jego kontem, żeby zmienić klucz.')); setBusy(false); return; }
     forgetKey();
-    try { setKey(await createKey()); } catch { setKey(null); setError(t('Nie udało się utworzyć panelu. Spróbuj za chwilę.')); }
+    try { const k = await createKey(); setKey(k); if (loggedIn) await claimPanel(k); await refresh(); } catch { setKey(null); setError(t('Nie udało się utworzyć panelu. Spróbuj za chwilę.')); }
     setBusy(false);
   };
   const importKey = async () => {
     const k = /#k=([A-Za-z0-9_-]{43})/.exec(importText)?.[1] ?? importText.trim();
     if (!isKey(k)) { setError(t('To nie jest link ani klucz panelu.')); return; }
     const r = await claim(k);
-    if (!r.ok) { setError(t('Nie udało się utworzyć panelu. Spróbuj za chwilę.')); return; }
+    if (!r.ok) { setError(r.status === 403 ? t('Ten klucz został zastąpiony nowym.') : t('Nie udało się utworzyć panelu. Spróbuj za chwilę.')); return; }
+    if (typeof r.data?.room === 'string') await rememberRoom(k, r.data.room);
     saveKey(k); setKey(k); setImportText(''); setError('');
   };
+  const doLogout = async () => { await logout(); await refresh(); setClaimState(key ? 'unowned' : ''); };
 
   return (
     <div className="pn-page">
@@ -83,11 +165,28 @@ export const PanelSetup = () => {
         <h1>🎛️ {t('Panel OBS')}</h1>
         <p className="pn-lead">{t('Dock w OBS, z którego na żywo sterujesz overlayami: licznik start/pauza, liczba w pasku celu, przypominajka „pokaż teraz” i ukrywanie widżetów. Bez wtyczek i bez zakładania konta.')}</p>
 
+        <AccountCard me={me} panelKey={key} onLogout={doLogout} />
+
         {!key ? (
           <section className="pn-card">
             <h2>{t('Utwórz swój panel')}</h2>
-            <p>{t('Twoja przeglądarka wylosuje tajny klucz. Serwer zna tylko jego skrót, więc nikt inny nie dostanie tego samego klucza ani nie zmieni Twoich overlayów.')}</p>
-            <button type="button" className="pn-primary pn-big" disabled={busy} onClick={create}>{busy ? '…' : t('Utwórz panel')}</button>
+            {loggedIn && me?.panels.length ? (
+              <>
+                <p>{t('Masz już panel na tym koncie. Utwórz dla tego komputera nowy link docka: linki overlayów w OBS zostają bez zmian, stary link docka przestanie działać.')}</p>
+                {me.panels.map((pn) => (
+                  <div key={pn.room} className="pn-row">
+                    <span className="pn-linked">{Object.entries(pn.links).map(([pl, login]) => `${PLATFORM_NAME[pl as 'twitch' | 'kick']}: ${login}`).join(' · ') || pn.room.slice(0, 8)}</span>
+                    <button type="button" className="pn-primary" disabled={busy} onClick={() => newKeyFor(pn.room)}>{t('Nowy link docka')}</button>
+                  </div>
+                ))}
+              </>
+            ) : (
+              <>
+                <p>{t('Twoja przeglądarka wylosuje tajny klucz. Serwer zna tylko jego skrót, więc nikt inny nie dostanie tego samego klucza ani nie zmieni Twoich overlayów.')}</p>
+                <button type="button" className="pn-primary pn-big" disabled={busy || !loggedIn} onClick={create}>{busy ? '…' : t('Utwórz panel')}</button>
+                {!loggedIn && <p className="pn-note">{t('Najpierw zaloguj się przez Twitch albo Kick: konto zostanie właścicielem panelu.')}</p>}
+              </>
+            )}
             <details className="pn-import">
               <summary>{t('Mam już panel na innym komputerze')}</summary>
               <div className="pn-copy">
@@ -99,6 +198,8 @@ export const PanelSetup = () => {
           </section>
         ) : (
           <>
+            {claimState === 'other' && <p className="pn-error pn-banner">{t('Ten panel należy do innego konta. Zaloguj się kontem, które go utworzyło.')}</p>}
+            {claimState === 'unowned' && !loggedIn && <p className="pn-warn pn-banner">🔓 {t('Ten panel nie ma jeszcze właściciela. Zaloguj się przez Twitch albo Kick, żeby nikt z samym linkiem docka nie mógł go przejąć.')}</p>}
             <section className="pn-card">
               <h2><span className="pn-step">1</span>{t('Dodaj dock w OBS')}</h2>
               <ol>
@@ -126,7 +227,7 @@ export const PanelSetup = () => {
                 ))}
               </div>
             </section>
-            <ConnectCard panelKey={key} links={snap?.state.links ?? {}} rewardFx={snap?.state.rewardFx ?? {}} />
+            <ChannelsCard panelKey={key} room={room} owner={owns} me={me} state={snap?.state ?? null} />
             <section className="pn-card">
               <h2><span className="pn-step">4</span>{t('Sprawdź')}</h2>
               <p>{t('Otwórz panel tutaj w przeglądarce i pokliknij: zmiany od razu widać w OBS.')}</p>
@@ -134,8 +235,10 @@ export const PanelSetup = () => {
             </section>
             <section className="pn-card pn-danger">
               <h2>{t('Nowy klucz')}</h2>
-              <p>{t('Gdy klucz wyciekł, utwórz nowy. Stary link docka i podłączone overlaye przestaną działać, trzeba je podmienić w OBS.')}</p>
-              <button type="button" className="pn-ghost" disabled={busy} onClick={regenerate}>{t('Utwórz nowy klucz')}</button>
+              <p>{owns
+                ? t('Gdy link docka wyciekł, utwórz nowy klucz. Stary link docka przestanie działać, a linki overlayów w OBS zostają bez zmian.')
+                : t('Gdy klucz wyciekł, utwórz nowy. Stary link docka i podłączone overlaye przestaną działać, trzeba je podmienić w OBS.')}</p>
+              <button type="button" className="pn-ghost" disabled={busy || claimState === 'other'} onClick={regenerate}>{t('Utwórz nowy klucz')}</button>
               {error && <p className="pn-error">{error}</p>}
             </section>
           </>
@@ -147,72 +250,82 @@ export const PanelSetup = () => {
 
 /* ===================== linked Twitch / Kick channels ===================== */
 const FX_OPTIONS: [string, string][] = [['confetti', tx('Konfetti')], ['hearts', tx('Serca')], ['stars', tx('Gwiazdki')], ['money', tx('Kasa')], ['wheel', tx('Zakręć kołem')]];
-const ConnectCard = ({ panelKey, links, rewardFx }: { panelKey: string; links: Partial<Record<'twitch' | 'kick', string>>; rewardFx: Record<string, string> }) => {
+const GOAL_AUTO: [string, string][] = [['', tx('Ręcznie (z docka)')], ['follows', tx('Followy')], ['subs', tx('Suby')], ['bits', tx('Bitsy')], ['kicks', tx('Kicks')]];
+const AUTO_TIME: [string, string][] = [['sub', tx('Sub')], ['gift', tx('Gift sub (za sztukę)')], ['bits100', tx('100 bitsów')], ['kicks100', tx('100 Kicks')], ['follow', tx('Follow')]];
+
+const ChannelsCard = ({ panelKey, room, owner, me, state }: { panelKey: string; room: string | null; owner: boolean; me: Me | null; state: PanelState | null }) => {
   const { t } = useT();
-  const [ready, setReady] = useState<{ twitch: boolean; kick: boolean } | null>(null);
-  const [busy, setBusy] = useState('');
-  const [error, setError] = useState('');
   const [reward, setReward] = useState('');
   const [fx, setFx] = useState('confetti');
-  const notice = useMemo(() => {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get('connected')) return { ok: true, text: `${t('Połączono')}: ${q.get('connected') === 'kick' ? 'Kick' : 'Twitch'}` };
-    if (q.get('connect_error')) return { ok: false, text: t('Nie udało się połączyć konta. Spróbuj jeszcze raz.') };
-    return null;
-  }, [t]);
-  useEffect(() => { fetch('/api/connect/status').then((r) => r.json()).then(setReady).catch(() => setReady({ twitch: false, kick: false })); }, []);
-  const start = async (platform: 'twitch' | 'kick') => {
-    setBusy(platform); setError('');
-    try {
-      const r = await fetch('/api/connect/start', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: panelKey, platform }) });
-      const b = await r.json().catch(() => ({}));
-      if (r.ok && b.url) { window.location.href = b.url; return; }
-      setError(b.error === 'not_configured' ? t('To połączenie nie jest jeszcze włączone na serwerze.') : t('Nie udało się połączyć konta. Spróbuj jeszcze raz.'));
-    } catch { setError(t('Nie udało się połączyć konta. Spróbuj jeszcze raz.')); }
-    setBusy('');
+  const [error, setError] = useState('');
+  const links = state?.links ?? {};
+  const rewardFx = state?.rewardFx ?? {};
+  const autoTime = (state as (PanelState & { autoTime?: Record<string, number> }) | null)?.autoTime ?? {};
+  const goalAuto = (state?.goal as { auto?: string | null } | undefined)?.auto ?? '';
+  const send = (patch: object) => void update(panelKey, patch);
+  const link = async (platform: 'twitch' | 'kick') => {
+    setError('');
+    const err = await loginWith(platform, panelKey);
+    if (err) setError(err === 'not_configured' ? t('Logowanie przez ten serwis nie jest jeszcze włączone na serwerze.') : t('Logowanie się nie udało. Spróbuj jeszcze raz.'));
   };
-  const disconnect = async (platform: 'twitch' | 'kick') => {
-    setBusy(platform);
-    await fetch('/api/connect/disconnect', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ key: panelKey, platform }) }).catch(() => {});
-    setBusy('');
+  const unlink = async (platform: 'twitch' | 'kick') => {
+    if (!room) return;
+    const r = await unlinkChannel(room, platform);
+    if (!r.ok) setError(t('Odłączyć kanał może tylko zalogowany właściciel panelu.'));
   };
-  const setRewardFx = (title: string, value: string | null) => void update(panelKey, { rewardFx: { [title]: value } });
   return (
     <section className="pn-card">
-      <h2><span className="pn-step">3</span>{t('Połącz Twitch i Kick')}</h2>
-      <p>{t('Po połączeniu „Alerty z panelu” same pokazują follow, suby, gifty, bitsy, raidy i nagrody za punkty kanału. Twoje hasło ani token nie trafiają do linku OBS.')}</p>
-      {notice && <p className={notice.ok ? 'pn-ok' : 'pn-error'}>{notice.text}</p>}
+      <h2><span className="pn-step">3</span>{t('Kanały Twitch i Kick')}</h2>
+      <p>{t('Podpięty kanał sam wysyła follow, suby, gifty, bitsy, raidy i nagrody za punkty do „Alertów z panelu”, liczy je w licznikach, w pasku celu i w subathonie. Hasło ani token nie trafiają do linku OBS.')}</p>
       <div className="pn-connect">
         {(['twitch', 'kick'] as const).map((pl) => (
           <div key={pl} className={`pn-connect-row is-${pl}`}>
-            <b>{pl === 'twitch' ? 'Twitch' : 'Kick'}</b>
+            <b>{PLATFORM_NAME[pl]}</b>
             {links[pl] ? (
               <>
                 <span className="pn-linked">✓ {links[pl]}</span>
-                <button type="button" className="pn-ghost" disabled={busy === pl} onClick={() => disconnect(pl)}>{t('Odłącz')}</button>
+                {owner && <button type="button" className="pn-ghost" onClick={() => unlink(pl)}>{t('Odłącz')}</button>}
               </>
             ) : (
-              <button type="button" className="pn-primary" disabled={busy === pl || ready?.[pl] === false} onClick={() => start(pl)}>
-                {busy === pl ? '…' : t('Połącz')}
-              </button>
+              <button type="button" className={`pn-login is-${pl}`} disabled={me ? !me[pl] : true} onClick={() => link(pl)}>{t('Zaloguj i podepnij')}</button>
             )}
           </div>
         ))}
       </div>
-      {ready && !ready.twitch && !ready.kick && <p className="pn-note">{t('To połączenie nie jest jeszcze włączone na serwerze.')}</p>}
       {error && <p className="pn-error">{error}</p>}
+
+      <h3 className="pn-sub">{t('Automaty')}</h3>
+      <div className="pn-auto">
+        <label>{t('Pasek celu liczy sam')}
+          <select value={goalAuto ?? ''} onChange={(e) => send({ goal: { auto: e.currentTarget.value } })}>
+            {GOAL_AUTO.map(([v, l]) => <option key={v} value={v}>{t(l)}</option>)}
+          </select>
+        </label>
+        <p className="pn-note">{t('Liczniki „follows”, „subs”, „bits”, „gifts”, „kicks” i „raids” rosną same; pokażesz je widżetem „Licznik” i wyzerujesz w docku.')}</p>
+        <b className="pn-auto-head">{t('Subathon: ile minut dodać')}</b>
+        <div className="pn-auto-grid">
+          {AUTO_TIME.map(([k, l]) => (
+            <label key={k}>{t(l)}
+              <input type="number" min={0} max={120} step={0.5} defaultValue={autoTime[k] ?? ''} placeholder="0"
+                onBlur={(e) => send({ autoTime: { [k]: Number(e.currentTarget.value) || 0 } })} />
+            </label>
+          ))}
+        </div>
+        <p className="pn-note">{t('Działa, gdy licznik w docku odlicza w dół (subathon albo odliczanie).')}</p>
+      </div>
+
       <h3 className="pn-sub">{t('Nagroda kanału → efekt')}</h3>
       <p className="pn-note">{t('Wpisz nazwę nagrody dokładnie jak na Twitchu lub Kicku. Gdy ktoś ją odbierze, odpali się wybrany efekt.')}</p>
       {Object.entries(rewardFx).map(([title, f]) => (
         <div key={title} className="pn-row pn-fx-row">
           <span>{title}</span><b>→ {t(FX_OPTIONS.find((o) => o[0] === f)?.[1] ?? f)}</b>
-          <button type="button" className="pn-ghost" onClick={() => setRewardFx(title, null)}>✕</button>
+          <button type="button" className="pn-ghost" onClick={() => send({ rewardFx: { [title]: null } })}>✕</button>
         </div>
       ))}
       <div className="pn-row">
         <input value={reward} maxLength={60} onChange={(e) => setReward(e.currentTarget.value)} placeholder={t('Nazwa nagrody')} />
         <select value={fx} onChange={(e) => setFx(e.currentTarget.value)}>{FX_OPTIONS.map(([v, l]) => <option key={v} value={v}>{t(l)}</option>)}</select>
-        <button type="button" className="pn-ghost" disabled={!reward.trim()} onClick={() => { setRewardFx(reward.trim(), fx); setReward(''); }}>{t('Dodaj')}</button>
+        <button type="button" className="pn-ghost" disabled={!reward.trim()} onClick={() => { send({ rewardFx: { [reward.trim()]: fx } }); setReward(''); }}>{t('Dodaj')}</button>
       </div>
     </section>
   );
@@ -363,7 +476,10 @@ export const PanelDock = () => {
 };
 
 /* Counters, score, one-shot effects and manual alerts (newer widgets: counter, scoreboard, wheel, burst, alertbox). */
-const COUNTER_NAMES: [string, string, string][] = [['deaths', '💀', tx('Śmierci')], ['wins', '🏆', tx('Wygrane')], ['losses', '❌', tx('Przegrane')], ['kills', '🎯', tx('Kille')], ['count', '🔢', tx('Licznik ogólny')]];
+const COUNTER_NAMES: [string, string, string][] = [
+  ['deaths', '💀', tx('Śmierci')], ['wins', '🏆', tx('Wygrane')], ['losses', '❌', tx('Przegrane')], ['kills', '🎯', tx('Kille')], ['count', '🔢', tx('Licznik ogólny')],
+  ['follows', '❤️', tx('Followy')], ['subs', '⭐', tx('Suby')], ['bits', '💎', tx('Bitsy')], ['gifts', '🎁', tx('Gift suby')], ['kicks', '🟢', tx('Kicks')], ['raids', '🚀', tx('Raidy')],
+];
 const BURSTS: [string, string, string][] = [['confetti', '🎉', tx('Konfetti')], ['hearts', '❤️', tx('Serca')], ['stars', '⭐', tx('Gwiazdki')], ['money', '💸', tx('Kasa')]];
 const ALERT_KINDS: [string, string][] = [['follow', tx('Follow')], ['sub', tx('Sub')], ['donate', tx('Donacja')], ['raid', tx('Raid')], ['bits', tx('Bitsy')], ['custom', tx('Własny tekst')]];
 const SHOWN_COUNTERS = 'vxh-overlays:panel-counters';

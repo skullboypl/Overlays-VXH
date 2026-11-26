@@ -1,17 +1,23 @@
-// Linking a streamer's Twitch / Kick channel to their OBS panel room, and turning platform events into alerts.
+// Logging in with Twitch / Kick on the OBS panel page, linking that channel to the panel, and turning platform events
+// into alerts, counters, the goal bar and subathon time.
 //
-// POST /api/connect/start       {"key", "platform": "twitch"|"kick"}  -> {"url"}  (the dock's secret key proves the room)
-// GET  /api/connect/twitch/callback, /api/connect/kick/callback       OAuth return, then back to /panel
-// POST /api/connect/disconnect  {"key", "platform"}
-// POST /api/eventsub/twitch     Twitch EventSub webhooks (HMAC-SHA256 with TWITCH_EVENTSUB_SECRET)
-// POST /api/webhooks/kick       Kick webhooks (RSA-SHA256, Kick's public key)
+// GET  /api/account/me                         who is logged in (cookie), which panels they own, what is set up on the server
+// POST /api/account/login     {"platform", "key"?}  -> {"url"}  Twitch / Kick login (and, with this device's dock key, link)
+// GET  /api/connect/twitch/callback, /api/connect/kick/callback   OAuth return, sets the login cookie, back to /panel
+// POST /api/account/claim     {"key"}            make the logged-in accounts owners of that panel and link their channels
+// POST /api/account/unlink    {"room", "platform"}            owner only
+// POST /api/account/rotate    {"room", "newKey"}              owner only: new dock key, overlay links stay the same
+// POST /api/account/logout
+// POST /api/eventsub/twitch   Twitch EventSub webhooks (HMAC-SHA256 with TWITCH_EVENTSUB_SECRET)
+// POST /api/webhooks/kick     Kick webhooks (RSA-SHA256, Kick's public key)
 //
-// Twitch: after the streamer allows the app, subscriptions are made with the APP token, so no user token is kept.
-// Kick: the streamer's token is used once to subscribe and then dropped; events arrive at the app's webhook URL.
-// Overlays only ever see the alert text, never a token or the dock key.
+// The dock key alone only drives the dock (counters, effects, manual alerts). Linking or unlinking a channel, a new
+// key and deleting the panel need the owner logged in, so a leaked dock link cannot take the panel over.
+// Twitch: subscriptions run on the APP token, the user token is revoked right after login. Kick: the user token is
+// used once to subscribe and dropped. Overlays only ever see alert text, never a token, a cookie or the dock key.
 import { createHash, createHmac, createVerify, randomBytes, timingSafeEqual } from 'node:crypto';
-import { linkChannel, putOAuthState, roomsForChannel, takeOAuthState, unlinkChannel } from './store.mjs';
-import { pushEvent, roomOf, roomState } from './panel.mjs';
+import { addOwner, linkChannel, ownersOf, putOAuthState, roomsForChannel, roomsOwnedBy, takeOAuthState, unlinkChannel } from './store.mjs';
+import { pushEvent, resolveRoom, roomExists, roomState, rotateKey } from './panel.mjs';
 
 const KEY = /^[A-Za-z0-9_-]{43}$/;
 const env = (k) => String(process.env[k] ?? '').trim();
@@ -36,14 +42,41 @@ export const configured = () => ({
 const json = async (res) => res.json().catch(() => ({}));
 const b64url = (buf) => buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 
-// ---------- linking ----------
-export const connectStart = async (body) => {
-  const key = String(body?.key ?? '');
+// ---------- login cookie ----------
+const SESSION_DAYS = 30;
+const sessionSecret = () => env('SESSION_SECRET') || createHmac('sha256', env('TWITCH_EVENTSUB_SECRET') || env('KICK_CLIENT_SECRET') || 'vxh-dev').update('vxh-session-v1').digest('hex');
+const sign = (body) => b64url(createHmac('sha256', sessionSecret()).update(body).digest());
+/** Accounts in the login cookie: [{ platform, userId, login }]. */
+export const readSession = (cookieHeader) => {
+  const m = /(?:^|;\s*)vxh_sess=([A-Za-z0-9_-]+)\.([A-Za-z0-9_-]+)/.exec(String(cookieHeader ?? ''));
+  if (!m) return [];
+  const expected = sign(m[1]);
+  if (expected.length !== m[2].length || !timingSafeEqual(Buffer.from(expected), Buffer.from(m[2]))) return [];
+  try {
+    const v = JSON.parse(Buffer.from(m[1].replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf8'));
+    return v.exp > Date.now() && Array.isArray(v.ids) ? v.ids.slice(0, 4) : [];
+  } catch { return []; }
+};
+const sessionCookie = (ids) => {
+  const body = b64url(Buffer.from(JSON.stringify({ ids, exp: Date.now() + SESSION_DAYS * 86_400_000 })));
+  const secure = origin().startsWith('https:') ? '; Secure' : '';
+  return `vxh_sess=${body}.${sign(body)}; Path=/api; HttpOnly; SameSite=Lax; Max-Age=${SESSION_DAYS * 86_400}${secure}`;
+};
+const clearCookie = () => `vxh_sess=; Path=/api; HttpOnly; SameSite=Lax; Max-Age=0${origin().startsWith('https:') ? '; Secure' : ''}`;
+const sameId = (a, b) => a.platform === b.platform && String(a.userId) === String(b.userId);
+const isOwner = async (room, ids) => (await ownersOf(room)).some((o) => ids.some((id) => sameId(o, id)));
+/** Panels without an owner (made before logging in existed) can still be deleted with the key alone. */
+export const mayDrop = async (room, cookieHeader) => {
+  const owners = await ownersOf(room);
+  return !owners.length || owners.some((o) => readSession(cookieHeader).some((id) => sameId(o, id)));
+};
+
+// ---------- login / link ----------
+export const accountLogin = async (body) => {
   const platform = String(body?.platform ?? '');
-  if (!KEY.test(key)) return { status: 400, body: { error: 'bad_key' } };
   if (platform !== 'twitch' && platform !== 'kick') return { status: 400, body: { error: 'bad_platform' } };
   if (!configured()[platform]) return { status: 503, body: { error: 'not_configured' } };
-  const room = roomOf(key);
+  const room = body?.key ? resolveRoom(String(body.key)) : '';
   const id = b64url(randomBytes(24));
   if (platform === 'twitch') {
     await putOAuthState(id, { room, platform });
@@ -62,30 +95,65 @@ export const connectStart = async (body) => {
   return { status: 200, body: { url: `https://id.kick.com/oauth/authorize?${q}` } };
 };
 
-/** Returns where to send the browser: back to the panel page with ok / an error code. */
-export const connectCallback = async (platform, params) => {
+/** Makes the logged-in accounts owners of an unowned panel (or adds them when one of them already owns it) and links their channels. */
+const claimRoom = async (room, ids) => {
+  if (!room || !roomExists(room) || !ids.length) return 'no_room';
+  const owners = await ownersOf(room);
+  if (owners.length && !owners.some((o) => ids.some((id) => sameId(o, id)))) return 'not_owner';
+  const links = { ...(roomState(room)?.links ?? {}) };
+  for (const id of ids) {
+    await addOwner(room, id);
+    await linkChannel(room, id.platform, id.userId, id.login);
+    links[id.platform] = id.login;
+  }
+  pushEvent(room, { links });
+  return 'ok';
+};
+
+/** OAuth return: { location, cookie }. */
+export const connectCallback = async (platform, params, cookieHeader) => {
   const back = (q) => `${origin()}/panel?${q}`;
   const st = await takeOAuthState(String(params.get('state') ?? ''));
-  if (!st || st.platform !== platform) return back(`connect_error=state&platform=${platform}`);
-  if (params.get('error')) return back(`connect_error=denied&platform=${platform}`);
-  const code = String(params.get('code') ?? '');
+  if (!st || st.platform !== platform) return { location: back(`login_error=state&platform=${platform}`) };
+  if (params.get('error')) return { location: back(`login_error=denied&platform=${platform}`) };
   try {
-    const who = platform === 'twitch' ? await twitchLink(code) : await kickLink(code, st.verifier);
-    await linkChannel(st.room, platform, who.id, who.login);
-    const links = { ...(roomState(st.room)?.links ?? {}), [platform]: who.login };
-    pushEvent(st.room, { links });
-    return back(`connected=${platform}`);
+    const who = platform === 'twitch' ? await twitchLink(String(params.get('code') ?? '')) : await kickLink(String(params.get('code') ?? ''), st.verifier);
+    const me = { platform, userId: who.id, login: who.login };
+    const ids = [me, ...readSession(cookieHeader).filter((x) => x.platform !== platform)];
+    const claimed = st.room ? await claimRoom(st.room, ids) : 'no_room';
+    return { location: back(`login=${platform}${claimed === 'not_owner' ? '&claim=not_owner' : ''}`), cookie: sessionCookie(ids) };
   } catch (err) {
-    console.error(`connect ${platform}:`, err?.message ?? err);
-    return back(`connect_error=${encodeURIComponent(String(err?.message ?? 'failed').slice(0, 40))}&platform=${platform}`);
+    console.error(`login ${platform}:`, err?.message ?? err);
+    return { location: back(`login_error=${encodeURIComponent(String(err?.message ?? 'failed').slice(0, 40))}&platform=${platform}`) };
   }
 };
 
-export const connectDisconnect = async (body) => {
-  const key = String(body?.key ?? '');
+export const accountMe = async (cookieHeader) => {
+  const ids = readSession(cookieHeader);
+  const rooms = await roomsOwnedBy(ids);
+  return {
+    status: 200,
+    body: {
+      ...configured(),
+      accounts: ids.map(({ platform, login }) => ({ platform, login })),
+      panels: rooms.filter(roomExists).map((room) => ({ room, links: roomState(room)?.links ?? {} })),
+    },
+  };
+};
+
+export const accountClaim = async (body, cookieHeader) => {
+  const ids = readSession(cookieHeader);
+  if (!ids.length) return { status: 401, body: { error: 'login_required' } };
+  const r = await claimRoom(resolveRoom(String(body?.key ?? '')), ids);
+  return r === 'ok' ? { status: 200, body: { ok: true } } : { status: r === 'not_owner' ? 403 : 404, body: { error: r } };
+};
+
+export const accountUnlink = async (body, cookieHeader) => {
+  const ids = readSession(cookieHeader);
+  const room = String(body?.room ?? '');
   const platform = String(body?.platform ?? '');
-  if (!KEY.test(key) || (platform !== 'twitch' && platform !== 'kick')) return { status: 400, body: { error: 'bad_request' } };
-  const room = roomOf(key);
+  if (platform !== 'twitch' && platform !== 'kick') return { status: 400, body: { error: 'bad_platform' } };
+  if (!ids.length || !(await isOwner(room, ids))) return { status: 403, body: { error: 'owner_login_required' } };
   const { userId, stillUsed } = await unlinkChannel(room, platform);
   if (platform === 'twitch' && userId && !stillUsed) await twitchUnsubscribeAll(userId).catch(() => {});
   const links = { ...(roomState(room)?.links ?? {}) };
@@ -93,6 +161,16 @@ export const connectDisconnect = async (body) => {
   pushEvent(room, { links });
   return { status: 200, body: { ok: true } };
 };
+
+export const accountRotate = async (body, cookieHeader) => {
+  const ids = readSession(cookieHeader);
+  const room = String(body?.room ?? '');
+  if (!ids.length || !(await isOwner(room, ids))) return { status: 403, body: { error: 'owner_login_required' } };
+  const r = rotateKey(room, String(body?.newKey ?? ''));
+  return r.ok ? { status: 200, body: { ok: true } } : { status: 409, body: { error: r.error } };
+};
+
+export const accountLogout = () => ({ status: 200, body: { ok: true }, cookie: clearCookie() });
 
 // ---------- Twitch ----------
 let appToken = { value: '', exp: 0 };
@@ -184,11 +262,27 @@ export const twitchAlert = (type, e) => {
   }
 };
 
+/** What an event adds to the automatic counters (follows, subs, bits...) and to the goal bar / subathon. */
+const tallies = (a) => {
+  const n = Number(a.amount) || 0;
+  switch (a.kind) {
+    case 'follow': return { follows: 1 };
+    case 'sub': return { subs: 1 };
+    case 'gift': return { subs: n || 1, gifts: n || 1 };
+    case 'bits': return { bits: n };
+    case 'donate': return a.platform === 'kick' ? { kicks: n } : {};
+    case 'raid': return { raids: 1 };
+    default: return {};
+  }
+};
+
 const deliver = async (platform, channelId, alert) => {
   if (!alert || !channelId) return;
+  const add = tallies({ ...alert, platform });
   for (const room of await roomsForChannel(platform, channelId)) {
-    const fx = alert.kind === 'reward' ? roomState(room)?.rewardFx?.[String(alert.reward ?? '').toLowerCase()] : undefined;
-    pushEvent(room, { alert: { ...alert, platform }, fire: fx });
+    const s = roomState(room);
+    const fx = alert.kind === 'reward' ? s?.rewardFx?.[String(alert.reward ?? '').toLowerCase()] : undefined;
+    pushEvent(room, { alert: { ...alert, platform }, fire: fx, tally: add });
   }
 };
 

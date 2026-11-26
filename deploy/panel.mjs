@@ -67,7 +67,10 @@ export const applyPatch = (state, patch, now = Date.now()) => {
   // The dock keeps the whole state in its own localStorage and sends it back after a server restart.
   if (patch && typeof patch === 'object' && patch.restore && typeof patch.restore === 'object') {
     const r = patch.restore;
-    s = applyPatch(fresh(), { hidden: r.hidden, goal: { current: r.goal?.current ?? null, target: r.goal?.target ?? null }, reminder: { paused: r.reminder?.paused === true } }, now);
+    s = applyPatch(fresh(), {
+      hidden: r.hidden, goal: { current: r.goal?.current ?? null, target: r.goal?.target ?? null, auto: r.goal?.auto ?? '' }, reminder: { paused: r.reminder?.paused === true },
+      autoTime: r.autoTime ?? {}, rewardFx: r.rewardFx ?? {},
+    }, now);
     if (r.counters && typeof r.counters === 'object') applyCounters(s, Object.fromEntries(Object.entries(r.counters).map(([k, v]) => [k, { set: v }])));
     const t = r.timer;
     if (t && typeof t === 'object' && (t.mode === 'countdown' || t.mode === 'stopwatch')) {
@@ -99,6 +102,20 @@ export const applyPatch = (state, patch, now = Date.now()) => {
       if (a === 'add') { const ms = clampNum(patch.timer.ms, -24 * 3_600_000, 24 * 3_600_000); if (ms !== null) t.left = Math.max(0, t.left + ms); }
       if (a === 'off') { s.timer = null; return s; }
       s.timer = t;
+    }
+    if (patch.goal && typeof patch.goal === 'object' && 'auto' in patch.goal) {
+      // The goal bar counts by itself from linked channels: follows, subs, bits or Kicks ('' = off).
+      const v = String(patch.goal.auto ?? '');
+      s.goal.auto = ['follows', 'subs', 'bits', 'kicks'].includes(v) ? v : null;
+    }
+    // Subathon: minutes added per follow / sub / gifted sub / 100 bits / 100 Kicks.
+    if (patch.autoTime && typeof patch.autoTime === 'object') {
+      s.autoTime ??= {};
+      for (const k of ['follow', 'sub', 'gift', 'bits100', 'kicks100']) {
+        if (!(k in patch.autoTime)) continue;
+        const v = clampNum(Number(patch.autoTime[k]), 0, 120);
+        if (v === null || v === 0) delete s.autoTime[k]; else s.autoTime[k] = v;
+      }
     }
     if (patch.goal && typeof patch.goal === 'object') {
       if ('current' in patch.goal) s.goal.current = patch.goal.current === null ? null : clampNum(patch.goal.current, -1e12, 1e12);
@@ -141,7 +158,7 @@ const broadcast = (room, r) => {
 };
 
 const prune = (now = Date.now()) => {
-  for (const [room, r] of rooms) if (!r.listeners.size && !r.watchers.size && now - r.touched > IDLE_MS) { rooms.delete(room); changed.delete(room); deleted.add(room); }
+  for (const [room, r] of rooms) if (!r.listeners.size && !r.watchers.size && now - r.touched > IDLE_MS) { if (r.keyHash) aliases.delete(r.keyHash); rooms.delete(room); changed.delete(room); deleted.add(room); }
 };
 
 const open = (room, create) => {
@@ -156,13 +173,42 @@ const open = (room, create) => {
   return r ?? null;
 };
 
-/** Every POST: { status, body }. */
-export const panelPost = (action, body) => {
+// ---------- keys ----------
+// A room's id is the hash of the key it was made with. After "new key" (owner logged in) the room keeps its id, so
+// overlay links in OBS keep working, and only the new key's hash opens it: hash -> room in `aliases`.
+const aliases = new Map();
+/** The room a dock key opens, or '' when that key was replaced by a newer one. */
+export const resolveRoom = (key) => {
+  if (!KEY.test(String(key ?? ''))) return '';
+  const h = roomOf(key);
+  const room = aliases.get(h) ?? h;
+  const r = rooms.get(room);
+  if (r?.keyHash && r.keyHash !== h) return '';
+  return room;
+};
+/** Owner only (checked by the caller): from now on `newKey` opens `room` and the old key does nothing. */
+export const rotateKey = (room, newKey) => {
+  const r = rooms.get(room);
+  if (!r || !KEY.test(String(newKey ?? ''))) return { ok: false, error: 'bad_request' };
+  const h = roomOf(newKey);
+  if (rooms.has(h) || aliases.has(h)) return { ok: false, error: 'taken' };
+  if (r.keyHash && r.keyHash !== room) aliases.delete(r.keyHash);
+  r.keyHash = h;
+  aliases.set(h, room);
+  r.touched = Date.now();
+  changed.add(room);
+  return { ok: true };
+};
+export const roomExists = (room) => rooms.has(room);
+
+/** Every POST: { status, body }. `allowDrop` says whether the caller may delete the room (no owner, or owner logged in). */
+export const panelPost = (action, body, allowDrop = () => true) => {
   const key = String(body?.key ?? '');
   if (!KEY.test(key)) return { status: 400, body: { error: 'bad_key' } };
-  const room = roomOf(key);
+  const room = resolveRoom(key);
+  if (!room) return { status: 403, body: { error: 'revoked' } };
   if (action === 'claim') {
-    if (body.fresh === true && rooms.has(room)) return { status: 409, body: { error: 'taken' } };
+    if (body.fresh === true && (rooms.has(room) || aliases.has(roomOf(key)))) return { status: 409, body: { error: 'taken' } };
     const r = open(room, true);
     if (!r) return { status: 503, body: { error: 'full' } };
     r.touched = Date.now();
@@ -177,12 +223,17 @@ export const panelPost = (action, body) => {
     r.touched = Date.now();
     changed.add(room);
     broadcast(room, r);
-    publishRoom(room, r.version, r.state);
+    publishRoom(room, r.version, r.state, r.keyHash);
     return { status: 200, body: JSON.parse(payload(room, r)) };
   }
   if (action === 'drop') {
+    if (!allowDrop(room)) return { status: 403, body: { error: 'owner_login_required' } };
     const r = rooms.get(room);
-    if (r) { for (const res of everyone(r)) res.end(); rooms.delete(room); changed.delete(room); deleted.add(room); }
+    if (r) {
+      for (const res of everyone(r)) res.end();
+      if (r.keyHash) aliases.delete(r.keyHash);
+      rooms.delete(room); changed.delete(room); deleted.add(room);
+    }
     return { status: 200, body: { ok: true } };
   }
   return { status: 404, body: { error: 'not_found' } };
@@ -233,13 +284,17 @@ export const panelGet = (path, req, res, watch = false) => {
 export const loadRooms = async () => {
   try {
     for (const v of await loadAllRooms()) {
-      if (ROOM.test(v.room)) rooms.set(v.room, { state: { ...fresh(), ...v.state }, version: v.version ?? 0, touched: v.touched ?? Date.now(), listeners: new Set(), watchers: new Set() });
+      if (!ROOM.test(v.room)) continue;
+      rooms.set(v.room, { state: { ...fresh(), ...v.state }, version: v.version ?? 0, touched: v.touched ?? Date.now(), keyHash: v.keyHash || undefined, listeners: new Set(), watchers: new Set() });
+      if (v.keyHash && v.keyHash !== v.room) aliases.set(v.keyHash, v.room);
     }
   } catch (err) { console.error('panel: load failed', err?.message ?? err); }
   // Another instance changed a room (Redis): take its newer state and tell our own listeners.
-  await onRemoteRoom((room, version, state) => {
+  await onRemoteRoom((room, version, state, keyHash) => {
     const r = open(room, true);
-    if (!r || version <= r.version) return;
+    if (!r) return;
+    if (keyHash && keyHash !== r.keyHash) { if (r.keyHash) aliases.delete(r.keyHash); r.keyHash = keyHash; if (keyHash !== room) aliases.set(keyHash, room); }
+    if (version <= r.version) return;
     r.state = { ...fresh(), ...state };
     r.version = version;
     r.touched = Date.now();
@@ -266,10 +321,22 @@ export const panelMaintenance = () => { prune(); void saveRooms(); };
  * A change that comes from the server, not the dock: an alert from Twitch / Kick, an effect for a channel point
  * reward, or the list of linked channels. Same path as a dock update: new version, live push, saved later.
  */
-export const pushEvent = (room, { alert, fire, links } = {}, now = Date.now()) => {
+export const pushEvent = (room, { alert, fire, links, tally } = {}, now = Date.now()) => {
   const r = rooms.get(room) ?? open(room, true);
   if (!r) return false;
-  const s = structuredClone(r.state);
+  let s = structuredClone(r.state);
+  if (tally && Object.keys(tally).length) {
+    // Automatic counters (follows, subs, bits, gifts, kicks, raids), the goal bar when it follows one of them,
+    // and subathon time per event, as set in the panel.
+    s.counters ??= {};
+    for (const [k, v] of Object.entries(tally)) if (v) s.counters[k] = clampNum((s.counters[k] ?? 0) + v, -1e9, 1e9);
+    const auto = s.goal?.auto;
+    if (auto && tally[auto]) s.goal.current = clampNum((s.goal.current ?? 0) + tally[auto], -1e12, 1e12);
+    const t = s.autoTime ?? {};
+    const min = (tally.follows ?? 0) * (t.follow ?? 0) + ((tally.subs ?? 0) - (tally.gifts ?? 0)) * (t.sub ?? 0) + (tally.gifts ?? 0) * (t.gift ?? t.sub ?? 0)
+      + ((tally.bits ?? 0) / 100) * (t.bits100 ?? 0) + ((tally.kicks ?? 0) / 100) * (t.kicks100 ?? 0);
+    if (min > 0 && s.timer?.mode === 'countdown') s = applyPatch(s, { timer: { action: 'add', ms: Math.round(min * 60_000) } }, now);
+  }
   s.alerts ??= []; s.fire ??= {}; s.links ??= {};
   if (alert) pushAlert(s, { id: randomBytes(6).toString('hex'), at: now, ...alert, text: String(alert.text ?? '').slice(0, 140) });
   if (fire && FIRE.test(fire)) s.fire[fire] = now;
@@ -279,7 +346,7 @@ export const pushEvent = (room, { alert, fire, links } = {}, now = Date.now()) =
   r.touched = now;
   changed.add(room);
   broadcast(room, r);
-  publishRoom(room, r.version, r.state);
+  publishRoom(room, r.version, r.state, r.keyHash);
   return true;
 };
 export const roomState = (room) => rooms.get(room)?.state ?? null;

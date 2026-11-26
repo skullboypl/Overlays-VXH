@@ -126,3 +126,18 @@ html.is-dock body { background: #101012; }
 .pn-fx-row > span { flex: 1 1 auto; font-weight: 600; }
 .pn-fx-row > b { flex: 0 0 auto; }
 .pn-fx-row > button { flex: 0 0 auto; }
+/* Login with Twitch / Kick, automations (added later). */
+.pn-login { height: 36px; padding: 0 14px; border-radius: 10px; border: 0; font-weight: 800; color: #fff; cursor: pointer; }
+.pn-login.is-twitch { background: #9146ff; }
+.pn-login.is-kick { background: #53fc18; color: #0b0b0c; }
+.pn-login:disabled { opacity: 0.45; cursor: default; }
+.pn-acc { display: inline-block; margin: 0 6px 0 2px; padding: 2px 8px; border-radius: 8px; background: var(--input); color: var(--text); }
+.pn-acc.is-twitch { border: 1px solid #9146ff; }
+.pn-acc.is-kick { border: 1px solid #53fc18; }
+.pn-banner { margin: 0; padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); }
+.pn-auto { display: grid; gap: 8px; }
+.pn-auto label { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--text); }
+.pn-auto select, .pn-auto input { height: 34px; padding: 0 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--input); color: var(--text); font: inherit; }
+.pn-auto input { width: 90px; }
+.pn-auto-head { font-size: 13px; margin-top: 4px; }
+.pn-auto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 14px; }

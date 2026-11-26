@@ -372,6 +372,9 @@ const W = (id: string, name: string, icon: string, size: { w: number; h: number 
 const COUNTER_OPTIONS = [
   { value: 'deaths', label: 'Śmierci' }, { value: 'wins', label: 'Wygrane' }, { value: 'losses', label: 'Przegrane' },
   { value: 'kills', label: 'Kille' }, { value: 'count', label: 'Licznik ogólny' }, { value: 'custom', label: 'Własna nazwa' },
+  // Counted by the server from a linked Twitch / Kick channel.
+  { value: 'follows', label: 'Followy (z kanału)' }, { value: 'subs', label: 'Suby (z kanału)' }, { value: 'bits', label: 'Bitsy (z kanału)' },
+  { value: 'gifts', label: 'Gift suby (z kanału)' }, { value: 'kicks', label: 'Kicks (z kanału)' }, { value: 'raids', label: 'Raidy (z kanału)' },
 ];
 const PANEL_HINT = 'Z Panelu OBS zmieniasz liczbę przyciskami +1 / −1; bez panelu pokazuje liczbę z linku';
 const DEMO = { group: 'Test', key: 'demo', label: 'Pokaz w pętli (test)', type: 'toggle', default: false, hint: 'Odpala się samo co kilka sekund, żeby sprawdzić wygląd w OBS. Na stream wyłącz.' } as const;

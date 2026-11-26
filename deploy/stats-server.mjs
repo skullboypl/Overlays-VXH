@@ -4,15 +4,15 @@
 // GET  /api/presence  {"live": n, "byType": {"snow": 3, ...}, "peakToday": n, "updated": <ms>}
 // GET  /api/followers?platform=twitch|kick|youtube&channel=...  follower count for the goal bar (followers.mjs)
 // /api/panel/...  the OBS panel (panel.mjs)
-// /api/connect/..., /api/eventsub/twitch, /api/webhooks/kick  linked Twitch / Kick channels (connect.mjs)
+// /api/account/..., /api/connect/..., /api/eventsub/twitch, /api/webhooks/kick  login and linked channels (connect.mjs)
 //
 // Nothing personal is kept: a random id the page makes up on load, the overlay type and the time of the last ping.
 // The client address only lives in memory, to stop one address from inflating the counter.
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { followers } from './followers.mjs';
-import { loadRooms, panelGet, panelMaintenance, panelPost } from './panel.mjs';
-import { configured, connectCallback, connectDisconnect, connectStart, kickWebhook, twitchWebhook } from './connect.mjs';
+import { loadRooms, panelGet, panelMaintenance, panelPost, resolveRoom } from './panel.mjs';
+import { accountClaim, accountLogin, accountLogout, accountMe, accountRotate, accountUnlink, configured, connectCallback, kickWebhook, mayDrop, twitchWebhook } from './connect.mjs';
 import { openStore, storeKind } from './store.mjs';
 
 const PORT = Number(process.env.STATS_PORT ?? 3001);
@@ -107,13 +107,21 @@ export const server = http.createServer((req, res) => {
       .catch(() => send(res, 500, { error: 'internal' }));
     return;
   }
-  // ---- linked Twitch / Kick channels ----
-  if (url.pathname === '/api/connect/status' && req.method === 'GET') return send(res, 200, { ...configured(), store: storeKind() });
+  // ---- login with Twitch / Kick, linked channels ----
+  const json = (status, body, cookie) => {
+    res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', ...(cookie ? { 'set-cookie': cookie } : {}) });
+    res.end(JSON.stringify(body));
+  };
+  if (url.pathname === '/api/connect/status' && req.method === 'GET') return json(200, { ...configured(), store: storeKind() });
+  if (url.pathname === '/api/account/me' && req.method === 'GET') {
+    accountMe(req.headers.cookie).then(({ status, body }) => json(status, body)).catch(() => json(500, { error: 'internal' }));
+    return;
+  }
   if ((url.pathname === '/api/connect/twitch/callback' || url.pathname === '/api/connect/kick/callback') && req.method === 'GET') {
     const platform = url.pathname.includes('/twitch/') ? 'twitch' : 'kick';
-    connectCallback(platform, url.searchParams)
-      .then((to) => { res.writeHead(302, { location: to, 'cache-control': 'no-store' }); res.end(); })
-      .catch(() => send(res, 500, { error: 'internal' }));
+    connectCallback(platform, url.searchParams, req.headers.cookie)
+      .then(({ location, cookie }) => { res.writeHead(302, { location, 'cache-control': 'no-store', ...(cookie ? { 'set-cookie': cookie } : {}) }); res.end(); })
+      .catch(() => json(500, { error: 'internal' }));
     return;
   }
   const hooks = { '/api/eventsub/twitch': twitchWebhook, '/api/webhooks/kick': kickWebhook };
@@ -126,14 +134,18 @@ export const server = http.createServer((req, res) => {
     });
     return;
   }
-  if ((url.pathname === '/api/connect/start' || url.pathname === '/api/connect/disconnect') && req.method === 'POST') {
+  const account = { login: accountLogin, claim: accountClaim, unlink: accountUnlink, rotate: accountRotate, logout: accountLogout };
+  const am = /^\/api\/account\/([a-z]+)$/.exec(url.pathname);
+  if (am && account[am[1]] && req.method === 'POST') {
     if (limited(clientIp(req), Date.now())) return send(res, 429);
+    // Only same-site pages may call these with the login cookie (SameSite=Lax already keeps it off cross-site POSTs).
+    if (!String(req.headers['content-type'] ?? '').startsWith('application/json')) return json(415, { error: 'json_only' });
     readBody(req, 2048, (raw) => {
       let body;
-      try { body = JSON.parse(raw ?? ''); } catch { return send(res, 400, { error: 'bad_json' }); }
-      (url.pathname.endsWith('/start') ? connectStart(body) : connectDisconnect(body))
-        .then(({ status, body: out }) => { res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(JSON.stringify(out)); })
-        .catch(() => send(res, 500, { error: 'internal' }));
+      try { body = JSON.parse(raw || '{}'); } catch { return json(400, { error: 'bad_json' }); }
+      Promise.resolve(account[am[1]](body, req.headers.cookie))
+        .then(({ status, body: out, cookie }) => json(status, out, cookie))
+        .catch(() => json(500, { error: 'internal' }));
     });
     return;
   }
@@ -148,9 +160,17 @@ export const server = http.createServer((req, res) => {
     req.on('end', () => {
       let body;
       try { body = JSON.parse(raw); } catch { return send(res, 400, { error: 'bad_json' }); }
-      const { status, body: out } = panelPost(action, body);
-      res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
-      res.end(JSON.stringify(out));
+      const done = ({ status, body: out }) => {
+        res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+        res.end(JSON.stringify(out));
+      };
+      // Deleting a panel that has an owner needs that owner logged in (a leaked dock link cannot delete it).
+      if (action === 'drop') {
+        const room = resolveRoom(body?.key);
+        mayDrop(room, req.headers.cookie).then((ok) => done(panelPost(action, body, () => ok))).catch(() => done({ status: 500, body: { error: 'internal' } }));
+        return;
+      }
+      done(panelPost(action, body));
     });
     return;
   }

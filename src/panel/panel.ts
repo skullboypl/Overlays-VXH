@@ -63,6 +63,52 @@ export const createKey = async () => {
   throw new Error('no_free_room');
 };
 export const claim = (key: string) => post('claim', { key });
+
+/**
+ * The room a key opens. Normally the hash of the key; after "new key" (owner logged in) the room keeps its old id,
+ * so the server says which one it is. Cached per key in this browser.
+ */
+const ROOM_STORE = 'vxh-overlays:panel-room';
+export const rememberRoom = async (key: string, room: string) => store.set(ROOM_STORE, `${await roomOf(key)}:${room}`);
+export const roomFor = async (key: string) => {
+  const h = await roomOf(key);
+  const cached = store.get(ROOM_STORE);
+  if (cached?.startsWith(`${h}:`)) return cached.slice(h.length + 1);
+  try {
+    const r = await claim(key);
+    if (r.ok && typeof r.data?.room === 'string') { store.set(ROOM_STORE, `${h}:${r.data.room}`); return r.data.room as string; }
+  } catch { /* offline: the hash is right for every key that was never replaced */ }
+  return h;
+};
+
+/* ---------- login with Twitch / Kick ---------- */
+export type Account = { platform: 'twitch' | 'kick'; login: string };
+export type Me = { twitch: boolean; kick: boolean; accounts: Account[]; panels: { room: string; links: Partial<Record<'twitch' | 'kick', string>> }[] };
+const account = async (action: string, body: object) => {
+  const res = await fetch(`/api/account/${action}`, { method: 'POST', headers: { 'content-type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify(body) });
+  return { ok: res.ok, status: res.status, data: await res.json().catch(() => ({})) };
+};
+export const fetchMe = async (): Promise<Me | null> => {
+  try { const r = await fetch('/api/account/me', { credentials: 'same-origin', cache: 'no-store' }); return r.ok ? await r.json() : null; } catch { return null; }
+};
+export const loginWith = async (platform: 'twitch' | 'kick', key: string | null) => {
+  const r = await account('login', { platform, key: key ?? undefined });
+  if (r.ok && r.data.url) { window.location.href = r.data.url; return null; }
+  return String(r.data.error ?? 'failed');
+};
+export const claimPanel = (key: string) => account('claim', { key });
+export const unlinkChannel = (room: string, platform: 'twitch' | 'kick') => account('unlink', { room, platform });
+export const logout = () => account('logout', {});
+/** Owner only: a fresh key for the same room; overlay links keep working, the old dock link stops. */
+export const rotateKey = async (room: string) => {
+  const key = newKey();
+  const r = await account('rotate', { room, newKey: key });
+  if (!r.ok) return null;
+  saveKey(key);
+  store.del(STATE_STORE);
+  await rememberRoom(key, room);
+  return key;
+};
 export const update = (key: string, patch: object) => post('update', { key, patch });
 export const drop = (key: string) => post('drop', { key });
 

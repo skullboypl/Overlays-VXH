@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { roomOf, savedKey } from '../panel/panel';
+import { roomFor, savedKey } from '../panel/panel';
 import '../panel/panel.css';
 import { findOverlay } from '../overlays/registry';
 import type { OverlayDef } from '../overlays/schema';
@@ -76,7 +76,7 @@ export const OutputPanel = ({ def, query, size, setSize, onApply }: Props) => {
   // OBS panel: the link gets only the read-only room id, never the key.
   const [room, setRoom] = useState<string | null>(null);
   const [usePanelLink, setUsePanelLink] = useState(() => { try { return localStorage.getItem('vxh-overlays:panel-link') !== '0'; } catch { return true; } });
-  useEffect(() => { const k = savedKey(); if (k) void roomOf(k).then(setRoom); }, []);
+  useEffect(() => { const k = savedKey(); if (k) void roomFor(k).then(setRoom); }, []);
   const togglePanel = (on: boolean) => { setUsePanelLink(on); try { localStorage.setItem('vxh-overlays:panel-link', on ? '1' : '0'); } catch { /* ignore */ } };
   // Non-Polish links carry ?lang so texts drawn by the overlay itself (holiday greetings) match the studio.
   const obsQuery = [query, lang !== 'pl' ? `lang=${lang}` : '', room && usePanelLink ? `panel=${room}` : ''].filter(Boolean).join('&');
