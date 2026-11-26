@@ -120,6 +120,11 @@ export const PanelSetup = () => {
                 <Link className="pn-ghost" to="/goal">🎯 {t('Pasek celu')}</Link>
                 <Link className="pn-ghost" to="/reminder">📣 {t('Przypominajka')}</Link>
               </div>
+              <div className="pn-row">
+                {['counter', 'scoreboard', 'subathon', 'wheel', 'alertbox', 'burst'].map((id) => OVERLAYS.find((o) => o.id === id)).map((o) => o && (
+                  <Link key={o.id} className="pn-ghost" to={`/${o.id}`}>{o.icon} {t(o.name)}</Link>
+                ))}
+              </div>
             </section>
             <section className="pn-card">
               <h2><span className="pn-step">3</span>{t('Sprawdź')}</h2>
