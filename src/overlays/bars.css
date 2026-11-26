@@ -326,3 +326,13 @@
 .lt.style-stack .lt-kicker { align-self: flex-start; padding: 0.25em 0.8em; background: var(--accent2); color: #fff; border-radius: 0.3em 0.3em 0 0; }
 .lt.style-stack .lt-title { padding: 0.2em 0.7em; background: var(--accent); color: #fff; }
 .lt.style-stack .lt-sub { padding: 0.3em 0.9em 0.35em; background: var(--bg); opacity: 1; }
+
+/* Schedule layouts added later: "calendar" (day tiles) and "today" (only the highlighted day). New class names only. */
+.sch.layout-calendar .sch-slot { flex-direction: column; justify-content: center; gap: 0.15em; min-width: 3.4em; padding: 0.5em 0.6em; text-align: center; }
+.sch.layout-calendar .sch-day { font-size: 0.62em; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.85; }
+.sch.layout-calendar .sch-time { font-size: 1.05em; font-weight: 800; }
+.sch.layout-calendar .sch-name { max-width: 6em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sch.layout-calendar .sch-slot.is-active { transform: translateY(-0.2em) scale(1.06); }
+.sch.layout-today .sch-slot { font-size: 1.15em; }
+/* Ticker: service icons (off by default). */
+.wd-tick-ico { display: inline-grid; place-items: center; width: 1.25em; height: 1.25em; margin-right: 0.45em; border-radius: 0.3em; vertical-align: -0.2em; }

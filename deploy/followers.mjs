@@ -72,7 +72,10 @@ const kick = async (slug, fetchImpl) => {
   if (!res.ok || !String(res.headers.get?.('content-type') ?? 'application/json').includes('json')) return { status: 503, body: { error: 'unavailable' } };
   const data = await res.json();
   if (data?.followers_count === undefined) return { status: 503, body: { error: 'unavailable' } };
-  return { status: 200, body: { platform: 'kick', channel: data.slug, name: data.user?.username ?? data.slug, avatar: data.user?.profile_pic ?? '', count: Number(data.followers_count) || 0 } };
+  // Extra fields (live, viewers, chatroom) are additions: older widgets read only count / name / avatar.
+  const live = Boolean(data.livestream?.is_live ?? data.livestream);
+  return { status: 200, body: { platform: 'kick', channel: data.slug, name: data.user?.username ?? data.slug, avatar: data.user?.profile_pic ?? '', count: Number(data.followers_count) || 0,
+    live, viewers: live ? Number(data.livestream?.viewer_count ?? 0) || 0 : 0, chatroom: Number(data.chatroom?.id ?? 0) || 0 } };
 };
 
 /** Resolves one request; `fetchImpl` is injectable for tests. */

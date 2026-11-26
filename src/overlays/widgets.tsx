@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import type { Params } from './schema';
-import { BRAND_COLORS, BRAND_INK, BrandIcon, parseSocials } from './icons';
+import { BRAND_COLORS, BRAND_INK, BrandIcon, detectBrand, parseSocials } from './icons';
 import { SCENE_FONTS } from './SceneScreen';
 
 type Vars = CSSProperties & Record<`--${string}`, string | number>;
@@ -34,7 +34,7 @@ export const TickerWidget = ({ params }: { params: Params }) => {
   useLayoutEffect(() => {
     const half = (trackRef.current?.scrollWidth ?? 0) / 2;
     if (half > 0) setDuration(half / Math.max(10, speed));
-  }, [params.text, params.fontSize, params.font, params.uppercase, speed, mode]);
+  }, [params.text, params.fontSize, params.font, params.uppercase, params.icons, speed, mode]);
 
   const style: Vars = {
     '--bg': String(params.bg ?? '#111114'),
@@ -46,7 +46,13 @@ export const TickerWidget = ({ params }: { params: Params }) => {
     '--font': SCENE_FONTS[String(params.font ?? 'dm')] ?? SCENE_FONTS.dm,
   };
   const sep = params.showSeparator !== false && <i>{String(params.separator ?? '◆')}</i>;
-  const run = items.map((t, i) => <span key={i} className="wd-tick-item">{t}{sep}</span>);
+  // Optional service icon in front of a message that names Twitch, Discord, YouTube...; off by default, so old links render as before.
+  const ico = (t: string) => {
+    if (params.icons !== true) return null;
+    const brand = detectBrand(t);
+    return brand === 'link' ? null : <b className="wd-tick-ico" style={{ background: BRAND_COLORS[brand], color: BRAND_INK[brand] }}><BrandIcon brand={brand} size="0.8em" /></b>;
+  };
+  const run = items.map((t, i) => <span key={i} className="wd-tick-item">{ico(t)}{t}{sep}</span>);
   const cls = [
     'ov-fill wd-ticker', `style-${params.style ?? 'solid'}`, `label-${params.labelStyle ?? 'angled'}`, `border-${params.borderPos ?? 'top'}`,
     params.uppercase ? 'is-upper' : '', params.fadeEdges !== false ? 'has-fade' : '', params.direction === 'right' ? 'dir-right' : '',
@@ -58,7 +64,7 @@ export const TickerWidget = ({ params }: { params: Params }) => {
       )}
       <div className="wd-tick-viewport">
         {mode === 'rotate' ? (
-          <div key={index} className={`wd-tick-one anim-${params.rotateAnim ?? 'up'}`}>{items[index]}</div>
+          <div key={index} className={`wd-tick-one anim-${params.rotateAnim ?? 'up'}`}>{ico(items[index] ?? '')}{items[index]}</div>
         ) : (
           <div className="wd-tick-track" ref={trackRef}>{run}{run}</div>
         )}

@@ -161,6 +161,15 @@ const parseSlot = (line: string, lang: string): Slot => {
   return { day, time: time === '–' ? '-' : time, title, dayIndex: dayOf(day, lang), off: time === '-' || time === '–', starred };
 };
 
+/** "Only today" layout: the highlighted day, or else the next day with a stream. */
+const todayOrNext = (slots: Slot[], isActive: (s: Slot) => boolean, today: number) => {
+  const on = slots.filter(isActive);
+  if (on.length) return on.slice(0, 1);
+  const ahead = (s: Slot) => ((s.dayIndex ?? 0) - today + 7) % 7;
+  const next = slots.filter((s) => !s.off && s.dayIndex !== undefined && s.dayIndex >= 0).sort((a, b) => ahead(a) - ahead(b))[0];
+  return next ? [next] : slots.slice(0, 1);
+};
+
 export const ScheduleWidget = ({ params: p }: { params: Params }) => {
   const lang = String(p._lang ?? 'pl');
   const slots = lines(p.items).map((l) => parseSlot(l, lang));
@@ -176,7 +185,7 @@ export const ScheduleWidget = ({ params: p }: { params: Params }) => {
       <div className={`sch layout-${layout} style-${p.style ?? 'pill'} ${p.uppercase ? 'is-upper' : ''} ${p.shadow === false ? 'no-shadow' : ''} ${p.stagger !== false ? 'has-stagger' : ''}`} style={style}>
         {p.showTitle !== false && p.title && <div className="sch-title">{String(p.title)}</div>}
         <div className="sch-list">
-          {slots.map((s, i) => (
+          {(layout === 'today' ? todayOrNext(slots, isActive, today) : slots).map((s, i) => (
             <div key={i} className={`sch-slot ${isActive(s) ? 'is-active' : ''} ${s.off ? 'is-off' : ''}`} style={{ '--i': i } as Vars}>
               {p.showDay !== false && <b className="sch-day">{s.day}</b>}
               {p.showTime !== false && <span className="sch-time">{s.off ? String(p.offText ?? '—') : s.time}</span>}

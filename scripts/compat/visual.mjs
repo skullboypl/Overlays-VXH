@@ -112,6 +112,16 @@ const shot = async (browser, base, v, size) => {
         ...urls.map((u) => { const img = new Image(); img.src = u.slice(4, -1).replace(/^"|"$/g, ''); return img.decode().catch(() => {}); }),
       ]);
     });
+    // Fit-to-source boxes (bars.tsx FitBox) ignore changes under 0.4%, so where they settle depends on the order the
+    // font files arrived in. Squeeze them and let go once every font is in: both builds then settle on the exact fit.
+    if (await page.evaluate(() => {
+      const boxes = [...document.querySelectorAll('.br-fit')];
+      boxes.forEach((b) => b.style.setProperty('width', '50%', 'important'));
+      return boxes.length;
+    })) {
+      await page.waitForTimeout(150);
+      await page.evaluate(() => document.querySelectorAll('.br-fit').forEach((b) => b.style.removeProperty('width')));
+    }
     await page.waitForTimeout(150);
     return await page.screenshot();
   } finally {

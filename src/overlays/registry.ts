@@ -1245,6 +1245,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Teksty', key: 'showSeparator', label: 'Pokaż separator', type: 'toggle', default: true, when: { key: 'mode', is: ['scroll'] } },
       { group: 'Teksty', key: 'separator', label: 'Separator', type: 'text', default: '◆', maxLength: 3, when: [{ key: 'mode', is: ['scroll'] }, { key: 'showSeparator', is: [true] }] },
       { group: 'Teksty', key: 'uppercase', label: 'Wielkie litery', type: 'toggle', default: false },
+      { group: 'Teksty', key: 'icons', label: 'Ikony serwisów przy komunikatach', type: 'toggle', default: false, hint: 'Komunikat z nazwą Twitcha, Discorda, YouTube… dostaje jego logo' },
       { group: 'Etykieta', key: 'showLabel', label: 'Pokaż etykietę z lewej', type: 'toggle', default: true },
       { group: 'Etykieta', key: 'label', i18n: true, label: 'Etykieta z lewej', type: 'text', default: 'INFO', maxLength: 16, when: { key: 'showLabel', is: [true] } },
       { group: 'Etykieta', key: 'labelStyle', label: 'Kształt etykiety', type: 'select', default: 'angled', when: { key: 'showLabel', is: [true] }, options: [
@@ -1418,6 +1419,7 @@ const ALL_OVERLAYS: OverlayDef[] = [
       { group: 'Terminy', key: 'title', i18n: true, label: 'Nagłówek', type: 'text', default: 'Harmonogram', maxLength: 24, when: { key: 'showTitle', is: [true] } },
       { group: 'Układ', key: 'layout', label: 'Układ', type: 'select', default: 'row', options: [
         { value: 'row', label: 'W rzędzie' }, { value: 'column', label: 'W kolumnie' }, { value: 'grid', label: 'Siatka 4 kolumny' },
+        { value: 'calendar', label: 'Kalendarz tygodnia' }, { value: 'today', label: 'Tylko dzisiaj' },
       ], hint: 'Do rzędu szerokie źródło, np. 1200 × 120; do kolumny wysokie, np. 420 × 400' },
       { group: 'Układ', key: 'style', label: 'Styl', type: 'select', default: 'pill', options: [
         { value: 'pill', label: 'Pigułki' }, { value: 'card', label: 'Karty' }, { value: 'glass', label: 'Szkło' }, { value: 'neon', label: 'Neon' },

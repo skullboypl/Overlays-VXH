@@ -57,7 +57,7 @@ export const CanvasFx = ({ start, params, respawn = [] }: { start: (c: HTMLCanva
 
 /** Card look shared by the add-on widgets: same names as the streamer tools (tl-card styles). */
 export const Card = ({ p, kind, children, className = '' }: { p: Params; kind: string; children: ReactNode; className?: string }) => (
-  <div className={`ov-fill tl-root mo-${kind} align-${p.align ?? 'center'} ${className}`} style={lookVars(p)}>
+  <div className={`ov-fill tl-root mo-card mo-${kind} align-${p.align ?? 'center'} ${className}`} style={lookVars(p)}>
     <div className={`tl-card style-${p.style ?? 'glass'} ${p.shadow === false ? 'no-shadow' : ''}`}>{children}</div>
   </div>
 );
