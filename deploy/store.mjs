@@ -22,12 +22,16 @@ let redisSub = null;
 const readJson = (file, fallback) => { try { return JSON.parse(readFileSync(file, 'utf8')); } catch { return fallback; } };
 const writeJson = (file, value) => { writeFileSync(`${file}.tmp`, JSON.stringify(value)); renameSync(`${file}.tmp`, file); };
 
+/** Gives up on a promise after `ms`, so a database that does not answer can never keep the server from starting. */
+const withTimeout = (p, ms, what) => Promise.race([p, new Promise((_, no) => setTimeout(() => no(new Error(`${what} timeout`)), ms))]);
+
 /** Connects to whatever is configured. Never throws: a missing database means "work like before" plus a log line. */
 export const openStore = async () => {
   if (DATABASE_URL) {
     try {
       const { default: pgLib } = await import('pg');
-      pg = new pgLib.Pool({ connectionString: DATABASE_URL, max: 5, ssl: /sslmode=require/.test(DATABASE_URL) ? { rejectUnauthorized: false } : undefined });
+      pg = new pgLib.Pool({ connectionString: DATABASE_URL, max: 5, connectionTimeoutMillis: 5000, ssl: /sslmode=require/.test(DATABASE_URL) ? { rejectUnauthorized: false } : undefined });
+      await withTimeout(pg.query('SELECT 1'), 8000, 'postgres');
       await pg.query(`CREATE TABLE IF NOT EXISTS panel_rooms (
         room text PRIMARY KEY, state jsonb NOT NULL, version integer NOT NULL, touched bigint NOT NULL)`);
       await pg.query(`CREATE TABLE IF NOT EXISTS platform_links (
@@ -37,20 +41,25 @@ export const openStore = async () => {
       console.log('store: postgres');
     } catch (err) {
       console.error('store: postgres unavailable, falling back to files:', err?.message ?? err);
+      pg?.end().catch(() => {});
       pg = null;
     }
   }
   if (REDIS_URL) {
     try {
       const { createClient } = await import('redis');
-      redis = createClient({ url: REDIS_URL });
-      redis.on('error', (e) => console.error('redis:', e?.message ?? e));
-      await redis.connect();
+      // Retries stop after ~30 s instead of forever, and every step has a time limit.
+      redis = createClient({ url: REDIS_URL, socket: { connectTimeout: 5000, reconnectStrategy: (n) => (n > 10 ? new Error('redis gave up') : Math.min(500 * n, 3000)) } });
+      let logged = 0;
+      redis.on('error', (e) => { if (logged++ < 5) console.error('redis:', e?.message ?? e); });
+      await withTimeout(redis.connect(), 8000, 'redis');
       redisSub = redis.duplicate();
-      await redisSub.connect();
+      redisSub.on('error', () => {});
+      await withTimeout(redisSub.connect(), 8000, 'redis');
       console.log('store: redis');
     } catch (err) {
       console.error('store: redis unavailable, single instance mode:', err?.message ?? err);
+      redis?.disconnect().catch(() => {}); redisSub?.disconnect().catch(() => {});
       redis = null; redisSub = null;
     }
   }

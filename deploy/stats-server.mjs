@@ -174,8 +174,9 @@ export const server = http.createServer((req, res) => {
 });
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
-  await openStore();
-  await loadRooms();
+  // Listen first: the counter and follower counts must work even when a database is slow or down.
   server.listen(PORT, HOST, () => console.log(`stats on ${HOST}:${PORT}`));
+  await openStore().catch((err) => console.error('store:', err?.message ?? err));
+  await loadRooms();
   setInterval(() => { prune(Date.now()); panelMaintenance(); }, 30_000).unref();
 }
