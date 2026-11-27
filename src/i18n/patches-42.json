@@ -1,0 +1,83 @@
+{
+ "en": {
+  "Bez właściciela": "No owner",
+  "Dalej: podepnij kanał": "Next: link your channel",
+  "Kanały i automaty": "Channels and automations",
+  "Klucz i konto": "Key and account",
+  "Nic nie podpięto": "Nothing linked",
+  "Opcjonalnie": "Optional",
+  "Zaloguj się": "Log in"
+ },
+ "de": {
+  "Bez właściciela": "Kein Besitzer",
+  "Dalej: podepnij kanał": "Weiter: Kanal verbinden",
+  "Kanały i automaty": "Kanäle und Automatik",
+  "Klucz i konto": "Schlüssel und Konto",
+  "Nic nie podpięto": "Nichts verbunden",
+  "Opcjonalnie": "Optional",
+  "Zaloguj się": "Anmelden"
+ },
+ "cs": {
+  "Bez właściciela": "Bez vlastníka",
+  "Dalej: podepnij kanał": "Dál: připoj kanál",
+  "Kanały i automaty": "Kanály a automatiky",
+  "Klucz i konto": "Klíč a účet",
+  "Nic nie podpięto": "Nic nepřipojeno",
+  "Opcjonalnie": "Volitelné",
+  "Zaloguj się": "Přihlas se"
+ },
+ "es": {
+  "Bez właściciela": "Sin propietario",
+  "Dalej: podepnij kanał": "Siguiente: vincula tu canal",
+  "Kanały i automaty": "Canales y automatizaciones",
+  "Klucz i konto": "Clave y cuenta",
+  "Nic nie podpięto": "Nada vinculado",
+  "Opcjonalnie": "Opcional",
+  "Zaloguj się": "Inicia sesión"
+ },
+ "fr": {
+  "Bez właściciela": "Sans propriétaire",
+  "Dalej: podepnij kanał": "Suite : relie ta chaîne",
+  "Kanały i automaty": "Chaînes et automatisations",
+  "Klucz i konto": "Clé et compte",
+  "Nic nie podpięto": "Rien de relié",
+  "Opcjonalnie": "Facultatif",
+  "Zaloguj się": "Connecte-toi"
+ },
+ "pt": {
+  "Bez właściciela": "Sem dono",
+  "Dalej: podepnij kanał": "Próximo: vincule seu canal",
+  "Kanały i automaty": "Canais e automações",
+  "Klucz i konto": "Chave e conta",
+  "Nic nie podpięto": "Nada vinculado",
+  "Opcjonalnie": "Opcional",
+  "Zaloguj się": "Entre"
+ },
+ "ru": {
+  "Bez właściciela": "Без владельца",
+  "Dalej: podepnij kanał": "Далее: подключи канал",
+  "Kanały i automaty": "Каналы и автоматика",
+  "Klucz i konto": "Ключ и аккаунт",
+  "Nic nie podpięto": "Ничего не подключено",
+  "Opcjonalnie": "По желанию",
+  "Zaloguj się": "Войди"
+ },
+ "tr": {
+  "Bez właściciela": "Sahibi yok",
+  "Dalej: podepnij kanał": "Sonraki: kanalını bağla",
+  "Kanały i automaty": "Kanallar ve otomasyonlar",
+  "Klucz i konto": "Anahtar ve hesap",
+  "Nic nie podpięto": "Hiçbir şey bağlı değil",
+  "Opcjonalnie": "İsteğe bağlı",
+  "Zaloguj się": "Giriş yap"
+ },
+ "uk": {
+  "Bez właściciela": "Без власника",
+  "Dalej: podepnij kanał": "Далі: підключи канал",
+  "Kanały i automaty": "Канали та автоматика",
+  "Klucz i konto": "Ключ і акаунт",
+  "Nic nie podpięto": "Нічого не підключено",
+  "Opcjonalnie": "За бажанням",
+  "Zaloguj się": "Увійди"
+ }
+}

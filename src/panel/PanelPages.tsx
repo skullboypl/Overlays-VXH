@@ -47,16 +47,19 @@ const useAccount = () => {
   return { me, refresh };
 };
 
-const AccountCard = ({ me, panelKey, onLogout }: { me: Me | null; panelKey: string | null; onLogout: () => void }) => {
+type Tab = 'start' | 'kanaly' | 'app' | 'konto';
+const TAB_IDS: Tab[] = ['start', 'kanaly', 'app', 'konto'];
+/** /panel#kanaly opens that tab; the app's "Connect" button opens /panel?app=connect. */
+const tabFromUrl = (): Tab => {
+  if (new URLSearchParams(window.location.search).get('app') === 'connect') return 'app';
+  const h = window.location.hash.slice(1) as Tab;
+  return TAB_IDS.includes(h) ? h : 'start';
+};
+
+/** step: shown as step 1 of creating a panel (a tick once logged in). */
+const AccountCard = ({ me, panelKey, onLogout, step }: { me: Me | null; panelKey: string | null; onLogout: () => void; step?: number }) => {
   const { t } = useT();
   const [error, setError] = useState('');
-  const notice = useMemo(() => {
-    const q = new URLSearchParams(window.location.search);
-    if (q.get('claim') === 'not_owner') return { ok: false, text: t('Ten panel należy do innego konta. Zaloguj się kontem, które go utworzyło.') };
-    if (q.get('login')) return { ok: true, text: `${t('Zalogowano przez')} ${q.get('login') === 'kick' ? 'Kick' : 'Twitch'}` };
-    if (q.get('login_error')) return { ok: false, text: t('Logowanie się nie udało. Spróbuj jeszcze raz.') };
-    return null;
-  }, [t]);
   const login = async (platform: 'twitch' | 'kick') => {
     setError('');
     const err = await loginWith(platform, panelKey);
@@ -65,13 +68,12 @@ const AccountCard = ({ me, panelKey, onLogout }: { me: Me | null; panelKey: stri
   const accounts = me?.accounts ?? [];
   return (
     <section className="pn-card pn-account">
-      <h2>👤 {t('Konto')}</h2>
+      <h2>{step ? <span className={`pn-step ${me?.accounts.length ? 'is-done' : ''}`}>{me?.accounts.length ? '✓' : step}</span> : '👤'} {step ? t('Zaloguj się') : t('Konto')}</h2>
       {accounts.length ? (
         <p>{t('Zalogowano')}: {accounts.map((a) => <b key={a.platform} className={`pn-acc is-${a.platform}`}>{PLATFORM_NAME[a.platform]}: {a.login}</b>)}</p>
       ) : (
         <p>{t('Zaloguj się przez Twitch albo Kick. Konto zostaje właścicielem panelu: tylko ono podepnie albo odłączy kanał, zmieni klucz i usunie panel. Sam link docka wystarcza wyłącznie do sterowania overlayami.')}</p>
       )}
-      {notice && <p className={notice.ok ? 'pn-ok' : 'pn-error'}>{notice.text}</p>}
       <div className="pn-row">
         {(['twitch', 'kick'] as const).filter((pl) => !accounts.some((a) => a.platform === pl)).map((pl) => (
           <button key={pl} type="button" className={`pn-login is-${pl}`} disabled={me ? !me[pl] : true} onClick={() => login(pl)}>
@@ -100,6 +102,17 @@ export const PanelSetup = () => {
   const dockUrl = key ? `${window.location.origin}/panel/dock#k=${key}` : '';
   const loggedIn = (me?.accounts.length ?? 0) > 0;
   const owns = Boolean(room && me?.panels.some((p) => p.room === room));
+  const linked = Object.values(snap?.state?.links ?? {}).filter(Boolean) as string[];
+  const [tab, setTabState] = useState<Tab>(tabFromUrl);
+  const setTab = (v: Tab) => { setTabState(v); window.history.replaceState(window.history.state, '', `/panel#${v}`); };
+  useEffect(() => { const f = () => setTabState(tabFromUrl()); window.addEventListener('hashchange', f); return () => window.removeEventListener('hashchange', f); }, []);
+  const notice = useMemo(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('claim') === 'not_owner') return { ok: false, text: t('Ten panel należy do innego konta. Zaloguj się kontem, które go utworzyło.') };
+    if (q.get('login')) return { ok: true, text: `${t('Zalogowano przez')} ${q.get('login') === 'kick' ? 'Kick' : 'Twitch'}` };
+    if (q.get('login_error')) return { ok: false, text: t('Logowanie się nie udało. Spróbuj jeszcze raz.') };
+    return null;
+  }, [t]);
 
   useEffect(() => { document.title = `${t('Panel OBS')} | VXH Overlays`; }, [t]);
 
@@ -152,6 +165,13 @@ export const PanelSetup = () => {
   };
   const doLogout = async () => { await logout(); await refresh(); setClaimState(key ? 'unowned' : ''); };
 
+  const steps = [
+    { id: 'start' as const, icon: '🚀', label: t('Start'), done: (snap?.sources ?? 0) > 0, hint: `${t('Połączone źródła')}: ${snap ? snap.sources : '…'}` },
+    { id: 'kanaly' as const, icon: '📡', label: t('Kanały i automaty'), done: linked.length > 0, hint: linked.length ? linked.join(' · ') : t('Nic nie podpięto') },
+    { id: 'app' as const, icon: '💻', label: t('Aplikacja na PC'), done: null, hint: t('Opcjonalnie') },
+    { id: 'konto' as const, icon: '🔑', label: t('Klucz i konto'), done: owns, hint: owns ? me?.accounts.map((a) => a.login).join(' · ') ?? '' : t('Bez właściciela') },
+  ];
+
   return (
     <div className="pn-page">
       <header className="st-top">
@@ -164,87 +184,108 @@ export const PanelSetup = () => {
       <main className="pn-main">
         <h1>🎛️ {t('Panel OBS')}</h1>
         <p className="pn-lead">{t('Dock w OBS, z którego na żywo sterujesz overlayami: licznik start/pauza, liczba w pasku celu, przypominajka „pokaż teraz” i ukrywanie widżetów. Bez wtyczek i bez zakładania konta.')}</p>
-
-        <AccountCard me={me} panelKey={key} onLogout={doLogout} />
+        {notice && <p className={`pn-banner ${notice.ok ? 'pn-ok' : 'pn-error'}`}>{notice.text}</p>}
 
         {!key ? (
           <>
-          <section className="pn-card">
-            <h2>{t('Utwórz swój panel')}</h2>
-            {loggedIn && me?.panels.length ? (
-              <>
-                <p>{t('Masz już panel na tym koncie. Utwórz dla tego komputera nowy link docka: linki overlayów w OBS zostają bez zmian, stary link docka przestanie działać.')}</p>
-                {me.panels.map((pn) => (
-                  <div key={pn.room} className="pn-row">
-                    <span className="pn-linked">{Object.entries(pn.links).map(([pl, login]) => `${PLATFORM_NAME[pl as 'twitch' | 'kick']}: ${login}`).join(' · ') || pn.room.slice(0, 8)}</span>
-                    <button type="button" className="pn-primary" disabled={busy} onClick={() => newKeyFor(pn.room)}>{t('Nowy link docka')}</button>
-                  </div>
-                ))}
-              </>
-            ) : (
-              <>
-                <p>{t('Twoja przeglądarka wylosuje tajny klucz. Serwer zna tylko jego skrót, więc nikt inny nie dostanie tego samego klucza ani nie zmieni Twoich overlayów.')}</p>
-                <button type="button" className="pn-primary pn-big" disabled={busy || !loggedIn} onClick={create}>{busy ? '…' : t('Utwórz panel')}</button>
-                {!loggedIn && <p className="pn-note">{t('Najpierw zaloguj się przez Twitch albo Kick: konto zostanie właścicielem panelu.')}</p>}
-              </>
-            )}
-            <details className="pn-import">
-              <summary>{t('Mam już panel na innym komputerze')}</summary>
-              <div className="pn-copy">
-                <input value={importText} onChange={(e) => setImportText(e.currentTarget.value)} placeholder={t('Wklej link docka')} />
-                <button type="button" className="pn-primary" onClick={importKey}>{t('Użyj')}</button>
-              </div>
-            </details>
-            {error && <p className="pn-error">{error}</p>}
-          </section>
-          <AppCard dockUrl="" />
+            <AccountCard me={me} panelKey={key} onLogout={doLogout} step={1} />
+            <section className={`pn-card ${loggedIn ? '' : 'is-locked'}`}>
+              <h2><span className="pn-step">2</span>{t('Utwórz swój panel')}</h2>
+              {loggedIn && me?.panels.length ? (
+                <>
+                  <p>{t('Masz już panel na tym koncie. Utwórz dla tego komputera nowy link docka: linki overlayów w OBS zostają bez zmian, stary link docka przestanie działać.')}</p>
+                  {me.panels.map((pn) => (
+                    <div key={pn.room} className="pn-row">
+                      <span className="pn-linked">{Object.entries(pn.links).map(([pl, login]) => `${PLATFORM_NAME[pl as 'twitch' | 'kick']}: ${login}`).join(' · ') || pn.room.slice(0, 8)}</span>
+                      <button type="button" className="pn-primary" disabled={busy} onClick={() => newKeyFor(pn.room)}>{t('Nowy link docka')}</button>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <>
+                  <p>{t('Twoja przeglądarka wylosuje tajny klucz. Serwer zna tylko jego skrót, więc nikt inny nie dostanie tego samego klucza ani nie zmieni Twoich overlayów.')}</p>
+                  <button type="button" className="pn-primary pn-big" disabled={busy || !loggedIn} onClick={create}>{busy ? '…' : t('Utwórz panel')}</button>
+                  {!loggedIn && <p className="pn-note">{t('Najpierw zaloguj się przez Twitch albo Kick: konto zostanie właścicielem panelu.')}</p>}
+                </>
+              )}
+              <details className="pn-import">
+                <summary>{t('Mam już panel na innym komputerze')}</summary>
+                <div className="pn-copy">
+                  <input value={importText} onChange={(e) => setImportText(e.currentTarget.value)} placeholder={t('Wklej link docka')} />
+                  <button type="button" className="pn-primary" onClick={importKey}>{t('Użyj')}</button>
+                </div>
+              </details>
+              {error && <p className="pn-error">{error}</p>}
+            </section>
+            <AppCard dockUrl="" />
           </>
         ) : (
           <>
             {claimState === 'other' && <p className="pn-error pn-banner">{t('Ten panel należy do innego konta. Zaloguj się kontem, które go utworzyło.')}</p>}
             {claimState === 'unowned' && !loggedIn && <p className="pn-warn pn-banner">🔓 {t('Ten panel nie ma jeszcze właściciela. Zaloguj się przez Twitch albo Kick, żeby nikt z samym linkiem docka nie mógł go przejąć.')}</p>}
-            <section className="pn-card">
-              <h2><span className="pn-step">1</span>{t('Dodaj dock w OBS')}</h2>
-              <ol>
-                <li>{t('W OBS otwórz menu Docki → Własne docki przeglądarki.')}</li>
-                <li>{t('Nazwa: „VXH Panel”, adres: wklej link poniżej, kliknij Zastosuj.')}</li>
-              </ol>
-              <CopyField value={dockUrl} secret />
-              <p className="pn-warn">🔒 {t('Ten link to Twój klucz. Nie pokazuj go na streamie i nie wysyłaj nikomu: kto go ma, steruje Twoimi overlayami.')}</p>
-            </section>
-            <section className="pn-card">
-              <h2><span className="pn-step">2</span>{t('Podłącz overlaye')}</h2>
-              <p>{t('W studiu, pod linkiem do OBS, włącz „Steruj z Panelu OBS” i skopiuj link jeszcze raz. Taki link pozwala tylko czytać ustawienia z panelu, więc nawet jeśli ktoś go zobaczy, niczego nie zmieni.')}</p>
-              <div className="pn-status">
-                <span className={`pn-dot ${snap?.sources ? 'is-on' : ''}`} />
-                {t('Połączone źródła')}: <b>{snap ? snap.sources : '…'}</b>
-              </div>
-              <div className="pn-row">
-                <Link className="pn-ghost" to="/timer">⏱️ {t('Odliczanie i stoper')}</Link>
-                <Link className="pn-ghost" to="/goal">🎯 {t('Pasek celu')}</Link>
-                <Link className="pn-ghost" to="/reminder">📣 {t('Przypominajka')}</Link>
-              </div>
-              <div className="pn-row">
-                {['counter', 'scoreboard', 'subathon', 'wheel', 'alertbox', 'burst'].map((id) => OVERLAYS.find((o) => o.id === id)).map((o) => o && (
-                  <Link key={o.id} className="pn-ghost" to={`/${o.id}`}>{o.icon} {t(o.name)}</Link>
-                ))}
-              </div>
-            </section>
-            <ChannelsCard panelKey={key} room={room} owner={owns} me={me} state={snap?.state ?? null} />
-            <AppCard dockUrl={dockUrl} />
-            <section className="pn-card">
-              <h2><span className="pn-step">4</span>{t('Sprawdź')}</h2>
-              <p>{t('Otwórz panel tutaj w przeglądarce i pokliknij: zmiany od razu widać w OBS.')}</p>
-              <a className="pn-ghost" href={dockUrl} target="_blank" rel="noreferrer">{t('Otwórz panel w nowej karcie')} ↗</a>
-            </section>
-            <section className="pn-card pn-danger">
-              <h2>{t('Nowy klucz')}</h2>
-              <p>{owns
-                ? t('Gdy link docka wyciekł, utwórz nowy klucz. Stary link docka przestanie działać, a linki overlayów w OBS zostają bez zmian.')
-                : t('Gdy klucz wyciekł, utwórz nowy. Stary link docka i podłączone overlaye przestaną działać, trzeba je podmienić w OBS.')}</p>
-              <button type="button" className="pn-ghost" disabled={busy || claimState === 'other'} onClick={regenerate}>{t('Utwórz nowy klucz')}</button>
-              {error && <p className="pn-error">{error}</p>}
-            </section>
+            <nav className="pn-tabs" role="tablist" aria-label={t('Panel OBS')}>
+              {steps.map((s) => (
+                <button key={s.id} type="button" role="tab" aria-selected={tab === s.id} className={`pn-tab ${tab === s.id ? 'is-active' : ''}`} onClick={() => setTab(s.id)}>
+                  <b>{s.icon} {s.label}{s.done !== null && <span className={`pn-dot ${s.done ? 'is-on' : s.id === 'konto' ? 'is-warn' : ''}`} />}</b>
+                  <small>{s.hint}</small>
+                </button>
+              ))}
+            </nav>
+
+            {tab === 'start' && (
+              <>
+                <section className="pn-card">
+                  <h2><span className="pn-step">1</span>{t('Dodaj dock w OBS')}</h2>
+                  <ol>
+                    <li>{t('W OBS otwórz menu Docki → Własne docki przeglądarki.')}</li>
+                    <li>{t('Nazwa: „VXH Panel”, adres: wklej link poniżej, kliknij Zastosuj.')}</li>
+                  </ol>
+                  <CopyField value={dockUrl} secret />
+                  <p className="pn-warn">🔒 {t('Ten link to Twój klucz. Nie pokazuj go na streamie i nie wysyłaj nikomu: kto go ma, steruje Twoimi overlayami.')}</p>
+                </section>
+                <section className="pn-card">
+                  <h2><span className={`pn-step ${snap?.sources ? 'is-done' : ''}`}>{snap?.sources ? '✓' : '2'}</span>{t('Podłącz overlaye')}</h2>
+                  <p>{t('W studiu, pod linkiem do OBS, włącz „Steruj z Panelu OBS” i skopiuj link jeszcze raz. Taki link pozwala tylko czytać ustawienia z panelu, więc nawet jeśli ktoś go zobaczy, niczego nie zmieni.')}</p>
+                  <div className="pn-status">
+                    <span className={`pn-dot ${snap?.sources ? 'is-on' : ''}`} />
+                    {t('Połączone źródła')}: <b>{snap ? snap.sources : '…'}</b>
+                  </div>
+                  <div className="pn-row">
+                    <Link className="pn-ghost" to="/timer">⏱️ {t('Odliczanie i stoper')}</Link>
+                    <Link className="pn-ghost" to="/goal">🎯 {t('Pasek celu')}</Link>
+                    <Link className="pn-ghost" to="/reminder">📣 {t('Przypominajka')}</Link>
+                  </div>
+                  <div className="pn-row">
+                    {['counter', 'scoreboard', 'subathon', 'wheel', 'alertbox', 'burst'].map((id) => OVERLAYS.find((o) => o.id === id)).map((o) => o && (
+                      <Link key={o.id} className="pn-ghost" to={`/${o.id}`}>{o.icon} {t(o.name)}</Link>
+                    ))}
+                  </div>
+                </section>
+                <section className="pn-card">
+                  <h2><span className="pn-step">3</span>{t('Sprawdź')}</h2>
+                  <p>{t('Otwórz panel tutaj w przeglądarce i pokliknij: zmiany od razu widać w OBS.')}</p>
+                  <div className="pn-row">
+                    <a className="pn-ghost" href={dockUrl} target="_blank" rel="noreferrer">{t('Otwórz panel w nowej karcie')} ↗</a>
+                    <button type="button" className="pn-primary" onClick={() => setTab('kanaly')}>{t('Dalej: podepnij kanał')} →</button>
+                  </div>
+                </section>
+              </>
+            )}
+            {tab === 'kanaly' && <ChannelsCard panelKey={key} room={room} owner={owns} me={me} state={snap?.state ?? null} />}
+            {tab === 'app' && <AppCard dockUrl={dockUrl} />}
+            {tab === 'konto' && (
+              <>
+                <AccountCard me={me} panelKey={key} onLogout={doLogout} />
+                <section className="pn-card pn-danger">
+                  <h2>{t('Nowy klucz')}</h2>
+                  <p>{owns
+                    ? t('Gdy link docka wyciekł, utwórz nowy klucz. Stary link docka przestanie działać, a linki overlayów w OBS zostają bez zmian.')
+                    : t('Gdy klucz wyciekł, utwórz nowy. Stary link docka i podłączone overlaye przestaną działać, trzeba je podmienić w OBS.')}</p>
+                  <button type="button" className="pn-ghost" disabled={busy || claimState === 'other'} onClick={regenerate}>{t('Utwórz nowy klucz')}</button>
+                  {error && <p className="pn-error">{error}</p>}
+                </section>
+              </>
+            )}
           </>
         )}
       </main>
@@ -279,7 +320,7 @@ const ChannelsCard = ({ panelKey, room, owner, me, state }: { panelKey: string; 
   };
   return (
     <section className="pn-card">
-      <h2><span className="pn-step">3</span>{t('Kanały Twitch i Kick')}</h2>
+      <h2>📡 {t('Kanały Twitch i Kick')}</h2>
       <p>{t('Podpięty kanał sam wysyła follow, suby, gifty, bitsy, raidy i nagrody za punkty do „Alertów z panelu”, liczy je w licznikach, w pasku celu i w subathonie. Hasło ani token nie trafiają do linku OBS.')}</p>
       <div className="pn-connect">
         {(['twitch', 'kick'] as const).map((pl) => (
