@@ -41,6 +41,10 @@ if (-not $Publish) { Write-Host "Not published (add -Publish)."; return }
 gh release view $tag --repo $Repo *> $null
 if (-not $LASTEXITCODE) { throw "release $tag already exists: bump the version in Cargo.toml" }
 if (-not $Notes) { $Notes = "VXH Overlays Tool $version. Plik podpisany certyfikatem EV SkullMedia Artur Spychalski.`nSHA-256: $hash" }
-gh release create $tag $out --repo $Repo --title "VXH Overlays Tool $version" --notes $Notes
+# The tag goes on the commit this build came from, which must already be on GitHub.
+$commit = (git rev-parse HEAD).Trim()
+git fetch -q origin
+if (-not (git branch -r --contains $commit)) { throw "commit $commit is not pushed yet" }
+gh release create $tag $out --repo $Repo --target $commit --title "VXH Overlays Tool $version" --notes $Notes
 if ($LASTEXITCODE) { throw "gh release create failed" }
 Write-Host "Published $tag"
