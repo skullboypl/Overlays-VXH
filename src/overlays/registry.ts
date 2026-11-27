@@ -55,6 +55,10 @@ const PHOTO_LABELS: Record<string, string> = {
   'bday-party': 'Urodziny: impreza', 'bday-cake': 'Urodziny: tort', 'bday-neon': 'Urodziny: neonowy klub',
   'gaming-room': 'Pokój gamingowy', 'space-window': 'Okno statku kosmicznego', 'rainy-cafe': 'Kawiarnia w deszczu',
   'aurora-peaks': 'Zorza nad górami', 'cyber-alley': 'Cyberpunkowa uliczka', underwater: 'Rafa koralowa',
+  'pl-wawel': '11.11: Wawel nocą', 'streamer-studio': 'Studio streamera', 'autumn-forest': 'Jesień: las',
+  'rainy-city': 'Deszczowe miasto nocą', 'space-station': 'Stacja kosmiczna', 'kids-day': 'Dzień Dziecka: balony',
+  mikolajki: 'Mikołajki: prezenty', 'mothers-day': 'Dzień Matki: kwiaty', 'summer-meadow': 'Majówka: łąka w słońcu',
+  'beach-night': 'Plaża nocą',
 };
 const BG_OPTIONS = [
   { value: 'aurora', label: 'Zorza' }, { value: 'synth', label: 'Synthwave' }, { value: 'waves', label: 'Fale' },
