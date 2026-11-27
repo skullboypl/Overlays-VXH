@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import type { OverlayDef, Params } from '../schema';
 import { timerValue, usePanel } from '../../panel/panel';
 import { isLang, translate, tx } from '../../i18n';
+import { useExtraEmotes, useTwitchChat, type Sink } from './chat';
 import { Card, fontOf, lines, look, num, rangeF, str, useNow, type Renderer, type Vars } from './common';
 
 const langOf = (p: Params) => (isLang(p._lang) ? p._lang : 'pl');
@@ -322,6 +323,27 @@ const KickRain: Renderer = ({ params: p }) => {
       return out.slice(-max);
     });
   }, []);
+  // Added later, both off by default: Twitch chat, and 7TV / BTTV / FFZ emotes written as words.
+  const [twitchId, setTwitchId] = useState('');
+  const [kickId, setKickId] = useState(0);
+  const extra = useExtraEmotes(p.thirdParty === true, twitchId, kickId);
+  const extraRef = useRef(extra);
+  extraRef.current = extra;
+  const wordEmotes = (text: string) => (pRef.current.thirdParty === true ? text.split(/\s+/).map((w) => extraRef.current.get(w)).filter((u): u is string => Boolean(u)).map((src) => ({ src, glyph: '' })) : []);
+  const twitchSink = useRef<Sink>({ add: () => {}, remove: () => {}, clearUser: () => {}, clearAll: () => {} });
+  twitchSink.current = {
+    ...twitchSink.current,
+    room: (id) => setTwitchId(id),
+    add: (m) => {
+      const pp = pRef.current;
+      const items: { src: string; glyph: string }[] = [];
+      if (pp.emotes !== false) for (const part of m.parts) if (part.t === 'emote') items.push({ src: part.url, glyph: '' });
+      items.push(...wordEmotes(m.text));
+      if (pp.emojis !== false) for (const x of m.text.matchAll(EMOJI)) items.push({ src: '', glyph: x[0] });
+      if (items.length) add(items);
+    },
+  };
+  useTwitchChat(str(p.twitch), twitchSink);
   // Preview: a few emojis so the studio shows something without a live chat.
   useEffect(() => {
     if (p._preview !== true) return undefined;
@@ -340,6 +362,7 @@ const KickRain: Renderer = ({ params: p }) => {
         const b = await r.json().catch(() => ({}));
         const room = Number(b.chatroom ?? 0);
         if (!alive) return;
+        if (b.userId) setKickId(Number(b.userId));
         if (!room) { setStatus(b.error === 'channel_not_found' ? 'Nie ma takiego kanału' : 'Nie udało się połączyć z czatem'); retry = window.setTimeout(connect, 60_000); return; }
         ws = new WebSocket('wss://ws-us2.pusher.com/app/32cbd69e4b950bf97679?protocol=7&client=js&version=8.4.0&flash=false');
         ws.onopen = () => ws?.send(JSON.stringify({ event: 'pusher:subscribe', data: { auth: '', channel: `chatrooms.${room}.v2` } }));
@@ -353,6 +376,7 @@ const KickRain: Renderer = ({ params: p }) => {
             const pp = pRef.current;
             const items: { src: string; glyph: string }[] = [];
             if (pp.emotes !== false) for (const x of content.matchAll(EMOTE)) items.push({ src: `https://files.kick.com/emotes/${x[1]}/fullsize`, glyph: '' });
+            items.push(...wordEmotes(content.replace(EMOTE, ' ')));
             if (pp.emojis !== false) for (const x of content.replace(EMOTE, '').matchAll(EMOJI)) items.push({ src: '', glyph: x[0] });
             if (items.length) add(items);
           } catch { /* not ours */ }
@@ -431,7 +455,11 @@ export const LIVE_DEFS: OverlayDef[] = [
     { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
   ]),
   W('alertbox', 'Alerty z panelu', '🔔', { w: 1920, h: 1080 }, 'Alerty z Twitcha i Kicka (follow, sub, gift, bitsy, raid, nagrody za punkty) po połączeniu kanału w Panelu OBS, plus ręczne z docka.', [
-    { group: 'Alert', key: 'style', label: 'Styl', type: 'select', default: 'pop', options: [{ value: 'pop', label: 'Wyskok' }, { value: 'slide', label: 'Wjazd z boku' }, { value: 'banner', label: 'Baner u góry' }, { value: 'neon', label: 'Neon' }] },
+    { group: 'Alert', key: 'style', label: 'Styl', type: 'select', default: 'pop', options: [
+      { value: 'pop', label: 'Wyskok' }, { value: 'slide', label: 'Wjazd z boku' }, { value: 'banner', label: 'Baner u góry' }, { value: 'neon', label: 'Neon' },
+      { value: 'brutal', label: 'Brutalizm' }, { value: 'comic', label: 'Komiks (wybuch)' }, { value: 'terminal', label: 'Terminal' },
+      { value: 'paper', label: 'Karteczka' }, { value: 'pixel', label: 'Piksele 8-bit' }, { value: 'line', label: 'Belka z linią (minimal)' },
+    ] },
     { group: 'Alert', key: 'position', label: 'Miejsce', type: 'select', default: 'c', options: [{ value: 'c', label: 'Środek' }, { value: 't', label: 'Góra' }, { value: 'b', label: 'Dół' }] },
     rangeF('duration', 'Czas na ekranie', 2, 20, 1, 6, 's', 'Alert'),
     { group: 'Alert', key: 'showMessage', label: 'Wiadomość od widza', type: 'toggle', default: true, hint: 'Tekst z resuba, cheera albo nagrody kanału' },
@@ -450,9 +478,11 @@ export const LIVE_DEFS: OverlayDef[] = [
     { group: 'Wybuch', key: 'colors', label: 'Kolory konfetti', type: 'colors', max: 6, default: ['#ff5900', '#ff2d95', '#7a5cff', '#facc15', '#22c55e', '#3b82f6'] },
     DEMO,
   ], 'screen'),
-  W('kickrain', 'Deszcz emotek z czatu Kick', '🌧️', { w: 1920, h: 1080 }, 'Emotki i emoji z czatu na Kicku spadają po ekranie na żywo.', [
+  W('kickrain', 'Deszcz emotek z czatu Kick', '🌧️', { w: 1920, h: 1080 }, 'Emotki i emoji z czatu Kicka (i opcjonalnie Twitcha, z 7TV / BTTV / FFZ) spadają po ekranie na żywo.', [
     { group: 'Kanał', key: 'channel', label: 'Kanał na Kicku', type: 'text', default: 'skullboypl', maxLength: 40 },
-    { group: 'Kanał', key: 'emotes', label: 'Emotki Kick', type: 'toggle', default: true },
+    { group: 'Kanał', key: 'twitch', label: 'Kanał na Twitchu (opcjonalnie)', type: 'text', default: '', maxLength: 25, placeholder: 'nick na Twitchu', hint: 'Emotki z czatu Twitcha też spadają' },
+    { group: 'Kanał', key: 'emotes', label: 'Emotki Kick / Twitch', type: 'toggle', default: true },
+    { group: 'Kanał', key: 'thirdParty', label: 'Emotki 7TV, BTTV i FFZ', type: 'toggle', default: false },
     { group: 'Kanał', key: 'emojis', label: 'Emoji', type: 'toggle', default: true },
     rangeF('perMessage', 'Najwięcej z jednej wiadomości', 1, 10, 1, 3, '', 'Kanał'),
     rangeF('max', 'Najwięcej naraz', 5, 150, 5, 40, '', 'Kanał'),

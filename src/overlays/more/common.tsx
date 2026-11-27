@@ -85,6 +85,9 @@ export const look = (style = 'glass', align = 'center', font = 'dm'): Field[] =>
   { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: style, options: [
     { value: 'glass', label: 'Szkło' }, { value: 'solid', label: 'Pełny' }, { value: 'neon', label: 'Neon' },
     { value: 'gradient', label: 'Gradient' }, { value: 'outline', label: 'Kontur' }, { value: 'none', label: 'Bez tła' },
+    // Looks with their own character, added later.
+    { value: 'brutal', label: 'Brutalizm (gruba ramka, twardy cień)' }, { value: 'terminal', label: 'Terminal' }, { value: 'paper', label: 'Karteczka' },
+    { value: 'pixel', label: 'Piksele 8-bit' }, { value: 'comic', label: 'Komiks' }, { value: 'minimal', label: 'Minimalny (linia)' }, { value: 'esport', label: 'Esport (ścięty)' },
   ] },
   { group: 'Wygląd', key: 'scale', label: 'Wielkość', type: 'range', min: 40, max: 160, step: 5, default: 100, unit: '%', hint: 'Widżet rośnie też razem ze źródłem w OBS' },
   { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: align, options: [

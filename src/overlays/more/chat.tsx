@@ -158,7 +158,7 @@ const getJson = async (url: string) => { try { const r = await fetch(url); retur
 const sevenTv = (set: { emotes?: { name: string; data?: { host?: { url?: string } } }[] } | null | undefined, out: Map<string, string>) => {
   for (const e of set?.emotes ?? []) { const u = e.data?.host?.url; if (u) out.set(e.name, `https:${u}/2x.webp`); }
 };
-const useExtraEmotes = (on: boolean, twitchId: string, kickId: number) => {
+export const useExtraEmotes = (on: boolean, twitchId: string, kickId: number) => {
   const [map, setMap] = useState<Map<string, string>>(new Map());
   useEffect(() => {
     if (!on) { setMap(new Map()); return undefined; }
@@ -291,7 +291,7 @@ const Chat: Renderer = ({ params: p }) => {
                   </span>
                 )}
                 {p.showBadges !== false && m.badges.slice(0, 3).map((b) => BADGES[b] && <span key={b} className="mo-chat-badge" style={{ background: BADGES[b][0] }}>{BADGES[b][1]}</span>)}
-                <b className="mo-chat-name">{m.user}</b>
+                <b className="mo-chat-name" data-pl={m.platform}>{m.user}</b>
                 {p.style !== 'card' && !m.action && <span className="mo-chat-colon">:</span>}
               </span>
               <span className="mo-chat-text">
@@ -319,6 +319,8 @@ export const CHAT_DEFS: OverlayDef[] = [{
     { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'bubble', options: [
       { value: 'bubble', label: 'Dymki' }, { value: 'plain', label: 'Sam tekst z cieniem' }, { value: 'boxed', label: 'Jedno tło pod całym czatem' },
       { value: 'card', label: 'Karty (nick nad wiadomością)' }, { value: 'neon', label: 'Neon' },
+      { value: 'native', label: 'Jak na Twitchu (linie, bez tła)' }, { value: 'brutal', label: 'Brutalizm' }, { value: 'terminal', label: 'Terminal' },
+      { value: 'paper', label: 'Karteczki' }, { value: 'pixel', label: 'Piksele 8-bit' }, { value: 'stack', label: 'Stos (nowe wypychają stare do góry, wyblakłe)' },
     ] },
     { group: 'Wygląd', key: 'direction', label: 'Nowe wiadomości', type: 'select', default: 'bottom', options: [{ value: 'bottom', label: 'Na dole' }, { value: 'top', label: 'Na górze' }] },
     { group: 'Wygląd', key: 'align', label: 'Wyrównanie', type: 'select', default: 'left', options: [{ value: 'left', label: 'Lewo' }, { value: 'right', label: 'Prawo' }] },
