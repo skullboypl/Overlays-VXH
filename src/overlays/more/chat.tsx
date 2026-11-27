@@ -382,8 +382,8 @@ export const CHAT_DEFS: OverlayDef[] = [{
     { group: 'Kanały', key: 'twitch', label: 'Kanał Twitch', type: 'text', default: 'skullboypl', maxLength: 25, placeholder: 'nick na Twitchu', hint: 'Puste: bez czatu z Twitcha' },
     { group: 'Kanały', key: 'kick', label: 'Kanał Kick', type: 'text', default: 'skullboypl', maxLength: 40, placeholder: 'nick na Kicku', hint: 'Puste: bez czatu z Kicka' },
     { group: 'Kanały', key: 'tiktok', label: 'TikTok LIVE (beta)', type: 'text', default: '', maxLength: 25, placeholder: '@nick', hint: 'TikTok nie ma oficjalnego API do czatu LIVE, więc czasem może nie działać' },
-    { group: 'Kanały', key: 'tiktokVia', label: 'Połączenie z TikTokiem', type: 'select', default: 'server', options: [
-      { value: 'server', label: 'Przez serwer VXH' }, { value: 'app', label: 'Przez aplikację VXH Overlays Tool (zalecane)' },
+    { group: 'Kanały', key: 'tiktokVia', label: 'Połączenie z TikTokiem', type: 'select', default: 'app', options: [
+      { value: 'app', label: 'Przez aplikację VXH Overlays Tool (zalecane)' }, { value: 'server', label: 'Przez serwer VXH' },
     ], hint: 'Aplikacja na Twoim PC łączy się z TikTokiem z Twojego internetu, więc nie dzieli limitów z innymi. Potrzebny link z „Steruj z Panelu OBS”. Gdy aplikacja nie działa, czat idzie przez serwer.' },
     { group: 'Kanały', key: 'tiktokEvents', label: 'Prezenty i followy z TikToka', type: 'toggle', default: true },
     F('thirdParty', 'Emotki 7TV, BTTV i FFZ', true, 'Kanały'),

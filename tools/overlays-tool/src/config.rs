@@ -22,7 +22,7 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        Config { dock_link: String::new(), source: "all".into(), autostart: true, tiktok_user: String::new(), tiktok_on: false }
+        Config { dock_link: String::new(), source: "all".into(), autostart: true, tiktok_user: String::new(), tiktok_on: true }
     }
 }
 
@@ -108,7 +108,9 @@ pub fn parse_dock_link(text: &str) -> Option<(String, String)> {
         let link = u.query_pairs().find(|(k, _)| k == "link")?.1.to_string();
         return parse_dock_link(&link);
     }
-    let re = regex::Regex::new(r"^(https?://[^/\s#?]+)/panel/dock#k=([A-Za-z0-9_-]{43})$").unwrap();
+    // Only the real panel (or a local test server): a web page opening vxh-tool:// must not point the app
+    // at its own server, which would then receive the streamer's songs and TikTok chat.
+    let re = regex::Regex::new(r"^(https://overlays\.vxh\.pl|http://(?:localhost|127\.0\.0\.1)(?::\d+)?)/panel/dock#k=([A-Za-z0-9_-]{43})$").unwrap();
     let c = re.captures(text)?;
     Some((c[1].to_string(), c[2].to_string()))
 }
@@ -128,6 +130,9 @@ mod tests {
         let enc = url::form_urlencoded::byte_serialize(link.as_bytes()).collect::<String>();
         assert_eq!(parse_dock_link(&format!("vxh-tool://connect?link={enc}")), Some(("https://overlays.vxh.pl".into(), key)));
         assert_eq!(parse_dock_link("https://evil.example/panel/dock#k=short"), None);
+        // A valid key on another site is refused too (a page must not redirect the app to its own server).
+        assert_eq!(parse_dock_link(&format!("https://evil.example/panel/dock#k={}", "A".repeat(43))), None);
+        assert!(parse_dock_link(&format!("http://localhost:5188/panel/dock#k={}", "A".repeat(43))).is_some());
         assert_eq!(parse_dock_link("hello"), None);
     }
 }

@@ -14591,7 +14591,7 @@
     },
     "tiktokVia": {
      "type": "select",
-     "default": "server",
+     "default": "app",
      "options": [
       "server",
       "app"

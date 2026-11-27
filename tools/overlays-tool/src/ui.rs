@@ -31,6 +31,8 @@ pub struct App {
     tiktok_user: String,
     paste_error: Option<String>,
     show_log: bool,
+    /// The room id stays hidden unless asked: the window may be on stream.
+    show_room: bool,
 }
 
 fn fonts() -> FontDefinitions {
@@ -158,7 +160,7 @@ impl App {
             }
             crate::tray::start(cc.egui_ctx.clone(), rt.clone());
         }
-        App { rt, tiktok_user: config::get().tiktok_user, paste_error: None, show_log: false }
+        App { rt, tiktok_user: config::get().tiktok_user, paste_error: None, show_log: false, show_room: false }
     }
 
     fn header(&self, ui: &mut egui::Ui) {
@@ -213,7 +215,13 @@ impl App {
                         ui.label(t);
                     });
                     if !room.is_empty() {
-                        ui.label(RichText::new(format!("{} · pokój {}…", config::origin().trim_start_matches("https://"), &room[..8.min(room.len())])).size(12.0).color(MUTED));
+                        ui.horizontal(|ui| {
+                            let shown = if self.show_room { format!("{}…", &room[..8.min(room.len())]) } else { "••••••••".into() };
+                            ui.label(RichText::new(format!("{} · pokój {shown}", config::origin().trim_start_matches("https://"))).size(12.0).color(MUTED));
+                            if ui.small_button(if self.show_room { "Ukryj" } else { "Pokaż" }).clicked() {
+                                self.show_room = !self.show_room;
+                            }
+                        });
                     }
                     ui.horizontal_wrapped(|ui| {
                         if ui.button("Otwórz Panel OBS").clicked() {
@@ -327,7 +335,7 @@ impl App {
             match &track {
                 Some(t) => {
                     ui.horizontal(|ui| {
-                        ui.label(RichText::new(if t.playing { "▶" } else { "❚❚" }).color(ORANGE));
+                        ui.label(RichText::new(if t.playing { "▶" } else { "⏸" }).color(ORANGE));
                         ui.vertical(|ui| {
                             ui.label(RichText::new(&t.title).family(FontFamily::Name("bold".into())));
                             ui.label(RichText::new(format!("{} · {}", t.artist, t.app)).size(12.5).color(MUTED));
