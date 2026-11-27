@@ -188,6 +188,9 @@ a { color: inherit; text-decoration: none; }
   left: 50%;
   top: 50%;
   transform-origin: center;
+  /* In OBS the window is the source size, so 100cqh / 100cqw there mean the source. Same here: without it they fell
+     back to the browser window and sizes counted from it (scoreboard, duo, paddings...) came out wrong in the preview. */
+  container-type: size;
 }
 .bg-light .st-canvas, .bg-checker .st-canvas, .bg-dark .st-canvas { outline: 1px dashed rgba(255, 89, 0, 0.35); }
 
