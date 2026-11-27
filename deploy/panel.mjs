@@ -228,6 +228,31 @@ export const panelPost = (action, body, allowDrop = () => true) => {
     publishRoom(room, r.version, r.state, r.keyHash);
     return { status: 200, body: JSON.parse(payload(room, r)) };
   }
+  // "Now playing" from the PC app (VXH Now Playing) or anything else that holds the dock key. The cover picture
+  // stays in memory only (it changes with every song) and is served at /api/panel/<room>/cover.
+  if (action === 'music') {
+    const r = open(room, true);
+    if (!r) return { status: 503, body: { error: 'full' } };
+    const m = body.music && typeof body.music === 'object' ? body.music : null;
+    const txt = (v, n) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
+    if (typeof body.cover === 'string' && body.cover.length <= 90_000) {
+      const mm = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(body.cover);
+      r.cover = mm ? { type: mm[1], data: Buffer.from(mm[2], 'base64'), v: Date.now() } : null;
+    } else if (body.cover === null) r.cover = null;
+    const s = structuredClone(r.state);
+    s.music = m ? {
+      title: txt(m.title, 120), artist: txt(m.artist, 120), album: txt(m.album, 120), app: txt(m.app, 40),
+      playing: m.playing === true, position: clampNum(Number(m.position), 0, 86_400) ?? 0, duration: clampNum(Number(m.duration), 0, 86_400) ?? 0,
+      at: Date.now(), cover: r.cover ? r.cover.v : 0,
+    } : null;
+    r.state = s;
+    r.version += 1;
+    r.touched = Date.now();
+    changed.add(room);
+    broadcast(room, r);
+    publishRoom(room, r.version, r.state, r.keyHash);
+    return { status: 200, body: { ok: true } };
+  }
   if (action === 'drop') {
     if (!allowDrop(room)) return { status: 403, body: { error: 'owner_login_required' } };
     const r = rooms.get(room);
@@ -243,6 +268,14 @@ export const panelPost = (action, body, allowDrop = () => true) => {
 
 /** GET /api/panel/<room> and /api/panel/<room>/events. Returns false when the path is not ours. */
 export const panelGet = (path, req, res, watch = false) => {
+  const cm = /^\/api\/panel\/([a-f0-9]{32})\/cover$/.exec(path);
+  if (cm) {
+    const c = rooms.get(cm[1])?.cover;
+    if (!c) { res.writeHead(404, { 'cache-control': 'no-store' }); res.end(); return true; }
+    res.writeHead(200, { 'content-type': c.type, 'cache-control': 'public, max-age=300' });
+    res.end(c.data);
+    return true;
+  }
   const m = /^\/api\/panel\/([a-f0-9]{32})(\/events)?$/.exec(path);
   if (!m || !ROOM.test(m[1])) return false;
   const room = m[1];

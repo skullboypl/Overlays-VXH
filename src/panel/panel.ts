@@ -24,6 +24,8 @@ export type PanelState = {
   prediction?: { title: string; status: string; at: number; locks: number; winner: string; outcomes: { id: string; title: string; color: string; points: number; users: number }[] };
   hype?: { status: string; at: number; level: number; total: number; progress: number; goal: number; ends: number; top: { name: string; type: string; total: number }[] };
   twGoal?: { status: string; at: number; kind: string; description: string; current: number; target: number };
+  /** Now playing from the PC app; `cover` is the version of the picture at /api/panel/<room>/cover (0 = none). */
+  music?: { title: string; artist: string; album: string; app: string; playing: boolean; position: number; duration: number; at: number; cover: number } | null;
 };
 export type PanelAlert = { id?: string; text: string; kind: string; at: number; amount?: number; months?: number; reward?: string; note?: string; platform?: string };
 export type PanelSnapshot = { room: string; version: number; now: number; sources: number; state: PanelState };
@@ -159,6 +161,6 @@ export const timerValue = (t: TimerState, serverNow: number) => {
 };
 
 /** What an overlay opened with ?panel=<room> gets from the dock. */
-export type PanelLink = { state: PanelState; serverNow: () => number } | null;
+export type PanelLink = { state: PanelState; serverNow: () => number; room?: string } | null;
 export const PanelContext = createContext<PanelLink>(null);
 export const usePanel = () => useContext(PanelContext);

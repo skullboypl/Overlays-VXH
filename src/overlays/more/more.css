@@ -646,3 +646,5 @@
 .mo-gw-winner { display: flex; flex-direction: column; align-items: center; padding: 0.3em 0.7em; border-radius: calc(var(--radius) * 0.6); background: rgba(0, 0, 0, 0.35); animation: mo-bump-pop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
 .mo-gw-winner small { font-size: 0.4em; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.9; }
 .mo-gw-winner b { font-size: 0.85em; white-space: nowrap; }
+.mo-np-bar .mo-np-real { animation: none; transform: none; width: 0; transition: width 0.5s linear; }
+.mo-nowplaying.is-paused .mo-eq i { animation-play-state: paused; }

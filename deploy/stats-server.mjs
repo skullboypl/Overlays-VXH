@@ -11,6 +11,7 @@
 import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { followers } from './followers.mjs';
+import { nowPlaying } from './music.mjs';
 import { loadRooms, panelGet, panelMaintenance, panelPost, resolveRoom } from './panel.mjs';
 import { accountClaim, accountLogin, accountLogout, accountMe, accountRotate, accountUnlink, configured, connectCallback, kickWebhook, mayDrop, twitchWebhook } from './connect.mjs';
 import { openStore, storeKind } from './store.mjs';
@@ -100,6 +101,13 @@ const readBody = (req, max, done) => {
 
 export const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://x');
+  if (url.pathname === '/api/nowplaying' && req.method === 'GET') {
+    if (limited(clientIp(req), Date.now())) return send(res, 429);
+    nowPlaying(url.searchParams.get('lastfm'))
+      .then(({ status, body }) => { res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }); res.end(JSON.stringify(body)); })
+      .catch(() => send(res, 500, { error: 'internal' }));
+    return;
+  }
   if (url.pathname === '/api/followers' && req.method === 'GET') {
     if (limited(clientIp(req), Date.now())) return send(res, 429);
     followers(url.searchParams.get('platform'), url.searchParams.get('channel'))
@@ -156,7 +164,7 @@ export const server = http.createServer((req, res) => {
     const action = url.pathname.slice('/api/panel/'.length);
     let raw = '';
     req.setEncoding('utf8');
-    req.on('data', (chunk) => { raw += chunk; if (raw.length > 8192) req.destroy(); });
+    req.on('data', (chunk) => { raw += chunk; if (raw.length > (action === 'music' ? 100_000 : 8192)) req.destroy(); });
     req.on('end', () => {
       let body;
       try { body = JSON.parse(raw); } catch { return send(res, 400, { error: 'bad_json' }); }

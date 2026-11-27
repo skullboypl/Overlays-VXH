@@ -16,7 +16,7 @@ RUN npm ci --omit=dev --no-audit --no-fund
 FROM nginx:1.30-alpine
 RUN apk add --no-cache nodejs
 COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
-COPY deploy/stats-server.mjs deploy/followers.mjs deploy/panel.mjs deploy/store.mjs deploy/connect.mjs deploy/package.json /srv/
+COPY deploy/stats-server.mjs deploy/followers.mjs deploy/panel.mjs deploy/store.mjs deploy/connect.mjs deploy/music.mjs deploy/package.json /srv/
 COPY --from=srvdeps /srv/node_modules /srv/node_modules
 COPY deploy/start.sh /srv/start.sh
 RUN tr -d '\r' < /srv/start.sh > /srv/start && mv /srv/start /srv/start.sh && chmod +x /srv/start.sh

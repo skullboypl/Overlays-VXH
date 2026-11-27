@@ -42,7 +42,7 @@ const OverlayRoute = () => {
 /** ?panel=<room>: the overlay listens to the OBS panel (read-only) and fades out when the dock hides it. */
 const PanelBridge = ({ room, overlay, children }: { room: string | null; overlay: string; children: React.ReactNode }) => {
   const { snap, offset } = useRoom(room);
-  const link = useMemo(() => (snap ? { state: snap.state, serverNow: () => Date.now() + offset.current } : null), [snap, offset]);
+  const link = useMemo(() => (snap ? { state: snap.state, serverNow: () => Date.now() + offset.current, room: snap.room } : null), [snap, offset]);
   const hidden = snap?.state.hidden?.[overlay] === true;
   return (
     <PanelContext.Provider value={link}>

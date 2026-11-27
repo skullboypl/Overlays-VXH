@@ -265,20 +265,63 @@ const Checklist: Renderer = ({ params: p }) => {
 };
 
 /* ---------------- 65 now playing ---------------- */
+type Track = { title: string; artist: string; cover: string; playing: boolean; position: number; duration: number; at: number };
+/** Last.fm: the server asks Last.fm every few seconds (one call for all OBS sources of a user). */
+const useLastFm = (user: string) => {
+  const [t, setT] = useState<Track | null>(null);
+  const [error, setError] = useState('');
+  useEffect(() => {
+    if (!user.trim()) return undefined;
+    let alive = true;
+    const load = async () => {
+      try {
+        const r = await fetch(`/api/nowplaying?lastfm=${encodeURIComponent(user.trim())}`);
+        const b = await r.json().catch(() => ({}));
+        if (!alive) return;
+        if (r.ok) { setT({ title: b.title, artist: b.artist, cover: safeUrl(b.cover), playing: b.playing === true, position: 0, duration: 0, at: Date.now() }); setError(''); }
+        else setError(String(b.error ?? 'unavailable'));
+      } catch { if (alive) setError('unavailable'); }
+    };
+    void load();
+    const id = window.setInterval(load, 10_000);
+    return () => { alive = false; window.clearInterval(id); };
+  }, [user]);
+  return { track: t, error };
+};
+
 const NowPlaying: Renderer = ({ params: p }) => {
-  const cover = safeUrl(p.cover);
+  const panel = usePanel();
+  const src = str(p.source, 'manual');
+  const lastfm = useLastFm(src === 'lastfm' ? str(p.lastfm) : '');
+  const now = useNow(500);
+  const lang = langOf(p);
+  const m = panel?.state.music;
+  const live: Track | null = src === 'app'
+    ? (m && m.title ? { title: m.title, artist: m.artist, cover: m.cover && panel?.room ? `/api/panel/${panel.room}/cover?v=${m.cover}` : '', playing: m.playing, position: m.position, duration: m.duration, at: m.at } : null)
+    : src === 'lastfm' ? lastfm.track : null;
+  const auto = src !== 'manual';
+  // Nothing playing (paused, or the PC app / Last.fm has no song): hide, unless asked to keep the card up.
+  if (auto && (!live || !live.title || (!live.playing && p.hideIdle !== false)) && p._preview !== true) return null;
+  const title = auto ? live?.title || (p._preview === true ? translate(lang, src === 'lastfm' ? (lastfm.error === 'not_configured' ? 'Last.fm nie jest jeszcze włączony na serwerze' : 'Wpisz nick Last.fm') : 'Włącz aplikację VXH Now Playing') : '') : str(p.title);
+  const artist = auto ? live?.artist ?? '' : str(p.artist);
+  const cover = auto ? live?.cover ?? '' : safeUrl(p.cover);
+  const playing = auto ? live?.playing ?? false : true;
+  // Real progress when the app sends position / length; otherwise the looping bar as before.
+  const pos = live && live.duration ? Math.min(live.duration, live.position + (live.playing ? (now - live.at) / 1000 : 0)) : 0;
   return (
-    <Card p={p} kind="nowplaying" className={`layout-${p.layout ?? 'card'}`}>
+    <Card p={p} kind="nowplaying" className={`layout-${p.layout ?? 'card'} ${playing ? '' : 'is-paused'}`}>
       <div className="mo-np">
         <div className={`mo-np-cover ${p.spin ? 'is-vinyl' : ''}`}>{cover ? <img src={cover} alt="" /> : <span aria-hidden>♫</span>}</div>
         <div className="mo-np-text">
           <small>{str(p.label)}</small>
-          <b>{str(p.title)}</b>
-          {p.artist && <span>{str(p.artist)}</span>}
+          <b key={title} className={auto ? 'mo-a-up' : ''}>{title}</b>
+          {artist && <span>{artist}</span>}
         </div>
         {p.eq !== false && <div className="mo-eq" aria-hidden>{Array.from({ length: 5 }, (_, i) => <i key={i} style={{ '--i': i } as Vars} />)}</div>}
       </div>
-      {p.progress !== false && <div className="mo-np-bar"><i style={{ animationDuration: `${num(p.length, 180)}s` }} /></div>}
+      {p.progress !== false && (live && live.duration
+        ? <div className="mo-np-bar"><i className="mo-np-real" style={{ width: `${(pos / live.duration) * 100}%` }} /></div>
+        : <div className="mo-np-bar"><i style={{ animationDuration: `${num(p.length, 180)}s` }} /></div>)}
     </Card>
   );
 };
@@ -546,6 +589,11 @@ export const WIDGET_DEFS: OverlayDef[] = [
     ...look('glass'),
   ]),
   W('nowplaying', 'Teraz gra', '🎵', { w: 640, h: 140 }, 'Tytuł utworu, wykonawca i okładka, z animowanym equalizerem.', [
+    { group: 'Źródło', key: 'source', label: 'Skąd brać utwór', type: 'select', default: 'manual', options: [
+      { value: 'manual', label: 'Wpisany ręcznie' }, { value: 'app', label: 'Aplikacja VXH Now Playing (Spotify, YouTube i inne)' }, { value: 'lastfm', label: 'Last.fm' },
+    ], hint: 'Aplikacja na PC czyta to, co gra w Windows, i wysyła do Panelu OBS (link z panelem). Last.fm: włącz scrobbling w Spotify i wpisz nick.' },
+    { group: 'Źródło', key: 'lastfm', label: 'Nick Last.fm', type: 'text', default: '', maxLength: 15, when: { key: 'source', is: ['lastfm'] } },
+    { group: 'Źródło', key: 'hideIdle', label: 'Ukryj, gdy nic nie gra', type: 'toggle', default: true, when: { key: 'source', is: ['app', 'lastfm'] } },
     { group: 'Utwór', key: 'label', i18n: true, label: 'Nagłówek', type: 'text', default: 'Teraz gra', maxLength: 20 },
     { group: 'Utwór', key: 'title', label: 'Tytuł', type: 'text', default: 'Lofi beats to stream to', maxLength: 60 },
     { group: 'Utwór', key: 'artist', label: 'Wykonawca', type: 'text', default: 'Chill Radio', maxLength: 60 },
