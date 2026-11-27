@@ -332,6 +332,11 @@ const ChannelsCard = ({ panelKey, room, owner, me, state }: { panelKey: string; 
   );
 };
 
+const APP_REPO = 'https://github.com/skullboypl/Overlays-VXH';
+// shortcut: "latest" is fine while the repo only publishes app releases (tool-v*); if site releases appear, point this at the install script instead.
+const APP_EXE = `${APP_REPO}/releases/latest/download/VXH.Overlays.Tool.exe`;
+const INSTALL_CMD = 'irm https://overlays.vxh.pl/install.ps1 | iex';
+
 /** The PC app (VXH Overlays Tool): one click hands it the dock link through the "vxh-tool://" link it registered. */
 const AppCard = ({ dockUrl }: { dockUrl: string }) => {
   const { t } = useT();
@@ -348,9 +353,18 @@ const AppCard = ({ dockUrl }: { dockUrl: string }) => {
     <section ref={ref} id="app" className={`pn-card ${fromApp ? 'pn-highlight' : ''}`}>
       <h2>💻 {t('Aplikacja VXH Overlays Tool')}</h2>
       <p>{t('Aplikacja na Windows w zasobniku: „Teraz gra” ze Spotify i YouTube, !skip i !voteskip z czatu, czat TikTok LIVE z Twojego internetu.')}</p>
+      <h3 className="pn-sub">{t('1. Zainstaluj (jedna komenda)')}</h3>
+      <p className="pn-note">{t('Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.')}</p>
+      <CopyField value={INSTALL_CMD} />
+      <div className="pn-row">
+        <a className="pn-ghost" href={APP_EXE} rel="noreferrer">⬇ {t('Pobierz .exe')}</a>
+        <a className="pn-ghost" href={`${APP_REPO}/releases`} target="_blank" rel="noreferrer">{t('Wszystkie wersje')} ↗</a>
+        <a className="pn-ghost" href={`${APP_REPO}/tree/main/tools/overlays-tool`} target="_blank" rel="noreferrer">{t('Kod źródłowy (GitHub)')} ↗</a>
+      </div>
+      <p className="pn-note">✔ {t('Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.')}</p>
+      <h3 className="pn-sub">{t('2. Połącz z panelem')}</h3>
       <div className="pn-row">
         <button type="button" className="pn-primary" onClick={connect}>{t('Połącz z VXH Overlays Tool')}</button>
-        <a className="pn-ghost" href="https://github.com/skullboypl/Overlays-VXH/releases" target="_blank" rel="noreferrer">{t('Pobierz aplikację')} ↗</a>
       </div>
       {opened && <p className="pn-note">{t('Przeglądarka zapyta, czy otworzyć aplikację: zgódź się. Nic się nie stało? Zainstaluj aplikację albo w niej wybierz „Wklej link docka” po skopiowaniu linku z kroku 1.')}</p>}
       <p className="pn-note">🔒 {t('Link docka trafia tylko do aplikacji na tym komputerze, nie przez żaden serwer.')}</p>

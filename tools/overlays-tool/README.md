@@ -8,13 +8,20 @@ Mała aplikacja dla Windows (Rust, ok. 5 MB), która siedzi w zasobniku obok zeg
 
 ## Jak użyć
 
-1. Pobierz `VXH Overlays Tool.exe` (wydanie `tool-v*` albo Actions → „VXH Overlays Tool” → artefakt).
-2. Uruchom. Dopóki aplikacja nie jest podpisana, Windows może ostrzec: „Więcej informacji” → „Uruchom mimo to”.
-3. W oknie aplikacji kliknij **Połącz z panelem**. Otworzy się Panel OBS: kliknij tam **Połącz z VXH Overlays Tool** i zgódź się na otwarcie aplikacji. Link docka trafia prosto do aplikacji na tym komputerze.
+1. Zainstaluj jedną komendą w PowerShell (Win + X → Terminal), bez praw administratora; ta sama komenda aktualizuje:
+   ```powershell
+   irm https://overlays.vxh.pl/install.ps1 | iex
+   ```
+   Albo pobierz `VXH.Overlays.Tool.exe` z [wydań](https://github.com/skullboypl/Overlays-VXH/releases) (tag `tool-v*`). Plik jest podpisany certyfikatem EV SkullMedia Artur Spychalski, a aplikacja sama się potem aktualizuje.
+2. W oknie aplikacji kliknij **Połącz z panelem**. Otworzy się Panel OBS: kliknij tam **Połącz z VXH Overlays Tool** i zgódź się na otwarcie aplikacji. Link docka trafia prosto do aplikacji na tym komputerze.
    Zamiast tego możesz skopiować link docka i w aplikacji kliknąć **Wklej link docka**.
-4. TikTok: wpisz nick w karcie Konta i włącz „Czat TikTok przez aplikację”.
+3. TikTok: wpisz nick w karcie Konta i włącz „Czat TikTok przez aplikację”.
 
 Zamknięcie okna chowa aplikację do zasobnika; „Zamknij” w menu ikony ją wyłącza. Stara aplikacja „VXH Now Playing” nie jest już potrzebna: nowa przejmuje jej link docka i wyłącza jej autostart.
+
+## Wydanie
+
+`release.ps1` (na komputerze z certyfikatem): testy, build, podpis EV (ten sam certyfikat co SmoothWizard), weryfikacja; z `-Publish` tworzy wydanie `tool-v<wersja z Cargo.toml>` na GitHubie. Zainstalowane aplikacje przy starcie same instalują nowsze wydanie, ale tylko z ważnym podpisem SkullMedia; w trakcie działania co 6 h sprawdzają i proponują aktualizację. CI nie publikuje wydań (nie ma dostępu do certyfikatu).
 
 ## Budowanie
 

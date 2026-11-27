@@ -1,0 +1,83 @@
+{
+ "en": {
+  "1. Zainstaluj (jedna komenda)": "1. Install (one command)",
+  "2. Połącz z panelem": "2. Connect to the panel",
+  "Kod źródłowy (GitHub)": "Source code (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "The file is signed with SkullMedia’s EV certificate, and the app updates itself.",
+  "Pobierz .exe": "Download .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Paste it into PowerShell (Win + X → Terminal) and press Enter. No admin rights; the same command updates an older version.",
+  "Wszystkie wersje": "All versions"
+ },
+ "de": {
+  "1. Zainstaluj (jedna komenda)": "1. Installieren (ein Befehl)",
+  "2. Połącz z panelem": "2. Mit dem Panel verbinden",
+  "Kod źródłowy (GitHub)": "Quellcode (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "Die Datei ist mit dem EV-Zertifikat von SkullMedia signiert, und die App aktualisiert sich selbst.",
+  "Pobierz .exe": ".exe herunterladen",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "In PowerShell einfügen (Win + X → Terminal) und Enter drücken. Ohne Administratorrechte; derselbe Befehl aktualisiert eine ältere Version.",
+  "Wszystkie wersje": "Alle Versionen"
+ },
+ "cs": {
+  "1. Zainstaluj (jedna komenda)": "1. Nainstaluj (jeden příkaz)",
+  "2. Połącz z panelem": "2. Připoj k panelu",
+  "Kod źródłowy (GitHub)": "Zdrojový kód (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "Soubor je podepsaný EV certifikátem SkullMedia a aplikace se aktualizuje sama.",
+  "Pobierz .exe": "Stáhnout .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Vlož do PowerShellu (Win + X → Terminál) a stiskni Enter. Bez práv správce; stejný příkaz aktualizuje starší verzi.",
+  "Wszystkie wersje": "Všechny verze"
+ },
+ "es": {
+  "1. Zainstaluj (jedna komenda)": "1. Instala (un comando)",
+  "2. Połącz z panelem": "2. Conecta con el panel",
+  "Kod źródłowy (GitHub)": "Código fuente (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "El archivo está firmado con el certificado EV de SkullMedia y la app se actualiza sola.",
+  "Pobierz .exe": "Descargar .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Pégalo en PowerShell (Win + X → Terminal) y pulsa Enter. Sin permisos de administrador; el mismo comando actualiza una versión anterior.",
+  "Wszystkie wersje": "Todas las versiones"
+ },
+ "fr": {
+  "1. Zainstaluj (jedna komenda)": "1. Installe (une commande)",
+  "2. Połącz z panelem": "2. Connecte au panneau",
+  "Kod źródłowy (GitHub)": "Code source (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "Le fichier est signé avec le certificat EV de SkullMedia, et l’app se met à jour toute seule.",
+  "Pobierz .exe": "Télécharger le .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Colle-la dans PowerShell (Win + X → Terminal) et appuie sur Entrée. Sans droits administrateur ; la même commande met à jour une ancienne version.",
+  "Wszystkie wersje": "Toutes les versions"
+ },
+ "pt": {
+  "1. Zainstaluj (jedna komenda)": "1. Instale (um comando)",
+  "2. Połącz z panelem": "2. Conecte ao painel",
+  "Kod źródłowy (GitHub)": "Código-fonte (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "O arquivo é assinado com o certificado EV da SkullMedia, e o app se atualiza sozinho.",
+  "Pobierz .exe": "Baixar .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Cole no PowerShell (Win + X → Terminal) e aperte Enter. Sem permissão de administrador; o mesmo comando atualiza uma versão antiga.",
+  "Wszystkie wersje": "Todas as versões"
+ },
+ "ru": {
+  "1. Zainstaluj (jedna komenda)": "1. Установи (одна команда)",
+  "2. Połącz z panelem": "2. Подключи к панели",
+  "Kod źródłowy (GitHub)": "Исходный код (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "Файл подписан EV-сертификатом SkullMedia, а приложение обновляется само.",
+  "Pobierz .exe": "Скачать .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Вставь в PowerShell (Win + X → Терминал) и нажми Enter. Без прав администратора; та же команда обновляет старую версию.",
+  "Wszystkie wersje": "Все версии"
+ },
+ "tr": {
+  "1. Zainstaluj (jedna komenda)": "1. Kur (tek komut)",
+  "2. Połącz z panelem": "2. Panele bağla",
+  "Kod źródłowy (GitHub)": "Kaynak kod (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "Dosya SkullMedia’nın EV sertifikasıyla imzalı ve uygulama kendini günceller.",
+  "Pobierz .exe": ".exe indir",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "PowerShell’e yapıştır (Win + X → Terminal) ve Enter’a bas. Yönetici yetkisi gerekmez; aynı komut eski sürümü günceller.",
+  "Wszystkie wersje": "Tüm sürümler"
+ },
+ "uk": {
+  "1. Zainstaluj (jedna komenda)": "1. Встанови (одна команда)",
+  "2. Połącz z panelem": "2. Підключи до панелі",
+  "Kod źródłowy (GitHub)": "Вихідний код (GitHub)",
+  "Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.": "Файл підписаний EV-сертифікатом SkullMedia, а застосунок оновлюється сам.",
+  "Pobierz .exe": "Завантажити .exe",
+  "Wklej w PowerShell (Win + X → Terminal) i naciśnij Enter. Bez praw administratora; ta sama komenda aktualizuje starszą wersję.": "Встав у PowerShell (Win + X → Термінал) і натисни Enter. Без прав адміністратора; та сама команда оновлює стару версію.",
+  "Wszystkie wersje": "Усі версії"
+ }
+}

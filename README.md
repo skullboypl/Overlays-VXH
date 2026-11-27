@@ -119,7 +119,7 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `chat` | Czat Twitch + Kick (+ TikTok LIVE beta) w jednym oknie, bez logowania: emotki Twitch / Kick / 7TV / BTTV / FFZ, odznaki, kolory nicków, usuwanie wiadomości przez modów, filtry botów / komend / linków / słów, znikanie, 11 stylów |
 | `latest`, `events` | Ostatni follow / sub / cheer / raid / donacja i lista ostatnich zdarzeń z kanału podpiętego w Panelu OBS |
 | `prediction`, `hypetrain`, `twgoal` | Predykcja, Hype Train i cel kanału z Twitcha na żywo |
-| `nowplaying` | Źródło: wpisane, Last.fm albo aplikacja [VXH Overlays Tool](tools/overlays-tool) na Windows (Spotify, YouTube i inne) |
+| `nowplaying` | Źródło: wpisane, Last.fm albo aplikacja [VXH Overlays Tool](tools/overlays-tool) na Windows (Spotify, YouTube i inne; instalacja: `irm https://overlays.vxh.pl/install.ps1 \| iex`) |
 
 Ankieta może pokazywać ankietę z Twitcha, rankingi liczą się z bitsów / Kicks / gift subów, giveaway zbiera zgłoszenia z czatu. Karty widżetów mają też style: brutalizm, terminal, karteczka, 8-bit, komiks, minimalny, esport.
 
