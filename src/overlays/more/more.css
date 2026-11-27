@@ -253,7 +253,8 @@
 .mo-counter-delta { position: absolute; right: -0.6em; top: -0.7em; font-style: normal; font-weight: 900; font-size: 0.55em; color: var(--accent); animation: mo-bump 1.6s ease-out both; }
 
 /* scoreboard */
-.mo-score { container-type: size; display: flex; align-items: center; justify-content: center; gap: 0.25em; padding: 8px; font-family: var(--font); color: var(--fg); font-size: var(--fs); }
+.mo-score-box { container-type: size; }
+.mo-score { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; gap: 0.25em; padding: 8px; font-family: var(--font); color: var(--fg); font-size: var(--fs); }
 .mo-score-team { display: flex; align-items: center; gap: 0.5em; min-width: 0; }
 .mo-score-team span { padding: 0.25em 0.8em; font-size: 0.62em; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: var(--bg); border-radius: 0.2em; box-shadow: 0 0.15em 0.5em rgba(0, 0, 0, 0.4); }
 .mo-score-team b { display: grid; place-items: center; min-width: 1.4em; padding: 0.05em 0.25em; font-weight: 900; font-variant-numeric: tabular-nums; line-height: 1.1; border-radius: 0.15em; }
@@ -265,6 +266,9 @@
 .mo-score-mid small { font-size: 0.32em; font-weight: 800; letter-spacing: 0.1em; opacity: 0.85; text-shadow: 0 1px 4px #000; }
 .mo-score-mid i { font-style: normal; font-weight: 900; text-shadow: 0 2px 8px rgba(0, 0, 0, 0.7); }
 .mo-score.style-esport .mo-score-team b, .mo-score.style-esport .mo-score-team span { clip-path: polygon(0.3em 0, 100% 0, calc(100% - 0.3em) 100%, 0 100%); border-radius: 0; }
+/* The slanted cut used to leave only a sliver of the side border at one corner: a full slanted stripe instead. */
+.mo-score.style-esport .mo-score-team.is-a span { border-left: 0; padding-left: 1.1em; background: linear-gradient(105deg, var(--ca) 0 0.55em, var(--bg) 0.55em); }
+.mo-score.style-esport .mo-score-team.is-b span { border-right: 0; padding-right: 1.1em; background: linear-gradient(105deg, var(--bg) calc(100% - 0.55em), var(--cb) calc(100% - 0.55em)); }
 .mo-score.style-glass .mo-score-team span { background: color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter: blur(10px); }
 .mo-score.style-glass .mo-score-team b { border-radius: 0.3em; }
 

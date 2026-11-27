@@ -90,11 +90,13 @@ const Scoreboard: Renderer = ({ params: p }) => {
   const b = panel?.state.counters?.right ?? num(p.scoreB, 0);
   const ba = useBump(a), bb = useBump(b);
   return (
-    <div className={`ov-fill mo-score style-${p.style ?? 'esport'}`} style={{ '--ca': str(p.colorA, '#ff5900'), '--cb': str(p.colorB, '#3b82f6'), '--bg': str(p.bg, '#111114'), '--fg': str(p.textColor, '#ffffff'), '--font': fontOf(p, 'russo'), '--fs': `max(10px, calc(${num(p.fontSize, 40)} * 100cqh / 120))` } as Vars}>
+    // The size is counted from this wrapper (a size container), not from whatever container holds the overlay:
+    // in the studio preview that was the whole stage, so the board came out many times too big.
+    <div className="ov-fill mo-score-box"><div className={`mo-score style-${p.style ?? 'esport'}`} style={{ '--ca': str(p.colorA, '#ff5900'), '--cb': str(p.colorB, '#3b82f6'), '--bg': str(p.bg, '#111114'), '--fg': str(p.textColor, '#ffffff'), '--font': fontOf(p, 'russo'), '--fs': `max(10px, calc(${num(p.fontSize, 40)} * 100cqh / 120))` } as Vars}>
       <div className="mo-score-team is-a"><span>{str(p.nameA)}</span><b key={ba?.k} className={ba ? 'is-bump' : ''}>{a}</b></div>
       <div className="mo-score-mid">{p.title ? <small>{str(p.title)}</small> : null}<i>:</i></div>
       <div className="mo-score-team is-b"><b key={bb?.k} className={bb ? 'is-bump' : ''}>{b}</b><span>{str(p.nameB)}</span></div>
-    </div>
+    </div></div>
   );
 };
 
