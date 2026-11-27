@@ -151,6 +151,7 @@ mod win {
 /// RGBA pixels -> "data:image/jpeg;base64,…" (None when too big for the panel server).
 #[cfg_attr(not(windows), allow(dead_code))]
 pub fn jpeg_data_url(w: u32, h: u32, rgba: Vec<u8>) -> Option<String> {
+    use base64::Engine;
     let img = image::RgbaImage::from_raw(w, h, rgba)?;
     let rgb = image::DynamicImage::ImageRgba8(img).to_rgb8();
     let mut out = Vec::new();
