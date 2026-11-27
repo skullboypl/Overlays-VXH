@@ -134,6 +134,8 @@ export const applyPatch = (state, patch, now = Date.now()) => {
       const kind = ALERT_KIND.test(String(patch.alert.kind)) ? String(patch.alert.kind) : 'custom';
       if (text) pushAlert(s, { id: randomBytes(6).toString('hex'), text, kind, at: now }); else s.alert = null;
     }
+    // New stream: forget per-person totals and the latest events (dock button).
+    if (patch.resetStream === true) { s.givers = {}; s.latest = {}; s.alerts = []; }
     // Channel point reward (exact title, any case) -> effect button; set from the setup page.
     if (patch.rewardFx && typeof patch.rewardFx === 'object') {
       s.rewardFx ??= {};
@@ -321,10 +323,30 @@ export const panelMaintenance = () => { prune(); void saveRooms(); };
  * A change that comes from the server, not the dock: an alert from Twitch / Kick, an effect for a channel point
  * reward, or the list of linked channels. Same path as a dock update: new version, live push, saved later.
  */
-export const pushEvent = (room, { alert, fire, links, tally } = {}, now = Date.now()) => {
+const LIVE_KEYS = ['poll', 'prediction', 'hype', 'twGoal'];
+export const pushEvent = (room, { alert, fire, links, tally, set } = {}, now = Date.now()) => {
   const r = rooms.get(room) ?? open(room, true);
   if (!r) return false;
   let s = structuredClone(r.state);
+  if (set) for (const k of LIVE_KEYS) if (k in set) s[k] = set[k];
+  if (alert && alert.platform) {
+    // "Latest follow / sub / cheer..." and per-person totals for the top-donor list, from linked channels only.
+    s.latest ??= {};
+    s.latest[alert.kind] = { text: String(alert.text ?? '').slice(0, 40), platform: alert.platform, amount: Number(alert.amount) || 0, at: now };
+    const add = alert.kind === 'bits' ? 'bits' : alert.kind === 'gift' ? 'gifts' : alert.kind === 'donate' && alert.platform === 'kick' ? 'kicks' : '';
+    if (add && alert.text && alert.text !== 'Anonim') {
+      s.givers ??= {};
+      const k = `${alert.platform}:${String(alert.text).toLowerCase()}`.slice(0, 60);
+      const g = s.givers[k] ?? { name: String(alert.text).slice(0, 30), platform: alert.platform, bits: 0, gifts: 0, kicks: 0 };
+      g[add] += Number(alert.amount) || (add === 'gifts' ? 1 : 0);
+      s.givers[k] = g;
+      const keys = Object.keys(s.givers);
+      if (keys.length > 60) {
+        const score = (x) => x.bits + x.kicks + x.gifts * 500;
+        for (const drop of keys.sort((a, b2) => score(s.givers[a]) - score(s.givers[b2])).slice(0, keys.length - 60)) delete s.givers[drop];
+      }
+    }
+  }
   if (tally && Object.keys(tally).length) {
     // Automatic counters (follows, subs, bits, gifts, kicks, raids), the goal bar when it follows one of them,
     // and subathon time per event, as set in the panel.

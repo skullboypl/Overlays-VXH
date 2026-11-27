@@ -7,8 +7,8 @@ import { isLang, translate } from '../../i18n';
 import { fontOf, lines, num, rangeF, str, type Renderer, type Vars } from './common';
 
 type Part = { t: 'text'; v: string } | { t: 'emote'; url: string; name: string } | { t: 'mention'; v: string };
-type Msg = { id: string; platform: 'twitch' | 'kick'; user: string; login: string; color: string; badges: string[]; parts: Part[]; text: string; at: number; action?: boolean };
-type Sink = { add: (m: Msg) => void; remove: (id: string) => void; clearUser: (login: string) => void; clearAll: () => void; room?: (id: string) => void };
+export type Msg = { id: string; platform: 'twitch' | 'kick'; user: string; login: string; color: string; badges: string[]; parts: Part[]; text: string; at: number; action?: boolean };
+export type Sink = { add: (m: Msg) => void; remove: (id: string) => void; clearUser: (login: string) => void; clearAll: () => void; room?: (id: string) => void };
 
 const langOf = (p: Params) => (isLang(p._lang) ? p._lang : 'pl');
 const cleanId = (v: unknown) => String(v ?? '').replace(/[^A-Za-z0-9_-]/g, '');
@@ -52,7 +52,7 @@ export const twitchParts = (text: string, emotes: string): Part[] => {
   return out;
 };
 
-const useTwitchChat = (channel: string, sink: React.MutableRefObject<Sink>) => {
+export const useTwitchChat = (channel: string, sink: React.MutableRefObject<Sink>) => {
   useEffect(() => {
     const ch = channel.trim().toLowerCase().replace(/^#/, '');
     if (!/^[a-z0-9_]{2,25}$/.test(ch)) return undefined;
@@ -109,7 +109,7 @@ export const kickParts = (content: string): Part[] => {
   if (at < content.length) out.push({ t: 'text', v: content.slice(at) });
   return out;
 };
-const useKickChat = (channel: string, sink: React.MutableRefObject<Sink>, onUser: (id: number) => void) => {
+export const useKickChat = (channel: string, sink: React.MutableRefObject<Sink>, onUser: (id: number) => void) => {
   useEffect(() => {
     const ch = channel.trim().toLowerCase();
     if (!/^[a-z0-9_-]{2,40}$/.test(ch)) return undefined;

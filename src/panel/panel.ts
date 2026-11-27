@@ -17,6 +17,13 @@ export type PanelState = {
   links?: Partial<Record<'twitch' | 'kick', string>>;
   /** Channel point reward title (lower case) -> effect trigger name. */
   rewardFx?: Record<string, string>;
+  /** From linked channels: the latest event of each kind, per-person totals, and live Twitch poll / prediction / Hype Train / goal. */
+  latest?: Record<string, { text: string; platform: string; amount: number; at: number }>;
+  givers?: Record<string, { name: string; platform: string; bits: number; gifts: number; kicks: number }>;
+  poll?: { title: string; status: string; at: number; ends: number; choices: { title: string; votes: number }[] };
+  prediction?: { title: string; status: string; at: number; locks: number; winner: string; outcomes: { id: string; title: string; color: string; points: number; users: number }[] };
+  hype?: { status: string; at: number; level: number; total: number; progress: number; goal: number; ends: number; top: { name: string; type: string; total: number }[] };
+  twGoal?: { status: string; at: number; kind: string; description: string; current: number; target: number };
 };
 export type PanelAlert = { id?: string; text: string; kind: string; at: number; amount?: number; months?: number; reward?: string; note?: string; platform?: string };
 export type PanelSnapshot = { room: string; version: number; now: number; sources: number; state: PanelState };

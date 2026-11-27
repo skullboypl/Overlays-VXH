@@ -543,7 +543,9 @@ const LiveControls = ({ state: s, send }: { state: PanelState | null; send: (pat
         <div className="pn-row pn-wrap">
           {BURSTS.map(([n, icon, l]) => <button key={n} type="button" className="pn-ghost" onClick={() => send({ fire: n })}>{icon} {t(l)}</button>)}
           <button type="button" className="pn-primary" onClick={() => send({ fire: 'wheel' })}>🎡 {t('Zakręć kołem')}</button>
+          <button type="button" className="pn-primary" onClick={() => send({ fire: 'giveaway' })}>🎁 {t('Losuj giveaway')}</button>
         </div>
+        <button type="button" className="pn-link" onClick={() => { if (window.confirm(t('Wyzerować ostatnie zdarzenia i ranking donatorów na nowy stream?'))) send({ resetStream: true }); }}>{t('Nowy stream: wyzeruj zdarzenia i ranking')}</button>
       </section>
 
       <section className="pn-box">

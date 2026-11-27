@@ -609,3 +609,40 @@
 .mo-chat.anim-fade .mo-chat-msg { animation: mo-in-fade 0.5s ease both; }
 .mo-chat.anim-pop .mo-chat-msg { animation: mo-bump-pop 0.45s cubic-bezier(0.3, 1.5, 0.5, 1) both; transform-origin: left bottom; }
 .mo-chat-empty { align-self: center; margin: auto; padding: 0.5em 1em; border-radius: 1em; background: rgba(0, 0, 0, 0.55); font-size: var(--fs); }
+
+/* =================== channel-fed widgets (channel.tsx) =================== */
+.mo-ch-pl { display: inline-grid; place-items: center; width: 1.1em; height: 1.1em; border-radius: 0.25em; margin-right: 0.35em; vertical-align: -0.12em; font-size: 0.8em; }
+.mo-latest .tl-card { --base: min(20cqh, 5.4cqw); }
+.mo-latest { display: flex; align-items: center; gap: 0.5em; }
+.mo-latest-icon { font-size: 1.4em; }
+.mo-latest > div { display: flex; flex-direction: column; text-align: left; min-width: 0; }
+.mo-latest small { font-size: 0.45em; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+.tl-card.style-gradient .mo-latest small { color: var(--fg); opacity: 0.85; }
+.mo-latest b { font-size: 0.85em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mo-latest em { font-style: normal; font-size: 0.5em; opacity: 0.85; }
+.mo-events .tl-card { --base: min(8.5cqh, 6.4cqw); }
+.mo-events { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 0.25em; }
+.mo-events li { display: flex; align-items: center; gap: 0.4em; padding: 0.25em 0.45em; border-radius: calc(var(--radius) * 0.5); background: rgba(255, 255, 255, 0.06); font-size: 0.62em; animation: mo-in-slide 0.45s calc(var(--i) * 60ms) both; }
+.mo-events li b { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mo-events li em { margin-left: auto; font-style: normal; font-size: 0.85em; opacity: 0.85; white-space: nowrap; }
+.mo-prediction .tl-card { --base: min(13cqh, 4.6cqw); width: 100%; }
+.mo-pred { display: flex; flex-direction: column; gap: 0.3em; }
+.mo-pred-row { position: relative; display: flex; justify-content: space-between; gap: 0.6em; padding: 0.35em 0.6em; border-radius: calc(var(--radius) * 0.6); background: rgba(255, 255, 255, 0.08); overflow: hidden; font-size: 0.7em; }
+.mo-pred-row > i { position: absolute; inset: 0 auto 0 0; transition: width 1s; }
+.mo-pred-row.c0 > i { background: color-mix(in srgb, #3a8dff 70%, transparent); }
+.mo-pred-row.c1 > i { background: color-mix(in srgb, #f0479b 70%, transparent); }
+.mo-pred-row > b, .mo-pred-row > span { position: relative; white-space: nowrap; }
+.mo-pred-row > span { font-weight: 700; font-variant-numeric: tabular-nums; }
+.mo-pred-row.is-win { box-shadow: 0 0 0 0.1em #ffd23f; }
+.mo-pred-row.is-lose { opacity: 0.45; }
+.mo-hype .tl-card { --base: min(26cqh, 5.2cqw); width: 100%; }
+.mo-hype-head { display: flex; align-items: baseline; gap: 0.5em; font-size: 0.75em; }
+.mo-hype-train { display: inline-block; animation: mo-train 1.2s ease-in-out infinite; }
+@keyframes mo-train { 50% { transform: translateX(0.15em) rotate(-3deg); } }
+.mo-hype-head em { font-style: normal; color: var(--accent); font-weight: 900; animation: mo-bump-pop 0.6s both; }
+.mo-hype-head small { margin-left: auto; font-variant-numeric: tabular-nums; opacity: 0.85; }
+.mo-twgoal .tl-card { --base: min(28cqh, 4.6cqw); width: 100%; }
+.mo-gw-count { font-style: normal; opacity: 0.85; }
+.mo-gw-winner { display: flex; flex-direction: column; align-items: center; padding: 0.3em 0.7em; border-radius: calc(var(--radius) * 0.6); background: rgba(0, 0, 0, 0.35); animation: mo-bump-pop 0.7s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+.mo-gw-winner small { font-size: 0.4em; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.9; }
+.mo-gw-winner b { font-size: 0.85em; white-space: nowrap; }

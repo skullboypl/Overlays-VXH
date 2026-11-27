@@ -7,9 +7,10 @@ import { WIDGET_DEFS, WIDGET_RENDERERS } from './widgets';
 import { LIVE_DEFS, LIVE_RENDERERS } from './live';
 import { FRAME_DEFS, FRAME_RENDERERS } from './frames';
 import { CHAT_DEFS, CHAT_RENDERERS } from './chat';
+import { CHANNEL_DEFS, CHANNEL_RENDERERS } from './channel';
 
-export const MORE_DEFS: OverlayDef[] = [...EFFECT_DEFS, ...WIDGET_DEFS, ...LIVE_DEFS, ...FRAME_DEFS, ...CHAT_DEFS];
-export const MORE_RENDERERS: Record<string, Renderer> = { ...EFFECT_RENDERERS, ...WIDGET_RENDERERS, ...LIVE_RENDERERS, ...FRAME_RENDERERS, ...CHAT_RENDERERS };
+export const MORE_DEFS: OverlayDef[] = [...EFFECT_DEFS, ...WIDGET_DEFS, ...LIVE_DEFS, ...FRAME_DEFS, ...CHAT_DEFS, ...CHANNEL_DEFS];
+export const MORE_RENDERERS: Record<string, Renderer> = { ...EFFECT_RENDERERS, ...WIDGET_RENDERERS, ...LIVE_RENDERERS, ...FRAME_RENDERERS, ...CHAT_RENDERERS, ...CHANNEL_RENDERERS };
 /** Menu placement: menu group id (and optional sub-group title) for each new overlay. */
 export const MORE_MENU: Record<string, string[]> = {
   'effects:Pogoda i natura': ['smoke', 'fire', 'glassrain', 'drift', 'storm', 'autumn', 'waveslayer', 'flyers'],
@@ -19,5 +20,5 @@ export const MORE_MENU: Record<string, string[]> = {
   frames: ['shapeframe', 'statframe', 'neonsign', 'termframe', 'winframe', 'filmframe', 'postcardframe', 'wantedframe', 'speedframe', 'consoleframe', 'boxframe', 'aquaframe', 'ekgframe', 'stickerframe', 'aviaframe', 'artframe', 'seasonframe'],
   bars: ['duo', 'nowplaying', 'sponsors', 'discount', 'brbbadge'],
   tools: ['worldclock', 'streamgoal', 'livecount', 'weather', 'streak'],
-  widgets: ['chat', 'poll', 'giveaway', 'commands', 'facts', 'topdonors', 'leaderboard', 'checklist', 'dice', 'counter', 'scoreboard', 'subathon', 'wheel', 'alertbox'],
+  widgets: ['chat', 'latest', 'events', 'prediction', 'hypetrain', 'twgoal', 'poll', 'giveaway', 'commands', 'facts', 'topdonors', 'leaderboard', 'checklist', 'dice', 'counter', 'scoreboard', 'subathon', 'wheel', 'alertbox'],
 };

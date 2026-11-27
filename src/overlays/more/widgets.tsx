@@ -1,8 +1,10 @@
 // Add-on widgets that run on their own (no OBS panel): proposals 16, 46-48, 50, 51, 54, 56, 58-63, 65, 67-70.
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import type { OverlayDef, Params } from '../schema';
 import { BRAND_COLORS, BRAND_INK, BrandIcon, detectBrand } from '../icons';
 import { isLang, translate } from '../../i18n';
+import { usePanel } from '../../panel/panel';
+import { useKickChat, useTwitchChat, type Sink } from './chat';
 import { Card, fontOf, lines, look, num, rangeF, safeUrl, str, useCycle, useNow, type Renderer, type Vars } from './common';
 
 const langOf = (p: Params) => (isLang(p._lang) ? p._lang : 'pl');
@@ -30,12 +32,19 @@ const endOf = (raw: string, from: number) => {
 
 /* ---------------- 47 poll ---------------- */
 const Poll: Renderer = ({ params: p }) => {
-  const opts = lines(p.options).map(splitNumber);
+  const panel = usePanel();
+  const live = panel?.state.poll;
+  const fromTwitch = p.source === 'twitch';
+  // A Twitch poll shows while it runs and for 20 s after it ends; without one the widget hides (sample in the studio).
+  const showLive = fromTwitch && live && (live.status !== 'ended' || panel!.serverNow() - live.at < 20_000);
+  if (fromTwitch && !showLive && p._preview !== true) return null;
+  const opts = showLive ? live!.choices.map((c) => ({ label: c.title, value: c.votes, rest: '' })) : lines(p.options).map(splitNumber);
+  const question = showLive ? live!.title : str(p.question);
   const total = opts.reduce((a, o) => a + Math.max(0, o.value), 0) || 1;
   const top = Math.max(...opts.map((o) => o.value));
   return (
     <Card p={p} kind="poll">
-      {p.question && <div className="mo-title">{str(p.question)}</div>}
+      {question && <div className="mo-title">{question}</div>}
       <div className="mo-poll-list">
         {opts.map((o, i) => (
           <div key={i} className={`mo-poll-row ${p.highlight !== false && o.value === top && top > 0 ? 'is-top' : ''}`} style={{ '--i': i } as Vars}>
@@ -45,17 +54,46 @@ const Poll: Renderer = ({ params: p }) => {
           </div>
         ))}
       </div>
-      {p.footer && <div className="mo-foot">{str(p.footer)}</div>}
+      {p.footer && !showLive && <div className="mo-foot">{str(p.footer)}</div>}
     </Card>
   );
 };
 
 /* ---------------- 48 giveaway ---------------- */
+/** Chat entries: everyone who types the keyword on Twitch / Kick is in; the dock's "draw" button (or the timer) picks one. */
+const useGiveawayEntries = (p: Params, active: boolean) => {
+  const [names, setNames] = useState<string[]>([]);
+  const keyword = str(p.keyword).trim().toLowerCase();
+  const sink = useRef<Sink>({ add: () => {}, remove: () => {}, clearUser: () => {}, clearAll: () => {} });
+  sink.current = {
+    ...sink.current,
+    add: (m) => {
+      if (!keyword || m.text.trim().toLowerCase().split(/\s+/)[0] !== keyword) return;
+      const name = `${m.platform === 'kick' ? '🟩' : '🟪'} ${m.user}`;
+      setNames((list) => (list.includes(name) || list.length >= 5000 ? list : [...list, name]));
+    },
+  };
+  useTwitchChat(active ? str(p.twitch) : '', sink);
+  useKickChat(active ? str(p.kick) : '', sink, () => {});
+  return { names, reset: () => setNames([]) };
+};
+
 const Giveaway: Renderer = ({ params: p }) => {
   const now = useNow(1000);
   const [start] = useState(() => Date.now());
   const end = endOf(str(p.at), start);
   const left = end === null ? null : end - now;
+  const fromChat = p.entry === 'chat';
+  const { names } = useGiveawayEntries(p, fromChat);
+  const panel = usePanel();
+  const drawAt = panel?.state.fire?.giveaway ?? 0;
+  const [winner, setWinner] = useState('');
+  const seenDraw = useRef(drawAt);
+  const drawn = useRef(false);
+  const entrants = fromChat ? (names.length || p._preview !== true ? names : ['🟪 widz123', '🟩 kasia_gra', '🟪 noob_pl']) : [];
+  const draw = () => { if (entrants.length) setWinner(entrants[Math.floor(Math.random() * entrants.length)]); };
+  useEffect(() => { if (fromChat && drawAt > seenDraw.current) { seenDraw.current = drawAt; draw(); } }, [drawAt]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { if (fromChat && left !== null && left <= 0 && !drawn.current && p.showTimer !== false) { drawn.current = true; draw(); } }, [left]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <Card p={p} kind="giveaway">
       <div className="mo-gift" aria-hidden>🎁</div>
@@ -63,9 +101,10 @@ const Giveaway: Renderer = ({ params: p }) => {
         <small>{str(p.label)}</small>
         <b>{str(p.prize)}</b>
         {lines(p.rules).length > 0 && <ul>{lines(p.rules).map((r, i) => <li key={i}>{r}</li>)}</ul>}
-        {p.keyword && <span className="mo-kw">{translate(langOf(p), 'Wpisz')} <code>{str(p.keyword)}</code></span>}
+        {p.keyword && <span className="mo-kw">{translate(langOf(p), 'Wpisz')} <code>{str(p.keyword)}</code>{fromChat && <em className="mo-gw-count"> · {translate(langOf(p), 'Zgłoszeń')}: {entrants.length}</em>}</span>}
       </div>
-      {left !== null && p.showTimer !== false && (
+      {winner && <div key={winner} className="mo-gw-winner"><small>{translate(langOf(p), 'Wygrywa')}</small><b>{winner}</b></div>}
+      {left !== null && p.showTimer !== false && !winner && (
         <div className="mo-gw-timer"><small>{translate(langOf(p), 'Losowanie za')}</small><b>{left > 0 ? hms(left) : str(p.doneText)}</b></div>
       )}
     </Card>
@@ -184,7 +223,16 @@ const BrbBadge: Renderer = ({ params: p }) => {
 /* ---------------- 59 top donors / 69 leaderboard ---------------- */
 const MEDALS = ['🥇', '🥈', '🥉'];
 const Ranking = ({ p, kind }: { p: Params; kind: string }) => {
-  const rows = lines(p.items).map(splitNumber);
+  const panel = usePanel();
+  const src = str(p.source, 'manual');
+  const givers = Object.values(panel?.state.givers ?? {});
+  // From linked channels: bits, Kicks, gifted subs, or all of them (a gifted sub counts as 500).
+  const fromChannel = src !== 'manual';
+  const metric = (g: (typeof givers)[number]) => (src === 'bits' ? g.bits : src === 'kicks' ? g.kicks : src === 'gifts' ? g.gifts : g.bits + g.kicks + g.gifts * 500);
+  const unit = src === 'bits' ? 'bits' : src === 'kicks' ? 'Kicks' : src === 'gifts' ? 'sub' : '';
+  const rows = fromChannel
+    ? givers.map((g) => ({ label: g.name, value: metric(g), rest: unit })).filter((r) => r.value > 0)
+    : lines(p.items).map(splitNumber);
   const sorted = p.sort === 'none' ? rows : [...rows].sort((a, b) => b.value - a.value);
   const shown = sorted.slice(0, Math.max(1, num(p.top, 5)));
   return (
@@ -397,6 +445,7 @@ const ANIMS = [{ value: 'up', label: 'Wjazd z dołu' }, { value: 'fade', label: 
 
 export const WIDGET_DEFS: OverlayDef[] = [
   W('poll', 'Ankieta na ekranie', '📊', { w: 640, h: 360 }, 'Pytanie do widzów i paski odpowiedzi z procentami; wyniki wpisujesz albo zmieniasz w trakcie.', [
+    { group: 'Ankieta', key: 'source', label: 'Źródło', type: 'select', default: 'manual', options: [{ value: 'manual', label: 'Wpisane ręcznie' }, { value: 'twitch', label: 'Ankieta z Twitcha (na żywo)' }], hint: 'Ankieta z Twitcha wymaga kanału zalogowanego w Panelu OBS i linku z panelem' },
     { group: 'Ankieta', key: 'question', i18n: true, label: 'Pytanie', type: 'text', default: 'W co gramy jutro?', maxLength: 80 },
     { group: 'Ankieta', key: 'options', i18n: true, label: 'Odpowiedzi i głosy', type: 'text', list: 'lines', default: 'Minecraft 12 | CS2 8 | Valorant 5', maxLength: 300, placeholder: 'Odpowiedź 0', hint: 'Liczba na końcu wiersza to liczba głosów' },
     { group: 'Ankieta', key: 'footer', i18n: true, label: 'Dopisek', type: 'text', default: 'Głosuj na czacie: !1 !2 !3', maxLength: 60 },
@@ -410,6 +459,9 @@ export const WIDGET_DEFS: OverlayDef[] = [
     { group: 'Giveaway', key: 'prize', i18n: true, label: 'Nagroda', type: 'text', default: 'Klucz Steam do gry', maxLength: 60 },
     { group: 'Giveaway', key: 'rules', i18n: true, label: 'Warunki', type: 'text', list: 'lines', default: 'Follow kanału | Bądź na czacie', maxLength: 200, placeholder: 'Warunek' },
     { group: 'Giveaway', key: 'keyword', label: 'Komenda', type: 'text', default: '!join', maxLength: 20 },
+    { group: 'Giveaway', key: 'entry', label: 'Zapisy', type: 'select', default: 'none', options: [{ value: 'none', label: 'Tylko informacja' }, { value: 'chat', label: 'Z czatu Twitch / Kick' }], hint: 'Z czatu: każdy, kto wpisze komendę, jest w losowaniu; losuje przycisk w docku albo koniec odliczania' },
+    { group: 'Giveaway', key: 'twitch', label: 'Kanał Twitch', type: 'text', default: 'skullboypl', maxLength: 25, when: { key: 'entry', is: ['chat'] } },
+    { group: 'Giveaway', key: 'kick', label: 'Kanał Kick', type: 'text', default: 'skullboypl', maxLength: 40, when: { key: 'entry', is: ['chat'] } },
     { group: 'Giveaway', key: 'showTimer', label: 'Odliczanie', type: 'toggle', default: true },
     { group: 'Giveaway', key: 'at', label: 'Losowanie o', type: 'text', default: '22:00', maxLength: 16, placeholder: 'GG:MM albo RRRR-MM-DD GG:MM', when: { key: 'showTimer', is: [true] } },
     { group: 'Giveaway', key: 'doneText', i18n: true, label: 'Po odliczeniu', type: 'text', default: 'Losujemy!', maxLength: 24, when: { key: 'showTimer', is: [true] } },
@@ -464,6 +516,10 @@ export const WIDGET_DEFS: OverlayDef[] = [
     { group: 'Kolory', key: 'textColor', label: 'Tekst', type: 'color', default: '#ffffff' },
   ]),
   W('topdonors', 'Top donatorzy', '💰', { w: 480, h: 360 }, 'Lista największych wpłat albo subów, z medalami dla podium.', [
+    { group: 'Lista', key: 'source', label: 'Źródło', type: 'select', default: 'manual', options: [
+      { value: 'manual', label: 'Wpisane ręcznie' }, { value: 'mix', label: 'Z kanału: bitsy + Kicks + gift suby' }, { value: 'bits', label: 'Z kanału: bitsy' },
+      { value: 'kicks', label: 'Z kanału: Kicks' }, { value: 'gifts', label: 'Z kanału: gift suby' },
+    ], hint: 'Z kanału: liczy się samo od początku streama (wyzeruj w docku); wymaga linku z panelem' },
     { group: 'Lista', key: 'title', i18n: true, label: 'Nagłówek', type: 'text', default: 'Top donatorzy', maxLength: 30 },
     { group: 'Lista', key: 'items', label: 'Nicki i kwoty', type: 'text', list: 'lines', default: 'widz123 150 zł | kasia_gra 100 zł | noob_pl 50 zł | ziomek 20 zł', maxLength: 600, placeholder: 'Nick 100 zł' },
     rangeF('top', 'Ile pozycji', 1, 10, 1, 5, '', 'Lista'),
@@ -472,6 +528,10 @@ export const WIDGET_DEFS: OverlayDef[] = [
     ...look('glass'),
   ]),
   W('leaderboard', 'Tabela rankingu', '🏆', { w: 480, h: 400 }, 'Ranking graczy albo widzów z punktami: ELO, kille, wygrane.', [
+    { group: 'Ranking', key: 'source', label: 'Źródło', type: 'select', default: 'manual', options: [
+      { value: 'manual', label: 'Wpisane ręcznie' }, { value: 'mix', label: 'Z kanału: bitsy + Kicks + gift suby' }, { value: 'bits', label: 'Z kanału: bitsy' },
+      { value: 'kicks', label: 'Z kanału: Kicks' }, { value: 'gifts', label: 'Z kanału: gift suby' },
+    ], hint: 'Z kanału: liczy się samo od początku streama (wyzeruj w docku); wymaga linku z panelem' },
     { group: 'Ranking', key: 'title', i18n: true, label: 'Nagłówek', type: 'text', default: 'Ranking', maxLength: 30 },
     { group: 'Ranking', key: 'items', label: 'Gracze i punkty', type: 'text', list: 'lines', default: 'skullboypl 2450 | widz123 2210 | kasia_gra 1980 | noob_pl 1500 | ziomek 1320', maxLength: 600, placeholder: 'Nick 1000' },
     rangeF('top', 'Ile pozycji', 1, 10, 1, 5, '', 'Ranking'),

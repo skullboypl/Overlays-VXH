@@ -23,7 +23,8 @@ const KEY = /^[A-Za-z0-9_-]{43}$/;
 const env = (k) => String(process.env[k] ?? '').trim();
 const origin = () => env('PUBLIC_ORIGIN') || 'https://overlays.vxh.pl';
 
-const TWITCH_SCOPES = ['moderator:read:followers', 'channel:read:subscriptions', 'bits:read', 'channel:read:redemptions'];
+// Polls, predictions, Hype Train and creator goals feed the matching widgets live (added later: re-login adds them).
+const TWITCH_SCOPES = ['moderator:read:followers', 'channel:read:subscriptions', 'bits:read', 'channel:read:redemptions', 'channel:read:polls', 'channel:read:predictions', 'channel:read:hype_train', 'channel:read:goals'];
 const KICK_SCOPES = ['user:read', 'channel:read', 'events:subscribe', 'channel:rewards:read'];
 const KICK_EVENTS = [
   { name: 'channel.followed', version: 1 },
@@ -220,6 +221,10 @@ const twitchSubscribe = async (id) => {
     ['channel.cheer', '1', { broadcaster_user_id: id }],
     ['channel.raid', '1', { to_broadcaster_user_id: id }],
     ['channel.channel_points_custom_reward_redemption.add', '1', { broadcaster_user_id: id }],
+    ...['begin', 'progress', 'end'].map((x) => [`channel.poll.${x}`, '1', { broadcaster_user_id: id }]),
+    ...['begin', 'progress', 'lock', 'end'].map((x) => [`channel.prediction.${x}`, '1', { broadcaster_user_id: id }]),
+    ...['begin', 'progress', 'end'].map((x) => [`channel.hype_train.${x}`, '2', { broadcaster_user_id: id }]),
+    ...['begin', 'progress', 'end'].map((x) => [`channel.goal.${x}`, '1', { broadcaster_user_id: id }]),
   ];
   for (const [type, version, condition] of subs) {
     const r = await helix('/eventsub/subscriptions', {
@@ -303,8 +308,32 @@ export const twitchWebhook = async (raw, headers) => {
   const type = String(msg.subscription?.type ?? '');
   const e = msg.event ?? {};
   const channel = String(e.broadcaster_user_id ?? e.to_broadcaster_user_id ?? '');
+  const live = twitchLive(type, e);
+  if (live) { for (const room of await roomsForChannel('twitch', channel)) pushEvent(room, { set: live }); return { status: 204, body: '' }; }
   await deliver('twitch', channel, twitchAlert(type, e));
   return { status: 204, body: '' };
+};
+
+/** Polls, predictions, Hype Train and creator goals: what the widgets show right now ({ poll } / { prediction } ...). */
+export const twitchLive = (type, e) => {
+  const status = type.endsWith('.end') ? 'ended' : type.endsWith('.lock') ? 'locked' : 'active';
+  const now = Date.now();
+  if (type.startsWith('channel.poll.')) {
+    return { poll: { title: String(e.title ?? '').slice(0, 80), status, at: now, ends: Date.parse(e.ends_at ?? '') || 0,
+      choices: (e.choices ?? []).slice(0, 5).map((c) => ({ title: String(c.title ?? '').slice(0, 40), votes: Number(c.votes ?? 0) || 0 })) } };
+  }
+  if (type.startsWith('channel.prediction.')) {
+    return { prediction: { title: String(e.title ?? '').slice(0, 80), status, at: now, locks: Date.parse(e.locks_at ?? '') || 0, winner: String(e.winning_outcome_id ?? ''),
+      outcomes: (e.outcomes ?? []).slice(0, 10).map((o) => ({ id: String(o.id ?? ''), title: String(o.title ?? '').slice(0, 40), color: String(o.color ?? ''), points: Number(o.channel_points ?? 0) || 0, users: Number(o.users ?? 0) || 0 })) } };
+  }
+  if (type.startsWith('channel.hype_train.')) {
+    return { hype: { status, at: now, level: Number(e.level ?? 1) || 1, total: Number(e.total ?? 0) || 0, progress: Number(e.progress ?? 0) || 0, goal: Number(e.goal ?? 0) || 0,
+      ends: Date.parse(e.expires_at ?? e.ended_at ?? '') || 0, top: (e.top_contributions ?? []).slice(0, 3).map((t) => ({ name: String(t.user_name ?? ''), type: String(t.type ?? ''), total: Number(t.total ?? 0) || 0 })) } };
+  }
+  if (type.startsWith('channel.goal.')) {
+    return { twGoal: { status, at: now, kind: String(e.type ?? ''), description: String(e.description ?? '').slice(0, 80), current: Number(e.current_amount ?? 0) || 0, target: Number(e.target_amount ?? 0) || 0 } };
+  }
+  return null;
 };
 
 // ---------- Kick ----------
