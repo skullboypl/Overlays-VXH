@@ -38,7 +38,9 @@ Write-Host "Signed: $out"
 Write-Host "SHA-256: $hash"
 
 if (-not $Publish) { Write-Host "Not published (add -Publish)."; return }
-gh release view $tag --repo $Repo *> $null
+# From here on native tools report through exit codes; Windows PowerShell would turn their stderr into errors.
+$ErrorActionPreference = "Continue"
+gh release view $tag --repo $Repo 2>$null | Out-Null
 if (-not $LASTEXITCODE) { throw "release $tag already exists: bump the version in Cargo.toml" }
 if (-not $Notes) { $Notes = "VXH Overlays Tool $version. Plik podpisany certyfikatem EV SkullMedia Artur Spychalski.`nSHA-256: $hash" }
 # The tag goes on the commit this build came from, which must already be on GitHub.
