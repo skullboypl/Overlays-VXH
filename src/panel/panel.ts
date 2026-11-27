@@ -123,6 +123,9 @@ export const rotateKey = async (room: string) => {
 export const update = (key: string, patch: object) => post('update', { key, patch });
 export const drop = (key: string) => post('drop', { key });
 
+/** Messages that ride along the room's event stream but are not part of the state (TikTok chat from the PC app). */
+export const panelEvents = new EventTarget();
+
 /** Live state of a room (Server-Sent Events, with polling as a fallback). `offset` maps the server clock onto ours. */
 export const useRoom = (room: string | null, watch = false) => {
   const [snap, setSnap] = useState<PanelSnapshot | null>(null);
@@ -148,6 +151,7 @@ export const useRoom = (room: string | null, watch = false) => {
     if ('EventSource' in window) {
       es = new EventSource(`/api/panel/${room}/events${watch ? '?watch=1' : ''}`);
       es.onmessage = (e) => take(e.data);
+      es.addEventListener('tiktok', (e) => panelEvents.dispatchEvent(new MessageEvent('tiktok', { data: (e as MessageEvent).data })));
       // EventSource reconnects by itself; polling covers proxies that never let it through.
       es.onerror = () => { if (es && es.readyState === EventSource.CLOSED) startPolling(); };
     } else startPolling();

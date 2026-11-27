@@ -149,3 +149,5 @@ html.is-dock body { background: #101012; }
 .pn-check code, .pn-note code { padding: 1px 6px; border-radius: 6px; background: var(--input); font-size: 12px; }
 .pn-inline { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
 .pn-inline input { width: 64px; }
+/* The app's "Connect to the panel" lands here (/panel?app=connect). */
+.pn-card.pn-highlight { border-color: var(--orange); box-shadow: 0 0 0 3px color-mix(in srgb, var(--orange) 25%, transparent); }

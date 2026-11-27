@@ -9,10 +9,12 @@
 // POST /api/panel/update  {"key", "patch"}        change the state
 // POST /api/panel/drop    {"key"}                 delete the room (new key in the setup page)
 // GET  /api/panel/<room>          current state (fallback for overlays that cannot use EventSource)
-// GET  /api/panel/<room>/events   Server-Sent Events: the state on connect and after every change
+// POST /api/panel/tiktok  {"key", "tiktok", "events"}  TikTok LIVE chat read by the PC app (VXH Overlays Tool)
+// GET  /api/panel/<room>/events   Server-Sent Events: the state on connect and after every change; TikTok chat from
+//                                 the app comes as separate `event: tiktok` messages (not part of the state, not saved)
 import { createHash } from 'node:crypto';
 import { randomBytes } from 'node:crypto';
-import { loadAllRooms, onRemoteRoom, publishRoom, saveRooms as storeRooms } from './store.mjs';
+import { loadAllRooms, onRemoteRoom, onRemoteTikTok, publishRoom, publishTikTok, saveRooms as storeRooms } from './store.mjs';
 
 const KEY = /^[A-Za-z0-9_-]{43}$/;
 const ROOM = /^[a-f0-9]{32}$/;
@@ -214,6 +216,45 @@ export const rotateKey = (room, newKey) => {
 };
 export const roomExists = (room) => rooms.has(room);
 
+// ---------- TikTok LIVE through the PC app ----------
+// The app on the streamer's PC reads TikTok (from the streamer's own IP) and posts the chat here with the dock key.
+// It goes to the room's listeners as `event: tiktok`, next to the state, and is never stored. Only the key holder can
+// post, so an overlay only ever shows chat from its own streamer's app.
+const TT_STATES = new Set(['connecting', 'live', 'offline', 'error', 'limited', 'off']);
+const TT_TYPES = new Set(['chat', 'gift', 'follow', 'share']);
+const TT_MAX_EVENTS = 60;
+const TT_FRESH_MS = 30_000;
+const ttText = (v, n) => String(v ?? '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, n);
+const ttEvent = (e) => {
+  if (!e || typeof e !== 'object' || !TT_TYPES.has(e.type)) return null;
+  const out = { type: e.type, id: ttText(e.id, 40) || randomBytes(6).toString('hex'), user: ttText(e.user, 40), login: ttText(e.login, 40).toLowerCase() };
+  if (e.type === 'chat') { out.text = ttText(e.text, 300); if (!out.text) return null; }
+  if (e.type === 'gift') { out.gift = ttText(e.gift, 40); out.count = clampNum(Math.round(Number(e.count)), 1, 100_000) ?? 1; out.diamonds = clampNum(Math.round(Number(e.diamonds)), 0, 1e7) ?? 0; }
+  return out;
+};
+const ttStatus = (t) => ({ user: ttText(t?.user, 25).replace(/^@/, '').toLowerCase(), state: TT_STATES.has(t?.state) ? t.state : 'connecting', at: Date.now() });
+const ttSend = (r, msg) => {
+  const data = `event: tiktok\ndata: ${JSON.stringify(msg)}\n\n`;
+  for (const res of r.listeners) res.write(data);
+};
+/** A room's TikTok message from another instance (Redis). */
+const ttRemote = (room, msg) => {
+  const r = rooms.get(room);
+  if (!r) return;
+  if (msg.status) r.tiktok = msg.status;
+  ttSend(r, msg);
+};
+/** Token bucket per room: about 4 posts a second at most, so a broken app cannot flood the overlays. */
+const ttAllowed = (r, now) => {
+  const b = r.ttBucket ?? { tokens: 20, at: now };
+  b.tokens = Math.min(20, b.tokens + ((now - b.at) / 1000) * 4);
+  b.at = now;
+  r.ttBucket = b;
+  if (b.tokens < 1) return false;
+  b.tokens -= 1;
+  return true;
+};
+
 /** Every POST: { status, body }. `allowDrop` says whether the caller may delete the room (no owner, or owner logged in). */
 export const panelPost = (action, body, allowDrop = () => true) => {
   const key = String(body?.key ?? '');
@@ -239,7 +280,7 @@ export const panelPost = (action, body, allowDrop = () => true) => {
     publishRoom(room, r.version, r.state, r.keyHash);
     return { status: 200, body: JSON.parse(payload(room, r)) };
   }
-  // "Now playing" from the PC app (VXH Now Playing) or anything else that holds the dock key. The cover picture
+  // "Now playing" from the PC app (VXH Overlays Tool) or anything else that holds the dock key. The cover picture
   // stays in memory only (it changes with every song) and is served at /api/panel/<room>/cover.
   if (action === 'music') {
     const r = open(room, true);
@@ -265,6 +306,18 @@ export const panelPost = (action, body, allowDrop = () => true) => {
     changed.add(room);
     broadcast(room, r);
     publishRoom(room, r.version, r.state, r.keyHash);
+    return { status: 200, body: { ok: true } };
+  }
+  if (action === 'tiktok') {
+    const r = open(room, true);
+    if (!r) return { status: 503, body: { error: 'full' } };
+    if (!ttAllowed(r, Date.now())) return { status: 429, body: { error: 'slow_down' } };
+    const events = (Array.isArray(body.events) ? body.events : []).slice(0, TT_MAX_EVENTS).map(ttEvent).filter(Boolean);
+    const status = ttStatus(body.tiktok);
+    r.tiktok = status;
+    const msg = { status, events };
+    ttSend(r, msg);
+    publishTikTok(room, msg);
     return { status: 200, body: { ok: true } };
   }
   if (action === 'drop') {
@@ -317,6 +370,8 @@ export const panelGet = (path, req, res, watch = false) => {
   const set = watch ? r.watchers : r.listeners;
   set.add(res);
   listeners += 1;
+  // A new overlay learns right away whether the streamer's app is reading TikTok.
+  if (!watch && r.tiktok && Date.now() - r.tiktok.at < TT_FRESH_MS) res.write(`event: tiktok\ndata: ${JSON.stringify({ status: r.tiktok, events: [] })}\n\n`);
   // Everyone (the dock too) hears that the number of sources changed.
   broadcast(room, r);
   const ping = setInterval(() => res.write(': ping\n\n'), PING_MS);
@@ -349,6 +404,7 @@ export const loadRooms = async () => {
     r.touched = Date.now();
     broadcast(room, r);
   });
+  await onRemoteTikTok(ttRemote);
 };
 let saving = false;
 export const saveRooms = async () => {

@@ -14589,6 +14589,14 @@
      "default": "",
      "maxLength": 25
     },
+    "tiktokVia": {
+     "type": "select",
+     "default": "server",
+     "options": [
+      "server",
+      "app"
+     ]
+    },
     "tiktokEvents": {
      "type": "toggle",
      "default": true

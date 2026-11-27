@@ -302,7 +302,7 @@ const NowPlaying: Renderer = ({ params: p }) => {
   const auto = src !== 'manual';
   // Nothing playing (paused, or the PC app / Last.fm has no song): hide, unless asked to keep the card up.
   if (auto && (!live || !live.title || (!live.playing && p.hideIdle !== false)) && p._preview !== true) return null;
-  const title = auto ? live?.title || (p._preview === true ? translate(lang, src === 'lastfm' ? (lastfm.error === 'not_configured' ? 'Last.fm nie jest jeszcze włączony na serwerze' : 'Wpisz nick Last.fm') : 'Włącz aplikację VXH Now Playing') : '') : str(p.title);
+  const title = auto ? live?.title || (p._preview === true ? translate(lang, src === 'lastfm' ? (lastfm.error === 'not_configured' ? tx('Last.fm nie jest jeszcze włączony na serwerze') : tx('Wpisz nick Last.fm')) : tx('Włącz aplikację VXH Overlays Tool')) : '') : str(p.title);
   const artist = auto ? live?.artist ?? '' : str(p.artist);
   const cover = auto ? live?.cover ?? '' : safeUrl(p.cover);
   const playing = auto ? live?.playing ?? false : true;
@@ -596,7 +596,7 @@ export const WIDGET_DEFS: OverlayDef[] = [
   ]),
   W('nowplaying', 'Teraz gra', '🎵', { w: 640, h: 140 }, 'Tytuł utworu, wykonawca i okładka, z animowanym equalizerem.', [
     { group: 'Źródło', key: 'source', label: 'Skąd brać utwór', type: 'select', default: 'manual', options: [
-      { value: 'manual', label: 'Wpisany ręcznie' }, { value: 'app', label: 'Aplikacja VXH Now Playing (Spotify, YouTube i inne)' }, { value: 'lastfm', label: 'Last.fm' },
+      { value: 'manual', label: 'Wpisany ręcznie' }, { value: 'app', label: 'Aplikacja VXH Overlays Tool (Spotify, YouTube i inne)' }, { value: 'lastfm', label: 'Last.fm' },
     ], hint: 'Aplikacja na PC czyta to, co gra w Windows, i wysyła do Panelu OBS (link z panelem). Last.fm: włącz scrobbling w Spotify i wpisz nick.' },
     { group: 'Źródło', key: 'lastfm', label: 'Nick Last.fm', type: 'text', default: '', maxLength: 15, when: { key: 'source', is: ['lastfm'] } },
     { group: 'Źródło', key: 'hideIdle', label: 'Ukryj, gdy nic nie gra', type: 'toggle', default: true, when: { key: 'source', is: ['app', 'lastfm'] } },

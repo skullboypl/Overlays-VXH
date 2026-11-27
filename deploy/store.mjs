@@ -225,6 +225,21 @@ export const publishRoom = (room, version, state, keyHash) => {
   if (!redis) return;
   redis.publish(CHANNEL, JSON.stringify({ from: INSTANCE, room, version, state, keyHash })).catch(() => {});
 };
+// TikTok chat posted by the PC app reaches the instance that holds the overlay's connection.
+const TT_CHANNEL = 'vxh:panel:tiktok';
+export const publishTikTok = (room, msg) => {
+  if (!redis) return;
+  redis.publish(TT_CHANNEL, JSON.stringify({ from: INSTANCE, room, msg })).catch(() => {});
+};
+export const onRemoteTikTok = async (handler) => {
+  if (!redisSub) return;
+  await redisSub.subscribe(TT_CHANNEL, (raw) => {
+    try {
+      const m = JSON.parse(raw);
+      if (m.from !== INSTANCE) handler(m.room, m.msg);
+    } catch { /* ignore */ }
+  });
+};
 export const onRemoteRoom = async (handler) => {
   if (!redisSub) return;
   await redisSub.subscribe(CHANNEL, (raw) => {

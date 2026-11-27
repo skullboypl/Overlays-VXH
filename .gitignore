@@ -24,3 +24,6 @@ src/i18n/missing.json
 
 # backward-compat check output (pnpm compat:visual)
 .compat/
+
+# Rust build output (tools/overlays-tool)
+tools/overlays-tool/target/

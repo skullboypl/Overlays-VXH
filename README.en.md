@@ -121,7 +121,7 @@ The full parameter list of every overlay (keys, ranges, defaults) is generated a
 | `chat` | Twitch + Kick (+ TikTok LIVE beta) chat in one window, no login: Twitch / Kick / 7TV / BTTV / FFZ emotes, badges, name colours, moderator deletions, bot / command / link / word filters, fade-out, 11 styles |
 | `latest`, `events` | Latest follow / sub / cheer / raid / donation and a recent-events list from the channel linked in the OBS panel |
 | `prediction`, `hypetrain`, `twgoal` | Live Twitch prediction, Hype Train and creator goal |
-| `nowplaying` | Source: typed in, Last.fm, or the [VXH Now Playing](tools/nowplaying-app) Windows app (Spotify, YouTube and others) |
+| `nowplaying` | Source: typed in, Last.fm, or the [VXH Overlays Tool](tools/overlays-tool) Windows app (Spotify, YouTube and others) |
 
 The poll can show the Twitch poll, rankings can count bits / Kicks / gifted subs, the giveaway can take entries from chat. Widget cards also come in brutalist, terminal, paper, 8-bit, comic, minimal and esport looks.
 

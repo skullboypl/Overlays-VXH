@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { OverlayDef, Params } from '../schema';
 import { BRAND_COLORS, BRAND_INK, BrandIcon } from '../icons';
-import { isLang, translate } from '../../i18n';
+import { isLang, translate, tx } from '../../i18n';
 import { fontOf, lines, num, rangeF, str, type Renderer, type Vars } from './common';
+import { panelEvents, usePanel } from '../../panel/panel';
 
 type Part = { t: 'text'; v: string } | { t: 'emote'; url: string; name: string } | { t: 'mention'; v: string };
 export type Msg = { id: string; platform: 'twitch' | 'kick' | 'tiktok'; system?: boolean; user: string; login: string; color: string; badges: string[]; parts: Part[]; text: string; at: number; action?: boolean };
@@ -153,26 +154,63 @@ export const useKickChat = (channel: string, sink: React.MutableRefObject<Sink>,
   }, [channel, sink]); // eslint-disable-line react-hooks/exhaustive-deps
 };
 
-/* ---------------- TikTok LIVE (beta, through our server) ---------------- */
-export const useTikTokChat = (user: string, sink: React.MutableRefObject<Sink>, events: boolean, onStatus: (s: string) => void) => {
+/* ---------------- TikTok LIVE (beta): through our server, or through the streamer's PC app ---------------- */
+type TikTokMsg = { type?: string; id?: string; user?: string; login?: string; text?: string; gift?: string; count?: number; state?: string };
+const addTikTok = (m: TikTokMsg, sink: React.MutableRefObject<Sink>, events: boolean) => {
+  if (m.type === 'chat') {
+    sink.current.add({ id: `tt:${m.id}`, platform: 'tiktok', user: String(m.user), login: String(m.login), color: '', badges: [], parts: [{ t: 'text', v: String(m.text) }], text: String(m.text), at: Date.now() });
+  } else if (events && (m.type === 'gift' || m.type === 'follow' || m.type === 'share')) {
+    const text = m.type === 'gift' ? `🎁 ${m.gift || 'gift'}${(m.count ?? 1) > 1 ? ` ×${m.count}` : ''}` : m.type === 'follow' ? '❤️ follow' : '↗ share';
+    sink.current.add({ id: `tt:${m.type}:${m.id ?? Math.random()}`, platform: 'tiktok', user: String(m.user), login: String(m.login), color: '', badges: [], parts: [{ t: 'text', v: text }], text: '', at: Date.now(), system: true });
+  }
+};
+/** How long the app may stay silent (it reports every 10 s) before the overlay goes back to the server. */
+const APP_SILENT_MS = 30_000;
+const APP_FIRST_WAIT_MS = 12_000;
+
+/**
+ * via 'server': our server reads TikTok. via 'app': the VXH Overlays Tool app on the streamer's PC reads it (from the
+ * streamer's own IP) and sends it through the OBS panel room; while the app is not running, the server takes over.
+ */
+export const useTikTokChat = (user: string, sink: React.MutableRefObject<Sink>, events: boolean, onStatus: (s: string) => void, via: 'server' | 'app' = 'server', room = '') => {
+  const u = user.trim().replace(/^@/, '').toLowerCase();
+  const valid = /^[a-z0-9._]{2,24}$/.test(u);
+  const useApp = via === 'app' && /^[a-f0-9]{32}$/.test(room);
+  // In app mode the server is only the fallback: off until the app has had a chance to say it is there.
+  const [serverOn, setServerOn] = useState(!useApp);
   useEffect(() => {
-    const u = user.trim().replace(/^@/, '').toLowerCase();
-    if (!/^[a-z0-9._]{2,24}$/.test(u)) return undefined;
+    if (!useApp) { setServerOn(true); return undefined; }
+    setServerOn(false);
+    let lastAlive = 0;
+    const started = Date.now();
+    const onMsg = (e: Event) => {
+      try {
+        const msg = JSON.parse((e as MessageEvent).data) as { status?: { state?: string; user?: string }; events?: TikTokMsg[] };
+        const st = msg.status?.state ?? '';
+        if (st && st !== 'off') { lastAlive = Date.now(); setServerOn(false); onStatus(st); }
+        if (st === 'off') { lastAlive = 0; setServerOn(true); }
+        for (const m of msg.events ?? []) addTikTok(m, sink, events);
+      } catch { /* ignore */ }
+    };
+    panelEvents.addEventListener('tiktok', onMsg);
+    const check = window.setInterval(() => {
+      const now = Date.now();
+      if (lastAlive ? now - lastAlive > APP_SILENT_MS : now - started > APP_FIRST_WAIT_MS) setServerOn(true);
+    }, 2000);
+    return () => { panelEvents.removeEventListener('tiktok', onMsg); window.clearInterval(check); };
+  }, [useApp, events]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!valid || !serverOn) return undefined;
     const es = new EventSource(`/api/tiktok/${encodeURIComponent(u)}/events`);
     es.onmessage = (e) => {
       try {
-        const m = JSON.parse(e.data);
+        const m = JSON.parse(e.data) as TikTokMsg;
         if (m.type === 'status') { onStatus(String(m.state)); return; }
-        if (m.type === 'chat') {
-          sink.current.add({ id: `tt:${m.id}`, platform: 'tiktok', user: String(m.user), login: String(m.login), color: '', badges: [], parts: [{ t: 'text', v: String(m.text) }], text: String(m.text), at: Date.now() });
-        } else if (events && (m.type === 'gift' || m.type === 'follow' || m.type === 'share')) {
-          const text = m.type === 'gift' ? `🎁 ${m.gift || 'gift'}${m.count > 1 ? ` ×${m.count}` : ''}` : m.type === 'follow' ? '❤️ follow' : '↗ share';
-          sink.current.add({ id: `tt:${m.type}:${m.id ?? Math.random()}`, platform: 'tiktok', user: String(m.user), login: String(m.login), color: '', badges: [], parts: [{ t: 'text', v: text }], text: '', at: Date.now(), system: true });
-        }
+        addTikTok(m, sink, events);
       } catch { /* ignore */ }
     };
     return () => es.close();
-  }, [user, events]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [u, valid, events, serverOn]); // eslint-disable-line react-hooks/exhaustive-deps
 };
 
 /* ---------------- 7TV / BTTV / FFZ ---------------- */
@@ -267,7 +305,8 @@ const Chat: Renderer = ({ params: p }) => {
   useTwitchChat(str(p.twitch), sink);
   useKickChat(str(p.kick), sink, setKickId);
   const [tiktokState, setTiktokState] = useState('');
-  useTikTokChat(str(p.tiktok), sink, p.tiktokEvents !== false, setTiktokState);
+  const panelLink = usePanel();
+  useTikTokChat(str(p.tiktok), sink, p.tiktokEvents !== false, setTiktokState, p.tiktokVia === 'app' ? 'app' : 'server', panelLink?.room ?? '');
   const extra = useExtraEmotes(p.thirdParty !== false, twitchId, kickId);
 
   // Studio preview (or "test" switch): sample messages from both services.
@@ -328,8 +367,8 @@ const Chat: Renderer = ({ params: p }) => {
         })}
       </div>
       {!msgs.length && !str(p.twitch).trim() && !str(p.kick).trim() && !str(p.tiktok).trim() && p._preview === true && <div className="mo-chat-empty">{translate(lang, 'Wpisz kanał Twitch albo Kick')}</div>}
-      {p._preview === true && str(p.tiktok).trim() && ['offline', 'error', 'unavailable', 'ended'].includes(tiktokState) && (
-        <div className="mo-chat-status">TikTok: {translate(lang, tiktokState === 'offline' || tiktokState === 'ended' ? 'kanał nie nadaje teraz na żywo' : 'nie udało się połączyć (beta)')}</div>
+      {p._preview === true && str(p.tiktok).trim() && ['offline', 'error', 'unavailable', 'ended', 'limited'].includes(tiktokState) && (
+        <div className="mo-chat-status">TikTok: {translate(lang, tiktokState === 'offline' || tiktokState === 'ended' ? tx('kanał nie nadaje teraz na żywo') : tiktokState === 'limited' ? tx('limit połączeń TikToka, za chwilę spróbuję znowu') : tx('nie udało się połączyć (beta)'))}</div>
       )}
     </div>
   );
@@ -342,7 +381,10 @@ export const CHAT_DEFS: OverlayDef[] = [{
   fields: [
     { group: 'Kanały', key: 'twitch', label: 'Kanał Twitch', type: 'text', default: 'skullboypl', maxLength: 25, placeholder: 'nick na Twitchu', hint: 'Puste: bez czatu z Twitcha' },
     { group: 'Kanały', key: 'kick', label: 'Kanał Kick', type: 'text', default: 'skullboypl', maxLength: 40, placeholder: 'nick na Kicku', hint: 'Puste: bez czatu z Kicka' },
-    { group: 'Kanały', key: 'tiktok', label: 'TikTok LIVE (beta)', type: 'text', default: '', maxLength: 25, placeholder: '@nick', hint: 'Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać' },
+    { group: 'Kanały', key: 'tiktok', label: 'TikTok LIVE (beta)', type: 'text', default: '', maxLength: 25, placeholder: '@nick', hint: 'TikTok nie ma oficjalnego API do czatu LIVE, więc czasem może nie działać' },
+    { group: 'Kanały', key: 'tiktokVia', label: 'Połączenie z TikTokiem', type: 'select', default: 'server', options: [
+      { value: 'server', label: 'Przez serwer VXH' }, { value: 'app', label: 'Przez aplikację VXH Overlays Tool (zalecane)' },
+    ], hint: 'Aplikacja na Twoim PC łączy się z TikTokiem z Twojego internetu, więc nie dzieli limitów z innymi. Potrzebny link z „Steruj z Panelu OBS”. Gdy aplikacja nie działa, czat idzie przez serwer.' },
     { group: 'Kanały', key: 'tiktokEvents', label: 'Prezenty i followy z TikToka', type: 'toggle', default: true },
     F('thirdParty', 'Emotki 7TV, BTTV i FFZ', true, 'Kanały'),
     { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'bubble', options: [

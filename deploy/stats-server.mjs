@@ -165,11 +165,12 @@ export const server = http.createServer((req, res) => {
   if (url.pathname.startsWith('/api/panel/')) {
     if (req.method === 'GET') return panelGet(url.pathname, req, res, url.searchParams.get('watch') === '1') || send(res, 404, { error: 'not_found' });
     if (req.method !== 'POST') return send(res, 405, { error: 'method' });
-    if (limited(clientIp(req), Date.now())) return send(res, 429);
     const action = url.pathname.slice('/api/panel/'.length);
+    // TikTok chat from the PC app has its own per-room limit (panel.mjs): a busy live sends a post a second.
+    if (action !== 'tiktok' && limited(clientIp(req), Date.now())) return send(res, 429);
     let raw = '';
     req.setEncoding('utf8');
-    req.on('data', (chunk) => { raw += chunk; if (raw.length > (action === 'music' ? 100_000 : 8192)) req.destroy(); });
+    req.on('data', (chunk) => { raw += chunk; if (raw.length > (action === 'music' ? 100_000 : action === 'tiktok' ? 48_000 : 8192)) req.destroy(); });
     req.on('end', () => {
       let body;
       try { body = JSON.parse(raw); } catch { return send(res, 400, { error: 'bad_json' }); }

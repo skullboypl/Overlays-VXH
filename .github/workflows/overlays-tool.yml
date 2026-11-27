@@ -1,0 +1,36 @@
+# Builds the Windows tray app "VXH Overlays Tool" (tools/overlays-tool, Rust) as one small .exe.
+# Every push that touches the app uploads it as a build artifact; a tag "tool-v*" also attaches it to a release.
+name: VXH Overlays Tool
+on:
+  push:
+    paths: ['tools/overlays-tool/**', '.github/workflows/overlays-tool.yml']
+    tags: ['tool-v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: tools/overlays-tool
+      - name: Test
+        working-directory: tools/overlays-tool
+        run: cargo test --release
+      - name: Build
+        working-directory: tools/overlays-tool
+        run: |
+          cargo build --release
+          Copy-Item "target/release/vxh-overlays-tool.exe" "VXH Overlays Tool.exe"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VXH-Overlays-Tool
+          path: tools/overlays-tool/VXH Overlays Tool.exe
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/tool-v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: tools/overlays-tool/VXH Overlays Tool.exe
