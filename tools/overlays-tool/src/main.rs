@@ -4,7 +4,8 @@
 //!  - TikTok LIVE chat read from the streamer's own PC -> chat overlay ("through the app").
 //! Lives in the tray; the window shows the panel connection, accounts, TikTok and music.
 
-#![cfg_attr(windows, windows_subsystem = "windows")]
+// Release builds have no console window; debug builds keep one, so `cargo run -- --tiktok-test <nick>` prints.
+#![cfg_attr(all(windows, not(debug_assertions)), windows_subsystem = "windows")]
 
 mod chat;
 mod config;
