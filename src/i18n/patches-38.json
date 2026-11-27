@@ -1,0 +1,110 @@
+{
+ "en": {
+  "11.11: Wawel nocą": "11.11: Wawel Castle at night",
+  "Studio streamera": "Streamer studio",
+  "Jesień: las": "Autumn: forest",
+  "Deszczowe miasto nocą": "Rainy city at night",
+  "Stacja kosmiczna": "Space station",
+  "Dzień Dziecka: balony": "Children’s Day: balloons",
+  "Mikołajki: prezenty": "St. Nicholas Day: gifts",
+  "Dzień Matki: kwiaty": "Mother’s Day: flowers",
+  "Majówka: łąka w słońcu": "May holiday: sunny meadow",
+  "Plaża nocą": "Beach at night"
+ },
+ "de": {
+  "11.11: Wawel nocą": "11.11: Wawel bei Nacht",
+  "Studio streamera": "Streamer-Studio",
+  "Jesień: las": "Herbst: Wald",
+  "Deszczowe miasto nocą": "Verregnete Stadt bei Nacht",
+  "Stacja kosmiczna": "Raumstation",
+  "Dzień Dziecka: balony": "Kindertag: Luftballons",
+  "Mikołajki: prezenty": "Nikolaustag: Geschenke",
+  "Dzień Matki: kwiaty": "Muttertag: Blumen",
+  "Majówka: łąka w słońcu": "Maifeiertage: sonnige Wiese",
+  "Plaża nocą": "Strand bei Nacht"
+ },
+ "cs": {
+  "11.11: Wawel nocą": "11.11: Wawel v noci",
+  "Studio streamera": "Studio streamera",
+  "Jesień: las": "Podzim: les",
+  "Deszczowe miasto nocą": "Deštivé město v noci",
+  "Stacja kosmiczna": "Vesmírná stanice",
+  "Dzień Dziecka: balony": "Den dětí: balonky",
+  "Mikołajki: prezenty": "Mikuláš: dárky",
+  "Dzień Matki: kwiaty": "Den matek: květiny",
+  "Majówka: łąka w słońcu": "Májové svátky: louka na slunci",
+  "Plaża nocą": "Pláž v noci"
+ },
+ "es": {
+  "11.11: Wawel nocą": "11.11: el Wawel de noche",
+  "Studio streamera": "Estudio de streamer",
+  "Jesień: las": "Otoño: bosque",
+  "Deszczowe miasto nocą": "Ciudad lluviosa de noche",
+  "Stacja kosmiczna": "Estación espacial",
+  "Dzień Dziecka: balony": "Día del Niño: globos",
+  "Mikołajki: prezenty": "San Nicolás: regalos",
+  "Dzień Matki: kwiaty": "Día de la Madre: flores",
+  "Majówka: łąka w słońcu": "Puente de mayo: prado al sol",
+  "Plaża nocą": "Playa de noche"
+ },
+ "fr": {
+  "11.11: Wawel nocą": "11.11 : le Wawel la nuit",
+  "Studio streamera": "Studio de streamer",
+  "Jesień: las": "Automne : forêt",
+  "Deszczowe miasto nocą": "Ville sous la pluie la nuit",
+  "Stacja kosmiczna": "Station spatiale",
+  "Dzień Dziecka: balony": "Journée de l’enfance : ballons",
+  "Mikołajki: prezenty": "Saint-Nicolas : cadeaux",
+  "Dzień Matki: kwiaty": "Fête des mères : fleurs",
+  "Majówka: łąka w słońcu": "Ponts de mai : prairie au soleil",
+  "Plaża nocą": "Plage la nuit"
+ },
+ "pt": {
+  "11.11: Wawel nocą": "11.11: Wawel à noite",
+  "Studio streamera": "Estúdio de streamer",
+  "Jesień: las": "Outono: floresta",
+  "Deszczowe miasto nocą": "Cidade chuvosa à noite",
+  "Stacja kosmiczna": "Estação espacial",
+  "Dzień Dziecka: balony": "Dia das Crianças: balões",
+  "Mikołajki: prezenty": "Dia de São Nicolau: presentes",
+  "Dzień Matki: kwiaty": "Dia das Mães: flores",
+  "Majówka: łąka w słońcu": "Feriado de maio: campo ao sol",
+  "Plaża nocą": "Praia à noite"
+ },
+ "ru": {
+  "11.11: Wawel nocą": "11.11: Вавель ночью",
+  "Studio streamera": "Студия стримера",
+  "Jesień: las": "Осень: лес",
+  "Deszczowe miasto nocą": "Дождливый город ночью",
+  "Stacja kosmiczna": "Космическая станция",
+  "Dzień Dziecka: balony": "День защиты детей: шарики",
+  "Mikołajki: prezenty": "День святого Николая: подарки",
+  "Dzień Matki: kwiaty": "День матери: цветы",
+  "Majówka: łąka w słońcu": "Майские: луг на солнце",
+  "Plaża nocą": "Пляж ночью"
+ },
+ "tr": {
+  "11.11: Wawel nocą": "11.11: gece Wawel",
+  "Studio streamera": "Yayıncı stüdyosu",
+  "Jesień: las": "Sonbahar: orman",
+  "Deszczowe miasto nocą": "Gece yağmurlu şehir",
+  "Stacja kosmiczna": "Uzay istasyonu",
+  "Dzień Dziecka: balony": "Çocuk Bayramı: balonlar",
+  "Mikołajki: prezenty": "Aziz Nikolas Günü: hediyeler",
+  "Dzień Matki: kwiaty": "Anneler Günü: çiçekler",
+  "Majówka: łąka w słońcu": "Mayıs tatili: güneşli çayır",
+  "Plaża nocą": "Gece plaj"
+ },
+ "uk": {
+  "11.11: Wawel nocą": "11.11: Вавель уночі",
+  "Studio streamera": "Студія стрімера",
+  "Jesień: las": "Осінь: ліс",
+  "Deszczowe miasto nocą": "Дощове місто вночі",
+  "Stacja kosmiczna": "Космічна станція",
+  "Dzień Dziecka: balony": "День захисту дітей: кульки",
+  "Mikołajki: prezenty": "День святого Миколая: подарунки",
+  "Dzień Matki: kwiaty": "День матері: квіти",
+  "Majówka: łąka w słońcu": "Травневі свята: луг на сонці",
+  "Plaża nocą": "Пляж уночі"
+ }
+}
