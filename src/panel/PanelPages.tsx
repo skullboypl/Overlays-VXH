@@ -168,6 +168,7 @@ export const PanelSetup = () => {
         <AccountCard me={me} panelKey={key} onLogout={doLogout} />
 
         {!key ? (
+          <>
           <section className="pn-card">
             <h2>{t('Utwórz swój panel')}</h2>
             {loggedIn && me?.panels.length ? (
@@ -196,6 +197,8 @@ export const PanelSetup = () => {
             </details>
             {error && <p className="pn-error">{error}</p>}
           </section>
+          <AppCard dockUrl="" />
+          </>
         ) : (
           <>
             {claimState === 'other' && <p className="pn-error pn-banner">{t('Ten panel należy do innego konta. Zaloguj się kontem, które go utworzyło.')}</p>}
@@ -343,7 +346,8 @@ const AppCard = ({ dockUrl }: { dockUrl: string }) => {
   const ref = useRef<HTMLElement>(null);
   const [opened, setOpened] = useState(false);
   // The app's "Connect to the panel" button opens /panel?app=connect: show this card first.
-  const fromApp = new URLSearchParams(window.location.search).get('app') === 'connect';
+  // The site menu links to /panel#app.
+  const fromApp = new URLSearchParams(window.location.search).get('app') === 'connect' || window.location.hash === '#app';
   useEffect(() => { if (fromApp) ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, [fromApp]);
   const connect = () => {
     setOpened(true);
@@ -363,9 +367,11 @@ const AppCard = ({ dockUrl }: { dockUrl: string }) => {
       </div>
       <p className="pn-note">✔ {t('Plik jest podpisany certyfikatem EV SkullMedia, a aplikacja sama się aktualizuje.')}</p>
       <h3 className="pn-sub">{t('2. Połącz z panelem')}</h3>
-      <div className="pn-row">
-        <button type="button" className="pn-primary" onClick={connect}>{t('Połącz z VXH Overlays Tool')}</button>
-      </div>
+      {dockUrl ? (
+        <div className="pn-row">
+          <button type="button" className="pn-primary" onClick={connect}>{t('Połącz z VXH Overlays Tool')}</button>
+        </div>
+      ) : <p className="pn-note">{t('Najpierw utwórz panel powyżej, potem połączysz go z aplikacją jednym kliknięciem.')}</p>}
       {opened && <p className="pn-note">{t('Przeglądarka zapyta, czy otworzyć aplikację: zgódź się. Nic się nie stało? Zainstaluj aplikację albo w niej wybierz „Wklej link docka” po skopiowaniu linku z kroku 1.')}</p>}
       <p className="pn-note">🔒 {t('Link docka trafia tylko do aplikacji na tym komputerze, nie przez żaden serwer.')}</p>
     </section>

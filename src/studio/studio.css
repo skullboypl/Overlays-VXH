@@ -60,6 +60,7 @@ a { color: inherit; text-decoration: none; }
   transition: color 0.15s, background 0.15s;
 }
 .st-nav a:hover { color: var(--text); background: var(--input); }
+.st-nav a.st-nav-app { color: var(--orange); }
 
 /* ---------- 3 columns ---------- */
 .st-body {

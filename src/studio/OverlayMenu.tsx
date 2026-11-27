@@ -134,6 +134,12 @@ export const OverlayMenu = ({ active, onPick }: { active: string; onPick: () => 
           <span><b>{t('Panel OBS')}</b><small>{t('Steruj overlayami z docka w OBS')}</small></span>
         </Link>
       )}
+      {!q && (
+        <Link to="/panel#app" className="st-panel-entry" onClick={onPick}>
+          <span aria-hidden>💻</span>
+          <span><b>{t('Aplikacja na PC')}</b><small>{t('Teraz gra, !skip i czat TikTok LIVE')}</small></span>
+        </Link>
+      )}
       {matches ? (
         <section className="st-mgroup">
           <h2 className="st-mhead is-static"><span>{t('Wyniki')}</span><small>{matches.length}</small></h2>

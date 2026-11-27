@@ -313,6 +313,7 @@ const Editor = ({ def, home }: { def: OverlayDef; home: boolean }) => {
         <LivePill />
         <nav className="st-nav">
           <a href={docsPath(lang, def.id)}>{t('Poradnik i opis')}</a>
+          <Link to="/panel#app" className="st-nav-app" title={t('Teraz gra, !skip i czat TikTok LIVE')}>💻 {t('Aplikacja na PC')}</Link>
           <a href="https://vxh.pl/" target="_blank" rel="noreferrer">{t('Inne narzędzia VXH')}</a>
           <LangSelect />
         </nav>
