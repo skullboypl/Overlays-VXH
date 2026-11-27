@@ -3,7 +3,7 @@
 use std::collections::VecDeque;
 use std::sync::{Mutex, OnceLock};
 
-use crate::tiktok;
+use crate::{tiktok, update};
 
 #[derive(Clone, Debug, PartialEq, Default)]
 pub enum PanelStatus {
@@ -60,6 +60,7 @@ pub struct Shared {
     pub tiktok_count: u64,
     pub tiktok_last: String,
     pub chat_on: bool,
+    pub update: update::Status,
     pub log: VecDeque<String>,
 }
 
@@ -78,6 +79,7 @@ impl Default for Shared {
             tiktok_count: 0,
             tiktok_last: String::new(),
             chat_on: false,
+            update: update::Status::Idle,
             log: VecDeque::new(),
         }
     }

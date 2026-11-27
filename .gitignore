@@ -27,3 +27,6 @@ src/i18n/missing.json
 
 # Rust build output (tools/overlays-tool)
 tools/overlays-tool/target/
+
+# Overlays Tool: signed builds from release.ps1
+tools/overlays-tool/dist/

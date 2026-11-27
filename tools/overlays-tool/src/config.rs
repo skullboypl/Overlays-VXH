@@ -18,11 +18,13 @@ pub struct Config {
     pub autostart: bool,
     pub tiktok_user: String,
     pub tiktok_on: bool,
+    /// Install a newer GitHub release by itself when the app starts.
+    pub auto_update: bool,
 }
 
 impl Default for Config {
     fn default() -> Self {
-        Config { dock_link: String::new(), source: "all".into(), autostart: true, tiktok_user: String::new(), tiktok_on: true }
+        Config { dock_link: String::new(), source: "all".into(), autostart: true, tiktok_user: String::new(), tiktok_on: true, auto_update: true }
     }
 }
 

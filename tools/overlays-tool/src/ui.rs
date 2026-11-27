@@ -9,6 +9,7 @@ use serde_json::json;
 
 use crate::state::{self, PanelStatus};
 use crate::tiktok::State as TtState;
+use crate::update::{self, Status as UpdStatus};
 use crate::{config, music, panel, platform};
 
 const ORANGE: Color32 = Color32::from_rgb(0xff, 0x59, 0x00);
@@ -422,6 +423,51 @@ impl App {
                 });
             });
             ui.label(RichText::new("Zamknięcie okna chowa aplikację do zasobnika obok zegara. Wyłączysz ją z menu ikony („Zamknij”).").size(12.0).color(MUTED));
+            ui.separator();
+            ui.horizontal(|ui| {
+                row_label(ui, "Aktualizuj automatycznie przy starcie");
+                ui.with_layout(egui::Layout::right_to_left(egui::Align::Center), |ui| {
+                    if toggle(ui, &mut cfg.auto_update, true).changed() {
+                        let on = cfg.auto_update;
+                        config::update(|c| c.auto_update = on);
+                    }
+                });
+            });
+            let upd = state::read(|s| s.update.clone());
+            let (color, text) = match &upd {
+                UpdStatus::Idle | UpdStatus::Checking => (MUTED, "Sprawdzam aktualizacje…".to_string()),
+                UpdStatus::UpToDate => (GREEN, "Masz najnowszą wersję".to_string()),
+                UpdStatus::Available(r) => (ORANGE, format!("Dostępna wersja {}", r.version)),
+                UpdStatus::Installing(v) => (YELLOW, format!("Instaluję wersję {v}…")),
+                UpdStatus::Failed(e) => (RED, format!("Aktualizacja: {e}")),
+            };
+            ui.horizontal_wrapped(|ui| {
+                dot(ui, color);
+                ui.label(RichText::new(text).size(12.5));
+            });
+            ui.horizontal_wrapped(|ui| {
+                if let UpdStatus::Available(r) = &upd {
+                    if primary(ui, &format!("Zaktualizuj do {}", r.version)).clicked() {
+                        let r = r.clone();
+                        self.rt.spawn(async move {
+                            let err = update::install(&r, false).await;
+                            state::with(|s| s.update = UpdStatus::Failed(err));
+                        });
+                    }
+                }
+                let busy = matches!(upd, UpdStatus::Checking | UpdStatus::Installing(_));
+                if ui.add_enabled(!busy, egui::Button::new("Sprawdź aktualizacje")).clicked() {
+                    self.rt.spawn(async {
+                        state::with(|s| s.update = UpdStatus::Checking);
+                        let st = match update::check().await {
+                            Ok(Some(r)) => UpdStatus::Available(r),
+                            Ok(None) => UpdStatus::UpToDate,
+                            Err(e) => UpdStatus::Failed(e),
+                        };
+                        state::with(|s| s.update = st);
+                    });
+                }
+            });
             ui.horizontal(|ui| {
                 if ui.small_button(if self.show_log { "Ukryj dziennik" } else { "Pokaż dziennik" }).clicked() {
                     self.show_log = !self.show_log;

@@ -19,6 +19,7 @@ mod tiktok_link;
 #[cfg(windows)]
 mod tray;
 mod ui;
+mod update;
 
 use std::time::Duration;
 
@@ -97,13 +98,14 @@ fn main() {
     rt.spawn(music::run());
     rt.spawn(tiktok_link::run());
     rt.spawn(watch_incoming());
+    let start_hidden = args.iter().any(|a| a == "--tray") && link_arg.is_none();
+    rt.spawn(update::run(start_hidden));
 
     let headless = args.iter().any(|a| a == "--headless");
     if headless {
         // Development / tests: the workers without a window.
         rt.block_on(async { tokio::signal::ctrl_c().await.ok() });
     } else {
-        let start_hidden = args.iter().any(|a| a == "--tray") && link_arg.is_none();
         let _ = ui::run(rt.handle().clone(), start_hidden);
     }
     rt.block_on(music::stop());

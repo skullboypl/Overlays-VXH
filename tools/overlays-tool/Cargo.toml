@@ -1,6 +1,6 @@
 [package]
 name = "vxh-overlays-tool"
-version = "2.0.0"
+version = "2.0.1"
 edition = "2021"
 description = "VXH Overlays Tool: tray app for the VXH Overlays OBS panel (now playing, chat commands, TikTok LIVE)"
 license = "MIT"
