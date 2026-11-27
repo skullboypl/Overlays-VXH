@@ -114,6 +114,17 @@ Shared screen options: title, subtitle and a kicker above the title; timer (off,
 
 The full parameter list of every overlay (keys, ranges, defaults) is generated at build time into [`/llms.txt`](https://overlays.vxh.pl/llms.txt).
 
+### 💬 Chat, channel and music
+
+| ID | What it does |
+|---|---|
+| `chat` | Twitch + Kick (+ TikTok LIVE beta) chat in one window, no login: Twitch / Kick / 7TV / BTTV / FFZ emotes, badges, name colours, moderator deletions, bot / command / link / word filters, fade-out, 11 styles |
+| `latest`, `events` | Latest follow / sub / cheer / raid / donation and a recent-events list from the channel linked in the OBS panel |
+| `prediction`, `hypetrain`, `twgoal` | Live Twitch prediction, Hype Train and creator goal |
+| `nowplaying` | Source: typed in, Last.fm, or the [VXH Now Playing](tools/nowplaying-app) Windows app (Spotify, YouTube and others) |
+
+The poll can show the Twitch poll, rankings can count bits / Kicks / gifted subs, the giveaway can take entries from chat. Widget cards also come in brutalist, terminal, paper, 8-bit, comic, minimal and esport looks.
+
 ### 🧩 Add-ons (`src/overlays/more`)
 
 New overlays added without touching the old ones: each has its own ID, and old links show exactly what they showed before.
@@ -277,6 +288,8 @@ Optional environment variables (the site works without any of them):
 | `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET` | Kick app for "Connect Kick"; redirect `/api/connect/kick/callback`, webhook `/api/webhooks/kick` |
 | `DATABASE_URL` | Optional PostgreSQL for panel rooms and linked channels (without it: the `PANEL_FILE` file) |
 | `REDIS_URL` | Optional Redis: several app instances at once (panel changes and OAuth state go through Redis) |
+| `LASTFM_API_KEY` | "Now playing" from Last.fm (free key from last.fm/api) |
+| `TIKTOK_SIGN_API_KEY` | Optional Euler Stream key for TikTok LIVE chat (beta); free limits without it |
 
 ## Contributing
 

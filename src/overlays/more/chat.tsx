@@ -7,7 +7,7 @@ import { isLang, translate } from '../../i18n';
 import { fontOf, lines, num, rangeF, str, type Renderer, type Vars } from './common';
 
 type Part = { t: 'text'; v: string } | { t: 'emote'; url: string; name: string } | { t: 'mention'; v: string };
-export type Msg = { id: string; platform: 'twitch' | 'kick'; user: string; login: string; color: string; badges: string[]; parts: Part[]; text: string; at: number; action?: boolean };
+export type Msg = { id: string; platform: 'twitch' | 'kick' | 'tiktok'; system?: boolean; user: string; login: string; color: string; badges: string[]; parts: Part[]; text: string; at: number; action?: boolean };
 export type Sink = { add: (m: Msg) => void; remove: (id: string) => void; clearUser: (login: string) => void; clearAll: () => void; room?: (id: string) => void };
 
 const langOf = (p: Params) => (isLang(p._lang) ? p._lang : 'pl');
@@ -153,6 +153,28 @@ export const useKickChat = (channel: string, sink: React.MutableRefObject<Sink>,
   }, [channel, sink]); // eslint-disable-line react-hooks/exhaustive-deps
 };
 
+/* ---------------- TikTok LIVE (beta, through our server) ---------------- */
+export const useTikTokChat = (user: string, sink: React.MutableRefObject<Sink>, events: boolean, onStatus: (s: string) => void) => {
+  useEffect(() => {
+    const u = user.trim().replace(/^@/, '').toLowerCase();
+    if (!/^[a-z0-9._]{2,24}$/.test(u)) return undefined;
+    const es = new EventSource(`/api/tiktok/${encodeURIComponent(u)}/events`);
+    es.onmessage = (e) => {
+      try {
+        const m = JSON.parse(e.data);
+        if (m.type === 'status') { onStatus(String(m.state)); return; }
+        if (m.type === 'chat') {
+          sink.current.add({ id: `tt:${m.id}`, platform: 'tiktok', user: String(m.user), login: String(m.login), color: '', badges: [], parts: [{ t: 'text', v: String(m.text) }], text: String(m.text), at: Date.now() });
+        } else if (events && (m.type === 'gift' || m.type === 'follow' || m.type === 'share')) {
+          const text = m.type === 'gift' ? `🎁 ${m.gift || 'gift'}${m.count > 1 ? ` ×${m.count}` : ''}` : m.type === 'follow' ? '❤️ follow' : '↗ share';
+          sink.current.add({ id: `tt:${m.type}:${m.id ?? Math.random()}`, platform: 'tiktok', user: String(m.user), login: String(m.login), color: '', badges: [], parts: [{ t: 'text', v: text }], text: '', at: Date.now(), system: true });
+        }
+      } catch { /* ignore */ }
+    };
+    return () => es.close();
+  }, [user, events]); // eslint-disable-line react-hooks/exhaustive-deps
+};
+
 /* ---------------- 7TV / BTTV / FFZ ---------------- */
 const getJson = async (url: string) => { try { const r = await fetch(url); return r.ok ? await r.json() : null; } catch { return null; } };
 const sevenTv = (set: { emotes?: { name: string; data?: { host?: { url?: string } } }[] } | null | undefined, out: Map<string, string>) => {
@@ -244,6 +266,8 @@ const Chat: Renderer = ({ params: p }) => {
   };
   useTwitchChat(str(p.twitch), sink);
   useKickChat(str(p.kick), sink, setKickId);
+  const [tiktokState, setTiktokState] = useState('');
+  useTikTokChat(str(p.tiktok), sink, p.tiktokEvents !== false, setTiktokState);
   const extra = useExtraEmotes(p.thirdParty !== false, twitchId, kickId);
 
   // Studio preview (or "test" switch): sample messages from both services.
@@ -266,7 +290,7 @@ const Chat: Renderer = ({ params: p }) => {
   }, [fadeS]);
 
   const lang = langOf(p);
-  const me = [str(p.twitch), str(p.kick)].map((s) => s.trim().toLowerCase()).filter(Boolean);
+  const me = [str(p.twitch), str(p.kick), str(p.tiktok)].map((s) => s.trim().toLowerCase().replace(/^@/, '')).filter(Boolean);
   const shown = p.direction === 'top' ? [...msgs].reverse() : msgs;
   const style: Vars = {
     // The px picked in the studio is the size on a 420 × 720 source; a bigger source scales it up.
@@ -282,8 +306,8 @@ const Chat: Renderer = ({ params: p }) => {
           const mod = p.highlightMods === true && m.badges.some((b) => b === 'moderator' || b === 'broadcaster');
           const leaving = fadeS > 0 && now - m.at > fadeS * 1000;
           return (
-            <div key={m.id} className={`mo-chat-msg is-${m.platform} ${mention ? 'is-mention' : ''} ${mod ? 'is-mod' : ''} ${m.action ? 'is-action' : ''} ${leaving ? 'is-out' : ''}`}
-              style={{ '--uc': m.color || (m.platform === 'kick' ? '#53fc18' : '#a970ff') } as Vars}>
+            <div key={m.id} className={`mo-chat-msg is-${m.platform} ${m.system ? 'is-system' : ''} ${mention ? 'is-mention' : ''} ${mod ? 'is-mod' : ''} ${m.action ? 'is-action' : ''} ${leaving ? 'is-out' : ''}`}
+              style={{ '--uc': m.color || (m.platform === 'kick' ? '#53fc18' : m.platform === 'tiktok' ? '#ff2a5f' : '#a970ff') } as Vars}>
               <span className="mo-chat-head">
                 {p.showPlatform !== false && (
                   <span className="mo-chat-pl" style={{ background: BRAND_COLORS[m.platform], color: BRAND_INK[m.platform] }} title={m.platform === 'kick' ? 'Kick' : 'Twitch'}>
@@ -292,7 +316,7 @@ const Chat: Renderer = ({ params: p }) => {
                 )}
                 {p.showBadges !== false && m.badges.slice(0, 3).map((b) => BADGES[b] && <span key={b} className="mo-chat-badge" style={{ background: BADGES[b][0] }}>{BADGES[b][1]}</span>)}
                 <b className="mo-chat-name" data-pl={m.platform}>{m.user}</b>
-                {p.style !== 'card' && !m.action && <span className="mo-chat-colon">:</span>}
+                {p.style !== 'card' && !m.action && !m.system && <span className="mo-chat-colon">:</span>}
               </span>
               <span className="mo-chat-text">
                 {enrich(m.parts, extra).map((part, i) => part.t === 'emote'
@@ -303,7 +327,10 @@ const Chat: Renderer = ({ params: p }) => {
           );
         })}
       </div>
-      {!msgs.length && !str(p.twitch).trim() && !str(p.kick).trim() && p._preview === true && <div className="mo-chat-empty">{translate(lang, 'Wpisz kanał Twitch albo Kick')}</div>}
+      {!msgs.length && !str(p.twitch).trim() && !str(p.kick).trim() && !str(p.tiktok).trim() && p._preview === true && <div className="mo-chat-empty">{translate(lang, 'Wpisz kanał Twitch albo Kick')}</div>}
+      {p._preview === true && str(p.tiktok).trim() && ['offline', 'error', 'unavailable', 'ended'].includes(tiktokState) && (
+        <div className="mo-chat-status">TikTok: {translate(lang, tiktokState === 'offline' || tiktokState === 'ended' ? 'kanał nie nadaje teraz na żywo' : 'nie udało się połączyć (beta)')}</div>
+      )}
     </div>
   );
 };
@@ -315,6 +342,8 @@ export const CHAT_DEFS: OverlayDef[] = [{
   fields: [
     { group: 'Kanały', key: 'twitch', label: 'Kanał Twitch', type: 'text', default: 'skullboypl', maxLength: 25, placeholder: 'nick na Twitchu', hint: 'Puste: bez czatu z Twitcha' },
     { group: 'Kanały', key: 'kick', label: 'Kanał Kick', type: 'text', default: 'skullboypl', maxLength: 40, placeholder: 'nick na Kicku', hint: 'Puste: bez czatu z Kicka' },
+    { group: 'Kanały', key: 'tiktok', label: 'TikTok LIVE (beta)', type: 'text', default: '', maxLength: 25, placeholder: '@nick', hint: 'Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać' },
+    { group: 'Kanały', key: 'tiktokEvents', label: 'Prezenty i followy z TikToka', type: 'toggle', default: true },
     F('thirdParty', 'Emotki 7TV, BTTV i FFZ', true, 'Kanały'),
     { group: 'Wygląd', key: 'style', label: 'Styl', type: 'select', default: 'bubble', options: [
       { value: 'bubble', label: 'Dymki' }, { value: 'plain', label: 'Sam tekst z cieniem' }, { value: 'boxed', label: 'Jedno tło pod całym czatem' },

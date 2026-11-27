@@ -112,6 +112,17 @@ Obszar (`area`) to cały ekran, lewa lub prawa połowa albo tylko boki.
 | `qrrotator` | Rotator kodów QR | 320×400 | kilka linków na zmianę; przejścia: glitch, obrót, kostka 3D, pikselizacja i inne |
 | `socials` | Rotator sociali | 560×100 | Twitch, Kick, YouTube, TikTok, Discord, Instagram, X, Facebook albo własny tekst; zmiana co N sekund, 3 animacje, kolory serwisów, pasek czasu |
 
+### 💬 Czat, kanał i muzyka
+
+| ID | Co robi |
+|---|---|
+| `chat` | Czat Twitch + Kick (+ TikTok LIVE beta) w jednym oknie, bez logowania: emotki Twitch / Kick / 7TV / BTTV / FFZ, odznaki, kolory nicków, usuwanie wiadomości przez modów, filtry botów / komend / linków / słów, znikanie, 11 stylów |
+| `latest`, `events` | Ostatni follow / sub / cheer / raid / donacja i lista ostatnich zdarzeń z kanału podpiętego w Panelu OBS |
+| `prediction`, `hypetrain`, `twgoal` | Predykcja, Hype Train i cel kanału z Twitcha na żywo |
+| `nowplaying` | Źródło: wpisane, Last.fm albo aplikacja [VXH Now Playing](tools/nowplaying-app) na Windows (Spotify, YouTube i inne) |
+
+Ankieta może pokazywać ankietę z Twitcha, rankingi liczą się z bitsów / Kicks / gift subów, giveaway zbiera zgłoszenia z czatu. Karty widżetów mają też style: brutalizm, terminal, karteczka, 8-bit, komiks, minimalny, esport.
+
 ### 🧩 Dodatki (`src/overlays/more`)
 
 Nowe overlaye dokładane bez ruszania starych: każdy ma własne ID, a stare linki pokazują to samo co wcześniej.
@@ -317,6 +328,8 @@ Opcjonalne zmienne (CapRover → aplikacja → **App Configs → Environmental V
 | `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET` | Aplikacja Kick do „Połącz Kick”; redirect `/api/connect/kick/callback`, webhook `/api/webhooks/kick` |
 | `DATABASE_URL` | Opcjonalnie PostgreSQL na pokoje panelu i połączone kanały (bez niej: plik `PANEL_FILE`) |
 | `REDIS_URL` | Opcjonalnie Redis: kilka instancji aplikacji naraz (zmiany panelu i stan OAuth przez Redis) |
+| `LASTFM_API_KEY` | „Teraz gra” ze źródłem Last.fm (darmowy klucz z last.fm/api) |
+| `TIKTOK_SIGN_API_KEY` | Opcjonalnie: klucz Euler Stream do czatu TikTok LIVE (beta); bez niego darmowe limity |
 | `PUBLIC_ORIGIN` | Adres strony do linków OAuth i webhooków (domyślnie `https://overlays.vxh.pl`) |
 | `TWITCH_EVENTSUB_SECRET` | Sekret podpisu webhooków Twitch EventSub (alerty po „Połącz Twitch” w Panelu OBS); redirect w aplikacji Twitch: `/api/connect/twitch/callback` |
 | `KICK_CLIENT_ID`, `KICK_CLIENT_SECRET` | Aplikacja Kick do „Połącz Kick”; redirect `/api/connect/kick/callback`, webhook `/api/webhooks/kick` |

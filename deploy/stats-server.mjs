@@ -12,6 +12,7 @@ import http from 'node:http';
 import { pathToFileURL } from 'node:url';
 import { followers } from './followers.mjs';
 import { nowPlaying } from './music.mjs';
+import { tiktokGet } from './tiktok.mjs';
 import { loadRooms, panelGet, panelMaintenance, panelPost, resolveRoom } from './panel.mjs';
 import { accountClaim, accountLogin, accountLogout, accountMe, accountRotate, accountUnlink, configured, connectCallback, kickWebhook, mayDrop, twitchWebhook } from './connect.mjs';
 import { openStore, storeKind } from './store.mjs';
@@ -101,6 +102,10 @@ const readBody = (req, max, done) => {
 
 export const server = http.createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://x');
+  if (url.pathname.startsWith('/api/tiktok/') && req.method === 'GET') {
+    if (limited(clientIp(req), Date.now())) return send(res, 429);
+    return tiktokGet(url.pathname, req, res) || send(res, 404, { error: 'not_found' });
+  }
   if (url.pathname === '/api/nowplaying' && req.method === 'GET') {
     if (limited(clientIp(req), Date.now())) return send(res, 429);
     nowPlaying(url.searchParams.get('lastfm'))

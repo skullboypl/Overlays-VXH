@@ -1,0 +1,56 @@
+{
+ "en": {
+  "@nick": "@nick",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "TikTok LIVE chat through our server; TikTok has no official API, so it may stop working at times",
+  "Prezenty i followy z TikToka": "Gifts and follows from TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (beta)"
+ },
+ "de": {
+  "@nick": "@nick",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "TikTok-LIVE-Chat über unseren Server; TikTok hat keine offizielle API, daher kann es zeitweise ausfallen",
+  "Prezenty i followy z TikToka": "Geschenke und Follows von TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (Beta)"
+ },
+ "cs": {
+  "@nick": "@nick",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Chat z TikTok LIVE přes náš server; TikTok nemá oficiální API, takže občas nemusí fungovat",
+  "Prezenty i followy z TikToka": "Dárky a followy z TikToku",
+  "TikTok LIVE (beta)": "TikTok LIVE (beta)"
+ },
+ "es": {
+  "@nick": "@nick",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Chat de TikTok LIVE a través de nuestro servidor; TikTok no tiene API oficial, así que a veces puede fallar",
+  "Prezenty i followy z TikToka": "Regalos y follows de TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (beta)"
+ },
+ "fr": {
+  "@nick": "@pseudo",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Chat TikTok LIVE via notre serveur ; TikTok n’a pas d’API officielle, il peut donc parfois ne pas fonctionner",
+  "Prezenty i followy z TikToka": "Cadeaux et follows de TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (bêta)"
+ },
+ "pt": {
+  "@nick": "@nick",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Chat do TikTok LIVE pelo nosso servidor; o TikTok não tem API oficial, então às vezes pode não funcionar",
+  "Prezenty i followy z TikToka": "Presentes e follows do TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (beta)"
+ },
+ "ru": {
+  "@nick": "@ник",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Чат TikTok LIVE через наш сервер; у TikTok нет официального API, поэтому иногда он может не работать",
+  "Prezenty i followy z TikToka": "Подарки и фоллоу из TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (бета)"
+ },
+ "tr": {
+  "@nick": "@kullanıcı",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Sunucumuz üzerinden TikTok LIVE sohbeti; TikTok'un resmi API'si yok, bu yüzden zaman zaman çalışmayabilir",
+  "Prezenty i followy z TikToka": "TikTok hediyeleri ve takipleri",
+  "TikTok LIVE (beta)": "TikTok LIVE (beta)"
+ },
+ "uk": {
+  "@nick": "@нік",
+  "Czat z TikTok LIVE przez nasz serwer; TikTok nie ma oficjalnego API, więc czasem może nie działać": "Чат TikTok LIVE через наш сервер; у TikTok немає офіційного API, тому інколи він може не працювати",
+  "Prezenty i followy z TikToka": "Подарунки й фолови з TikTok",
+  "TikTok LIVE (beta)": "TikTok LIVE (бета)"
+ }
+}

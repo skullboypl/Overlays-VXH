@@ -10485,6 +10485,14 @@
     "h": 360
    },
    "fields": {
+    "source": {
+     "type": "select",
+     "default": "manual",
+     "options": [
+      "manual",
+      "twitch"
+     ]
+    },
     "question": {
      "type": "text",
      "default": "W co gramy jutro?",
@@ -10522,7 +10530,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -10627,6 +10642,24 @@
      "default": "!join",
      "maxLength": 20
     },
+    "entry": {
+     "type": "select",
+     "default": "none",
+     "options": [
+      "none",
+      "chat"
+     ]
+    },
+    "twitch": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 25
+    },
+    "kick": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 40
+    },
     "showTimer": {
      "type": "toggle",
      "default": true
@@ -10650,7 +10683,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -10778,7 +10818,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -10907,7 +10954,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11031,7 +11085,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11146,7 +11207,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11259,7 +11327,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11414,6 +11489,17 @@
     "h": 360
    },
    "fields": {
+    "source": {
+     "type": "select",
+     "default": "manual",
+     "options": [
+      "manual",
+      "mix",
+      "bits",
+      "kicks",
+      "gifts"
+     ]
+    },
     "title": {
      "type": "text",
      "default": "Top donatorzy",
@@ -11452,7 +11538,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11536,6 +11629,17 @@
     "h": 400
    },
    "fields": {
+    "source": {
+     "type": "select",
+     "default": "manual",
+     "options": [
+      "manual",
+      "mix",
+      "bits",
+      "kicks",
+      "gifts"
+     ]
+    },
     "title": {
      "type": "text",
      "default": "Ranking",
@@ -11574,7 +11678,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11682,7 +11793,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11766,6 +11884,24 @@
     "h": 140
    },
    "fields": {
+    "source": {
+     "type": "select",
+     "default": "manual",
+     "options": [
+      "manual",
+      "app",
+      "lastfm"
+     ]
+    },
+    "lastfm": {
+     "type": "text",
+     "default": "",
+     "maxLength": 15
+    },
+    "hideIdle": {
+     "type": "toggle",
+     "default": true
+    },
     "label": {
      "type": "text",
      "default": "Teraz gra",
@@ -11813,7 +11949,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -11931,7 +12074,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -12143,7 +12293,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -12263,7 +12420,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -12382,7 +12546,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -12507,7 +12678,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -12643,7 +12821,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -12853,7 +13038,14 @@
       "neon",
       "gradient",
       "outline",
-      "none"
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
      ]
     },
     "scale": {
@@ -13017,7 +13209,13 @@
       "pop",
       "slide",
       "banner",
-      "neon"
+      "neon",
+      "brutal",
+      "comic",
+      "terminal",
+      "paper",
+      "pixel",
+      "line"
      ]
     },
     "position": {
@@ -13177,9 +13375,18 @@
      "default": "skullboypl",
      "maxLength": 40
     },
+    "twitch": {
+     "type": "text",
+     "default": "",
+     "maxLength": 25
+    },
     "emotes": {
      "type": "toggle",
      "default": true
+    },
+    "thirdParty": {
+     "type": "toggle",
+     "default": false
     },
     "emojis": {
      "type": "toggle",
@@ -14334,6 +14541,770 @@
       "pacifico",
       "bebas"
      ]
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "chat": {
+   "category": "widget",
+   "size": {
+    "w": 420,
+    "h": 720
+   },
+   "fields": {
+    "twitch": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 25
+    },
+    "kick": {
+     "type": "text",
+     "default": "skullboypl",
+     "maxLength": 40
+    },
+    "tiktok": {
+     "type": "text",
+     "default": "",
+     "maxLength": 25
+    },
+    "tiktokEvents": {
+     "type": "toggle",
+     "default": true
+    },
+    "thirdParty": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "bubble",
+     "options": [
+      "bubble",
+      "plain",
+      "boxed",
+      "card",
+      "neon",
+      "native",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "stack"
+     ]
+    },
+    "direction": {
+     "type": "select",
+     "default": "bottom",
+     "options": [
+      "bottom",
+      "top"
+     ]
+    },
+    "align": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "right"
+     ]
+    },
+    "anim": {
+     "type": "select",
+     "default": "slide",
+     "options": [
+      "slide",
+      "fade",
+      "pop",
+      "none"
+     ]
+    },
+    "fontSize": {
+     "type": "range",
+     "default": 18,
+     "min": 10,
+     "max": 40
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "russo",
+      "bebas",
+      "pacifico"
+     ]
+    },
+    "emoteSize": {
+     "type": "range",
+     "default": 1.6,
+     "min": 1,
+     "max": 3
+    },
+    "opacity": {
+     "type": "range",
+     "default": 0.75,
+     "min": 0,
+     "max": 1
+    },
+    "radius": {
+     "type": "range",
+     "default": 14,
+     "min": 0,
+     "max": 30
+    },
+    "nameColor": {
+     "type": "select",
+     "default": "user",
+     "options": [
+      "user",
+      "platform",
+      "accent"
+     ]
+    },
+    "showPlatform": {
+     "type": "toggle",
+     "default": true
+    },
+    "showBadges": {
+     "type": "toggle",
+     "default": true
+    },
+    "max": {
+     "type": "range",
+     "default": 12,
+     "min": 3,
+     "max": 50
+    },
+    "fade": {
+     "type": "range",
+     "default": 0,
+     "min": 0,
+     "max": 300
+    },
+    "hideCommands": {
+     "type": "toggle",
+     "default": true
+    },
+    "hideBots": {
+     "type": "toggle",
+     "default": true
+    },
+    "bots": {
+     "type": "text",
+     "default": "Nightbot | StreamElements | Streamlabs | Moobot | Fossabot | Sery_Bot | BotRixOficial | KickBot",
+     "maxLength": 400,
+     "list": "lines"
+    },
+    "hideLinks": {
+     "type": "toggle",
+     "default": false
+    },
+    "blocked": {
+     "type": "text",
+     "default": "",
+     "maxLength": 400,
+     "list": "lines"
+    },
+    "highlightMentions": {
+     "type": "toggle",
+     "default": true
+    },
+    "highlightMods": {
+     "type": "toggle",
+     "default": false
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "demo": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "latest": {
+   "category": "widget",
+   "size": {
+    "w": 520,
+    "h": 140
+   },
+   "fields": {
+    "show": {
+     "type": "select",
+     "default": "all",
+     "options": [
+      "all",
+      "follow",
+      "sub",
+      "gift",
+      "bits",
+      "raid",
+      "donate"
+     ]
+    },
+    "every": {
+     "type": "range",
+     "default": 6,
+     "min": 3,
+     "max": 30
+    },
+    "showPlatform": {
+     "type": "toggle",
+     "default": true
+    },
+    "showEmpty": {
+     "type": "toggle",
+     "default": false
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "events": {
+   "category": "widget",
+   "size": {
+    "w": 480,
+    "h": 420
+   },
+   "fields": {
+    "title": {
+     "type": "text",
+     "default": "Ostatnie zdarzenia",
+     "maxLength": 30
+    },
+    "kinds": {
+     "type": "select",
+     "default": "all",
+     "options": [
+      "all",
+      "money",
+      "follow",
+      "reward"
+     ]
+    },
+    "max": {
+     "type": "range",
+     "default": 6,
+     "min": 1,
+     "max": 12
+    },
+    "showPlatform": {
+     "type": "toggle",
+     "default": true
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "left",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "prediction": {
+   "category": "widget",
+   "size": {
+    "w": 640,
+    "h": 220
+   },
+   "fields": {
+    "keep": {
+     "type": "range",
+     "default": 30,
+     "min": 5,
+     "max": 120
+    },
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "hypetrain": {
+   "category": "widget",
+   "size": {
+    "w": 640,
+    "h": 140
+   },
+   "fields": {
+    "style": {
+     "type": "select",
+     "default": "neon",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
+    },
+    "aiLabel": {
+     "type": "toggle",
+     "default": false
+    },
+    "aiLabelText": {
+     "type": "text",
+     "default": "Grafika wygenerowana z pomocą AI",
+     "maxLength": 50
+    },
+    "aiLabelPos": {
+     "type": "select",
+     "default": "br",
+     "options": [
+      "br",
+      "bl",
+      "tr",
+      "tl"
+     ]
+    }
+   }
+  },
+  "twgoal": {
+   "category": "widget",
+   "size": {
+    "w": 900,
+    "h": 140
+   },
+   "fields": {
+    "style": {
+     "type": "select",
+     "default": "glass",
+     "options": [
+      "glass",
+      "solid",
+      "neon",
+      "gradient",
+      "outline",
+      "none",
+      "brutal",
+      "terminal",
+      "paper",
+      "pixel",
+      "comic",
+      "minimal",
+      "esport"
+     ]
+    },
+    "scale": {
+     "type": "range",
+     "default": 100,
+     "min": 40,
+     "max": 160
+    },
+    "align": {
+     "type": "select",
+     "default": "center",
+     "options": [
+      "left",
+      "center",
+      "right"
+     ]
+    },
+    "radius": {
+     "type": "range",
+     "default": 18,
+     "min": 0,
+     "max": 60
+    },
+    "font": {
+     "type": "select",
+     "default": "dm",
+     "options": [
+      "dm",
+      "poppins",
+      "bebas",
+      "russo",
+      "orbitron",
+      "pacifico"
+     ]
+    },
+    "shadow": {
+     "type": "toggle",
+     "default": true
+    },
+    "accent": {
+     "type": "color",
+     "default": "#ff5900"
+    },
+    "accent2": {
+     "type": "color",
+     "default": "#ff2d95"
+    },
+    "bg": {
+     "type": "color",
+     "default": "#111114"
+    },
+    "textColor": {
+     "type": "color",
+     "default": "#ffffff"
     },
     "aiLabel": {
      "type": "toggle",

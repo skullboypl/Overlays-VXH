@@ -726,3 +726,7 @@
 .mo-alert.style-line .mo-alert-card { background: none; box-shadow: none; padding-left: 0.8em; border-left: 0.18em solid var(--accent); border-radius: 0; text-shadow: 0 1px 3px #000, 0 0 8px rgba(0, 0, 0, 0.8); animation-name: mo-in-slide, mo-alert-out; }
 .mo-alert.style-line .mo-alert-icon { display: none; }
 .mo-alert.style-line .mo-alert-bar { left: 0.8em; height: 0.06em; }
+/* TikTok gifts / follows in the chat */
+.mo-chat-msg.is-system .mo-chat-text { font-weight: 700; color: var(--accent); }
+.mo-chat.style-plain .mo-chat-msg.is-system, .mo-chat.style-native .mo-chat-msg.is-system { opacity: 0.9; }
+.mo-chat-status { position: absolute; left: 50%; top: 8px; translate: -50% 0; padding: 0.3em 0.8em; border-radius: 1em; background: rgba(0, 0, 0, 0.6); color: #fff; font: 600 max(11px, calc(var(--fs) * 0.7)) system-ui, sans-serif; white-space: nowrap; }

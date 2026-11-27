@@ -1,10 +1,11 @@
 {
   "name": "vxh-overlays-server",
   "private": true,
-  "description": "Runtime dependencies of the small Node server in the container (deploy/*.mjs). Only loaded when DATABASE_URL / REDIS_URL are set.",
+  "description": "Runtime dependencies of the small Node server in the container (deploy/*.mjs). pg / redis only load with DATABASE_URL / REDIS_URL; tiktok-live-connector only when a chat overlay asks for TikTok.",
   "type": "module",
   "dependencies": {
     "pg": "8.13.1",
-    "redis": "4.7.1"
+    "redis": "4.7.1",
+    "tiktok-live-connector": "2.5.0"
   }
 }
