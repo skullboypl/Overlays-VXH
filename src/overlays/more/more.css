@@ -730,3 +730,8 @@
 .mo-chat-msg.is-system .mo-chat-text { font-weight: 700; color: var(--accent); }
 .mo-chat.style-plain .mo-chat-msg.is-system, .mo-chat.style-native .mo-chat-msg.is-system { opacity: 0.9; }
 .mo-chat-status { position: absolute; left: 50%; top: 8px; translate: -50% 0; padding: 0.3em 0.8em; border-radius: 1em; background: rgba(0, 0, 0, 0.6); color: #fff; font: 600 max(11px, calc(var(--fs) * 0.7)) system-ui, sans-serif; white-space: nowrap; }
+.mo-np-votes { display: flex; align-items: center; gap: 0.5em; font-size: 0.42em; font-weight: 700; }
+.mo-np-votes i { flex: 1; height: 0.5em; border-radius: 1em; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.mo-np-votes i b { display: block; height: 100%; background: var(--accent); transition: width 0.4s; }
+.mo-np-votes em { font-style: normal; font-variant-numeric: tabular-nums; }
+.mo-np-skipped { font-size: 0.42em; font-weight: 800; color: var(--accent); }

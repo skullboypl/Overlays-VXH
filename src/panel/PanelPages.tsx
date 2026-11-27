@@ -549,6 +549,31 @@ const LiveControls = ({ state: s, send }: { state: PanelState | null; send: (pat
       </section>
 
       <section className="pn-box">
+        <h3>🎵 {t('Muzyka (VXH Now Playing)')}</h3>
+        <p className="pn-note">{t('Komendy obsługuje aplikacja VXH Now Playing na Twoim PC: czyta czat podpiętego kanału Twitch / Kick i przełącza utwór w Spotify, YouTube i innych odtwarzaczach.')}</p>
+        <label className="pn-check"><input type="checkbox" checked={s?.musicCtl?.skip === true} onChange={(e) => send({ musicCtl: { skip: e.currentTarget.checked } })} />
+          {t('Skip dla modów i streamera')} <code>{s?.musicCtl?.skipCmd ?? '!skip'}</code></label>
+        <label className="pn-check"><input type="checkbox" checked={s?.musicCtl?.vote === true} onChange={(e) => send({ musicCtl: { vote: e.currentTarget.checked } })} />
+          {t('Głosowanie widzów na następny')} <code>{s?.musicCtl?.voteCmd ?? '!voteskip'}</code></label>
+        <div className="pn-row">
+          <label className="pn-inline">{t('Ile głosów')}
+            <input type="number" min={2} max={100} defaultValue={s?.musicCtl?.needed ?? 5} onBlur={(e) => send({ musicCtl: { needed: Number(e.currentTarget.value) || 5 } })} />
+          </label>
+          <label className="pn-inline">{t('Przerwa między skipami (s)')}
+            <input type="number" min={0} max={600} defaultValue={s?.musicCtl?.cooldown ?? 20} onBlur={(e) => send({ musicCtl: { cooldown: Number(e.currentTarget.value) || 0 } })} />
+          </label>
+        </div>
+        <div className="pn-row">
+          <input defaultValue={s?.musicCtl?.skipCmd ?? '!skip'} maxLength={21} aria-label={t('Komenda skip')} onBlur={(e) => send({ musicCtl: { skipCmd: e.currentTarget.value } })} />
+          <input defaultValue={s?.musicCtl?.voteCmd ?? '!voteskip'} maxLength={21} aria-label={t('Komenda głosowania')} onBlur={(e) => send({ musicCtl: { voteCmd: e.currentTarget.value } })} />
+        </div>
+        <div className="pn-row">
+          <button type="button" className="pn-primary" onClick={() => send({ fire: 'musicnext' })}>⏭ {t('Następny utwór')}</button>
+        </div>
+        {s?.music?.title && <p className="pn-note">🎵 {s.music.title}{s.music.artist ? ` – ${s.music.artist}` : ''}{s.music.needed ? ` · ${t('głosy')}: ${s.music.votes ?? 0}/${s.music.needed}` : ''}</p>}
+      </section>
+
+      <section className="pn-box">
         <h3>🔔 {t('Alert')}</h3>
         <div className="pn-seg pn-wrap">
           {ALERT_KINDS.map(([k, l]) => <button key={k} type="button" className={alertKind === k ? 'is-on' : ''} onClick={() => setAlertKind(k)}>{t(l)}</button>)}

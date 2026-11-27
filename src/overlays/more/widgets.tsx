@@ -2,7 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { OverlayDef, Params } from '../schema';
 import { BRAND_COLORS, BRAND_INK, BrandIcon, detectBrand } from '../icons';
-import { isLang, translate } from '../../i18n';
+import { isLang, translate, tx } from '../../i18n';
 import { usePanel } from '../../panel/panel';
 import { useKickChat, useTwitchChat, type Sink } from './chat';
 import { Card, fontOf, lines, look, num, rangeF, safeUrl, str, useCycle, useNow, type Renderer, type Vars } from './common';
@@ -319,6 +319,12 @@ const NowPlaying: Renderer = ({ params: p }) => {
         </div>
         {p.eq !== false && <div className="mo-eq" aria-hidden>{Array.from({ length: 5 }, (_, i) => <i key={i} style={{ '--i': i } as Vars} />)}</div>}
       </div>
+      {src === 'app' && p.showVotes !== false && m && (m.needed ?? 0) > 0 && (m.votes ?? 0) > 0 && (
+        <div className="mo-np-votes"><span>⏭ {translate(lang, tx('Głosy na następny'))}</span><i><b style={{ width: `${Math.min(100, ((m.votes ?? 0) / (m.needed ?? 1)) * 100)}%` }} /></i><em>{m.votes}/{m.needed}</em></div>
+      )}
+      {src === 'app' && m?.skippedBy && m.skippedAt && now - m.skippedAt < 6000 && p.showVotes !== false && (
+        <div key={m.skippedAt} className="mo-np-skipped mo-a-up">⏭ {translate(lang, tx('Pominięto'))}: {m.skippedBy}</div>
+      )}
       {p.progress !== false && (live && live.duration
         ? <div className="mo-np-bar"><i className="mo-np-real" style={{ width: `${(pos / live.duration) * 100}%` }} /></div>
         : <div className="mo-np-bar"><i style={{ animationDuration: `${num(p.length, 180)}s` }} /></div>)}
@@ -594,6 +600,7 @@ export const WIDGET_DEFS: OverlayDef[] = [
     ], hint: 'Aplikacja na PC czyta to, co gra w Windows, i wysyła do Panelu OBS (link z panelem). Last.fm: włącz scrobbling w Spotify i wpisz nick.' },
     { group: 'Źródło', key: 'lastfm', label: 'Nick Last.fm', type: 'text', default: '', maxLength: 15, when: { key: 'source', is: ['lastfm'] } },
     { group: 'Źródło', key: 'hideIdle', label: 'Ukryj, gdy nic nie gra', type: 'toggle', default: true, when: { key: 'source', is: ['app', 'lastfm'] } },
+    { group: 'Źródło', key: 'showVotes', label: 'Pokaż głosowanie !voteskip i skipy', type: 'toggle', default: true, when: { key: 'source', is: ['app'] }, hint: 'Komendy włączasz w docku Panelu OBS (sekcja Muzyka)' },
     { group: 'Utwór', key: 'label', i18n: true, label: 'Nagłówek', type: 'text', default: 'Teraz gra', maxLength: 20 },
     { group: 'Utwór', key: 'title', label: 'Tytuł', type: 'text', default: 'Lofi beats to stream to', maxLength: 60 },
     { group: 'Utwór', key: 'artist', label: 'Wykonawca', type: 'text', default: 'Chill Radio', maxLength: 60 },

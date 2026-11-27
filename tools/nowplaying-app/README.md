@@ -14,6 +14,15 @@ Bez logowania do Spotify, bez kluczy API.
 
 W menu ikony: wybór źródła (wszystko / tylko Spotify / tylko przeglądarka / programy muzyczne), uruchamianie z Windows, zamknięcie.
 
+## Skip i głosowanie z czatu
+
+W docku Panelu OBS, w sekcji **Muzyka (VXH Now Playing)**, włączasz osobno:
+
+- **Skip dla modów i streamera**: `!skip` od moderatora albo streamera od razu przełącza utwór.
+- **Głosowanie widzów na następny**: `!voteskip` od widzów; po zebraniu ustawionej liczby głosów (jeden głos na osobę na utwór) utwór się przełącza.
+
+Tam też ustawisz liczbę głosów, przerwę między skipami i nazwy komend, a przyciskiem „Następny utwór” przełączysz utwór z docka. Aplikacja czyta czat kanałów Twitch / Kick podpiętych w panelu (anonimowo, nic nie pisze na czacie) i wysyła do odtwarzacza systemowe „następny”. Działa w Spotify, playlistach YouTube i w większości odtwarzaczy. Widżet pokazuje pasek głosów i kto pominął utwór (opcja „Pokaż głosowanie !voteskip i skipy”).
+
 ## Budowanie
 
 ```bash

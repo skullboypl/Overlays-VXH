@@ -136,6 +136,17 @@ export const applyPatch = (state, patch, now = Date.now()) => {
     }
     // New stream: forget per-person totals and the latest events (dock button).
     if (patch.resetStream === true) { s.givers = {}; s.latest = {}; s.alerts = []; }
+    // Music control for the PC app: !skip for moderators / the streamer, !voteskip for everyone (off by default).
+    if (patch.musicCtl && typeof patch.musicCtl === 'object') {
+      const c = { ...(s.musicCtl ?? {}) };
+      const m = patch.musicCtl;
+      if (typeof m.skip === 'boolean') c.skip = m.skip;
+      if (typeof m.vote === 'boolean') c.vote = m.vote;
+      if (isNum(m.needed)) c.needed = clampNum(Math.round(m.needed), 2, 100);
+      if (isNum(m.cooldown)) c.cooldown = clampNum(Math.round(m.cooldown), 0, 600);
+      for (const k of ['skipCmd', 'voteCmd']) if (typeof m[k] === 'string' && /^!?[a-z0-9_]{2,20}$/i.test(m[k].trim())) c[k] = `!${m[k].trim().replace(/^!/, '').toLowerCase()}`;
+      s.musicCtl = c;
+    }
     // Channel point reward (exact title, any case) -> effect button; set from the setup page.
     if (patch.rewardFx && typeof patch.rewardFx === 'object') {
       s.rewardFx ??= {};
@@ -244,6 +255,9 @@ export const panelPost = (action, body, allowDrop = () => true) => {
       title: txt(m.title, 120), artist: txt(m.artist, 120), album: txt(m.album, 120), app: txt(m.app, 40),
       playing: m.playing === true, position: clampNum(Number(m.position), 0, 86_400) ?? 0, duration: clampNum(Number(m.duration), 0, 86_400) ?? 0,
       at: Date.now(), cover: r.cover ? r.cover.v : 0,
+      // Vote-skip progress and the last skip, counted by the app from chat.
+      votes: clampNum(Number(m.votes), 0, 1000) ?? 0, needed: clampNum(Number(m.needed), 0, 1000) ?? 0,
+      skippedBy: txt(m.skippedBy, 40), skippedAt: m.skippedBy ? Date.now() : (s.music?.skippedAt ?? 0),
     } : null;
     r.state = s;
     r.version += 1;

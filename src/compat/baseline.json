@@ -11902,6 +11902,10 @@
      "type": "toggle",
      "default": true
     },
+    "showVotes": {
+     "type": "toggle",
+     "default": true
+    },
     "label": {
      "type": "text",
      "default": "Teraz gra",

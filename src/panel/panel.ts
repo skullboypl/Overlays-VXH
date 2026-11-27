@@ -25,7 +25,9 @@ export type PanelState = {
   hype?: { status: string; at: number; level: number; total: number; progress: number; goal: number; ends: number; top: { name: string; type: string; total: number }[] };
   twGoal?: { status: string; at: number; kind: string; description: string; current: number; target: number };
   /** Now playing from the PC app; `cover` is the version of the picture at /api/panel/<room>/cover (0 = none). */
-  music?: { title: string; artist: string; album: string; app: string; playing: boolean; position: number; duration: number; at: number; cover: number } | null;
+  music?: { title: string; artist: string; album: string; app: string; playing: boolean; position: number; duration: number; at: number; cover: number; votes?: number; needed?: number; skippedBy?: string; skippedAt?: number } | null;
+  /** Chat commands the PC app obeys: !skip (moderators / streamer) and !voteskip (viewers). */
+  musicCtl?: { skip?: boolean; vote?: boolean; needed?: number; cooldown?: number; skipCmd?: string; voteCmd?: string };
 };
 export type PanelAlert = { id?: string; text: string; kind: string; at: number; amount?: number; months?: number; reward?: string; note?: string; platform?: string };
 export type PanelSnapshot = { room: string; version: number; now: number; sources: number; state: PanelState };

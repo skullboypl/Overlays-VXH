@@ -17,6 +17,16 @@ static class Program
     static Track? last;
     static DateTime lastSent = DateTime.MinValue;
     static double expectedPos;
+    // Music commands from chat (settings come from the dock).
+    static PanelSettings settings = new();
+    static readonly Media media = new();
+    static readonly HashSet<string> voters = new(StringComparer.OrdinalIgnoreCase);
+    static DateTime lastSkip = DateTime.MinValue;
+    static long seenNextAt = -1;
+    static string skippedBy = "";
+    static bool forceSend;
+    static CancellationTokenSource? chatStop;
+    static string chatFor = "";
 
     [DllImport("user32.dll")] static extern bool OpenClipboard(IntPtr owner);
     [DllImport("user32.dll")] static extern bool CloseClipboard();
@@ -36,6 +46,7 @@ static class Program
         if (Config.ParseDockLink(config.DockLink) == null)
             tray.Balloon("VXH Now Playing", "Skopiuj link docka ze strony Panel OBS i wybierz w menu ikony: „Wklej link docka ze schowka”.");
         _ = Task.Run(Loop);
+        _ = Task.Run(() => Panel.FollowAsync(() => Config.ParseDockLink(config.DockLink), OnSettings, CancellationToken.None));
         tray.Run();
         _ = Send(null, null); // tell the overlay the music stopped
     }
@@ -106,9 +117,49 @@ static class Program
         try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true }); } catch { }
     }
 
+    /// <summary>New panel state: start / stop chat listeners for the linked channels, obey the dock's "next song".</summary>
+    static void OnSettings(PanelSettings s)
+    {
+        settings = s;
+        if (seenNextAt < 0) seenNextAt = s.NextAt;
+        else if (s.NextAt > seenNextAt) { seenNextAt = s.NextAt; _ = Skip("panel"); }
+        var want = (s.Skip || s.Vote) ? $"{s.Twitch}|{s.Kick}" : "";
+        if (want == chatFor) return;
+        chatFor = want;
+        chatStop?.Cancel();
+        chatStop = null;
+        if (want == "") return;
+        chatStop = new CancellationTokenSource();
+        var origin = Config.ParseDockLink(config.DockLink)?.Origin ?? "https://overlays.vxh.pl";
+        if (s.Twitch != "") _ = Task.Run(() => Chat.TwitchAsync(s.Twitch, OnChat, chatStop.Token));
+        if (s.Kick != "") _ = Task.Run(() => Chat.KickAsync(origin, s.Kick, OnChat, chatStop.Token));
+    }
+
+    static void OnChat(ChatLine line)
+    {
+        var cmd = line.Text.Trim().Split(' ', 2)[0].ToLowerInvariant();
+        if (settings.Skip && line.Privileged && cmd == settings.SkipCmd) { _ = Skip(line.User); return; }
+        if (!settings.Vote || cmd != settings.VoteCmd || last == null) return;
+        lock (voters)
+        {
+            if (!voters.Add($"{line.Platform}:{line.User}")) return;
+            forceSend = true;
+            if (voters.Count >= settings.Needed) _ = Skip($"{voters.Count} głosów");
+        }
+    }
+
+    static async Task Skip(string by)
+    {
+        if (DateTime.UtcNow - lastSkip < TimeSpan.FromSeconds(by == "panel" ? 1 : settings.Cooldown)) return;
+        lastSkip = DateTime.UtcNow;
+        if (!await media.SkipAsync(config.Source)) return;
+        skippedBy = by == "panel" ? "" : by;
+        lock (voters) voters.Clear();
+        forceSend = true;
+    }
+
     static async Task Loop()
     {
-        var media = new Media();
         while (true)
         {
             try
@@ -119,8 +170,10 @@ static class Program
                 // A jump of more than 3 s against where the song should be = the streamer seeked.
                 var seeked = track != null && last != null && !changedSong && Math.Abs(track.Position - expectedPos) > 3;
                 var stale = DateTime.UtcNow - lastSent > TimeSpan.FromSeconds(15);
-                if (changedSong || changedState || seeked || stale)
+                if (changedSong) lock (voters) voters.Clear();
+                if (changedSong || changedState || seeked || stale || forceSend)
                 {
+                    forceSend = false;
                     var cover = changedSong ? await Media.CoverAsync(thumb) : null;
                     var ok = await Send(track, changedSong ? (cover ?? "") : null);
                     lastSent = DateTime.UtcNow;
@@ -145,10 +198,17 @@ static class Program
     {
         var link = Config.ParseDockLink(config.DockLink);
         if (link == null) return false;
-        object? music = t == null ? null : new { title = t.Title, artist = t.Artist, album = t.Album, app = t.App, playing = t.Playing, position = Math.Round(t.Position, 1), duration = Math.Round(t.Duration, 1) };
+        int votes; lock (voters) votes = voters.Count;
+        var by = skippedBy;
+        skippedBy = "";
+        object? music = t == null ? null : new
+        {
+            title = t.Title, artist = t.Artist, album = t.Album, app = t.App, playing = t.Playing, position = Math.Round(t.Position, 1), duration = Math.Round(t.Duration, 1),
+            votes, needed = settings.Vote ? settings.Needed : 0, skippedBy = by,
+        };
         object body = cover == null
             ? new { key = link.Value.Key, music }
-            : cover == "" ? new { key = link.Value.Key, music, cover = (string?)null } : new { key = link.Value.Key, music, cover };
+            : cover == "" ? new { key = link.Value.Key, music, cover = (string?)null } : new { key = link.Value.Key, music, cover = (string?)cover };
         try
         {
             var res = await http.PostAsJsonAsync($"{link.Value.Origin}/api/panel/music", body);

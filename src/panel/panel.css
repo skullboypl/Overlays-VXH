@@ -141,3 +141,11 @@ html.is-dock body { background: #101012; }
 .pn-auto input { width: 90px; }
 .pn-auto-head { font-size: 13px; margin-top: 4px; }
 .pn-auto-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 6px 14px; }
+
+/* Music control (added later). */
+.pn-check { display: flex; align-items: center; justify-content: flex-start; gap: 8px; font-size: 13px; margin: 4px 0; text-align: left; }
+.pn-check input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--orange); }
+.pn-check code { margin-left: auto; }
+.pn-check code, .pn-note code { padding: 1px 6px; border-radius: 6px; background: var(--input); font-size: 12px; }
+.pn-inline { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.pn-inline input { width: 64px; }

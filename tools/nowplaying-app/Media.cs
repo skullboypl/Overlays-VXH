@@ -70,6 +70,13 @@ public sealed class Media
         return (new Track(props.Title, artist ?? "", props.AlbumTitle ?? "", AppName(s.SourceAppUserModelId), playing, position, duration), props.Thumbnail);
     }
 
+    /// <summary>"Next track" on the session being shown (works in Spotify, YouTube playlists and most players).</summary>
+    public async Task<bool> SkipAsync(string source)
+    {
+        var s = await PickAsync(source);
+        return s != null && await s.TrySkipNextAsync();
+    }
+
     /// <summary>The cover as a small JPEG data URL (at most 200 px), or null.</summary>
     public static async Task<string?> CoverAsync(IRandomAccessStreamReference? thumb)
     {
